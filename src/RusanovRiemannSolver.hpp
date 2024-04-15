@@ -1,0 +1,6 @@
+#ifndef RUSANOV_RIEMANN_SOLVER_HPP_
+#define RUSANOV_RIEMANN_SOLVER_HPP_
+
+
+
+#endif

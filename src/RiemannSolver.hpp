@@ -1,4 +1,0 @@
-#ifndef RIEMANN_SOLVER_HPP_
-#define RIEMANN_SOLVER_HPP_
-
-#endif
