@@ -4,8 +4,8 @@
 #include <vector>
 #include <string>
 
+#include "ReconstructedValues.hpp"
 #include "ConservativeVariablesCC.hpp"
-
 
 class PrimitiveVariablesCC {
 public:
@@ -75,6 +75,13 @@ public:
         Bx = Bx_;
         By = By_;
         Bz = Bz_;
+    }
+
+    ReconstructedValues operator[](int index) const {
+        if (index < 0 || index >= nx * ny)
+            throw("Index out of range");
+
+        return {rho[index], vx[index], vy[index], vz[index], Bx[index], By[index], Bz[index], P};
     }
 };
 

@@ -6,11 +6,6 @@
 
 #include "PrimitiveVariablesCC.hpp"
 
-enum struct Dir {
-    X,
-    Y
-};
-
 class ConservativeVariablesCC {
 public:
     int nx;
@@ -47,30 +42,6 @@ public:
     }
 
     ~ConservativeVariablesCC() = default;
-    
-    // should problably be in a reconstruct to faces class as it is meant to be computed with ur and ul
-    std::vector<double> ComputeFluxVector(int index, Dir dir){
-        std::vector<double> flux(7, 0.0);
-        if(dir == Dir::X){
-            flux[0] = rhovx[index];
-            flux[1] = rhovx[index] * (rhovx[index]/rho[index]) + P - Bx[index] * Bx[index];
-            flux[2] = rhovx[index] * (rhovy[index]/rho[index]) - Bx[index] * By[index];
-            flux[3] = rhovx[index] * (rhovz[index]/rho[index]) - Bx[index] * Bz[index];
-            flux[4] = 0.0;
-            flux[5] = By[index] * (rhovx[index] / rho[index]) - (rhovy[index] / rho[index]) * Bx[index];
-            flux[6] = Bz[index] * (rhovx[index] / rho[index]) - (rhovz[index] / rho[index]) * Bx[index];
-        }
-        else if(dir == Dir::Y){
-            flux[0] = rhovy[index];
-            flux[1] = rhovy[index] * (rhovx[index]/rho[index]) - By[index] * Bx[index];
-            flux[2] = rhovy[index] * (rhovy[index]/rho[index]) + P - By[index] * By[index];
-            flux[3] = rhovy[index] * (rhovz[index]/rho[index]) - By[index] * Bz[index];
-            flux[4] = Bx[index] * (rhovy[index] / rho[index]) - (rhovx[index] / rho[index]) * By[index];
-            flux[5] = 0.0;
-            flux[6] = Bz[index] * (rhovy[index] / rho[index]) - (rhovz[index] / rho[index]) * By[index];
-        }
-        return flux;
-    }
 };
 
 
