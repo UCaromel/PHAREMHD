@@ -6,6 +6,8 @@
 #include "ReconstructedValues.hpp"
 #include "PrimitiveVariablesCC.hpp"
 
+//might need a conversion to conserved variables here.
+
 enum struct Dir {
     X,
     Y
@@ -74,6 +76,14 @@ public:
             // for rusanov :
             Splus = std::max(std::abs(uL.vy) + cfastL, std::abs(uR.vy) + cfastR);
         }
+
+        //pass uL and uR in conservative form
+        uL.vx = uL.rho * uL.vx;
+        uL.vy = uL.rho * uL.vy;
+        uL.vz = uL.rho * uL.vz;
+        uR.vx = uR.rho * uR.vx;
+        uR.vy = uR.rho * uR.vy;
+        uR.vz = uR.rho * uR.vz;
     }
     ~Interface() = default;
 };
