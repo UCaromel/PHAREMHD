@@ -42,7 +42,7 @@ public:
         By.resize(nx * ny);
         Bz.resize(nx * ny);
 
-        for (int i = 0; i < nx * ny; ++i) {
+        for (int i = 0; i < nx * ny; i++) {
             rho[i] = P_cc.rho[i];
             vx[i] = P_cc.rhovx[i] / P_cc.rho[i];
             vy[i] = P_cc.rhovy[i] / P_cc.rho[i];
@@ -65,6 +65,16 @@ public:
         Bx[i * nx + j] = Bx_;
         By[i * nx + j] = By_;
         Bz[i * nx + j] = Bz_;
+    }
+
+    void set(const ReconstructedValues& rv, int index){
+        rho[index] = rv.rho;
+        vx[index] = rv.vx;
+        vy[index] = rv.vy;
+        vz[index] = rv.vz;
+        Bx[index] = rv.Bx;
+        By[index] = rv.By;
+        Bz[index] = rv.Bz;
     }
 
     void init(std::vector<double> rho_, std::vector<double> vx_, std::vector<double> vy_, std::vector<double> vz_, std::vector<double> Bx_, std::vector<double> By_, std::vector<double> Bz_){

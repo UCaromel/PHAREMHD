@@ -30,7 +30,7 @@ public:
         By.resize(nx * ny);
         Bz.resize(nx * ny);
 
-        for (int i = 0; i < nx * ny; ++i) {
+        for (int i = 0; i < nx * ny; i++) {
             rho[i] = P_cc.rho[i];
             rhovx[i] = P_cc.rho[i] * P_cc.vx[i];
             rhovy[i] = P_cc.rho[i] * P_cc.vy[i];
