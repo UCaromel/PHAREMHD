@@ -1,7 +1,6 @@
 ## TODO
 
 # By priority order in short term
-- Correctly take into account boundary conditions (ghost cells added before interfacing).
 - Implement Constrained Transport.
 - Implement time integrator.
 - Use real physical initial conditions aswell as realistic values for P and T.

@@ -10,40 +10,40 @@ class ConservativeVariablesCC {
 public:
     int nx;
     int ny;
-    std::vector<double> rho;
-    std::vector<double> rhovx;
-    std::vector<double> rhovy;
-    std::vector<double> rhovz;
-    std::vector<double> Bx;
-    std::vector<double> By;
-    std::vector<double> Bz;
+    std::vector<std::vector<double>> rho;
+    std::vector<std::vector<double>> rhovx;
+    std::vector<std::vector<double>> rhovy;
+    std::vector<std::vector<double>> rhovz;
+    std::vector<std::vector<double>> Bx;
+    std::vector<std::vector<double>> By;
+    std::vector<std::vector<double>> Bz;
     const double P = 10.0;
 
     // Constructor that takes grid dimensions as arguments
     ConservativeVariablesCC(const PrimitiveVariablesCC& P_cc) : nx(P_cc.nx), ny(P_cc.ny)
     {
-        rho.resize(nx * ny);
-        rhovx.resize(nx * ny);
-        rhovy.resize(nx * ny);
-        rhovz.resize(nx * ny);
-        Bx.resize(nx * ny);
-        By.resize(nx * ny);
-        Bz.resize(nx * ny);
+        rho.resize(nx, std::vector<double>(ny));
+        rhovx.resize(nx, std::vector<double>(ny));
+        rhovy.resize(nx, std::vector<double>(ny));
+        rhovz.resize(nx, std::vector<double>(ny));
+        Bx.resize(nx, std::vector<double>(ny));
+        By.resize(nx, std::vector<double>(ny));
+        Bz.resize(nx, std::vector<double>(ny));
 
-        for (int i = 0; i < nx * ny; i++) {
-            rho[i] = P_cc.rho[i];
-            rhovx[i] = P_cc.rho[i] * P_cc.vx[i];
-            rhovy[i] = P_cc.rho[i] * P_cc.vy[i];
-            rhovz[i] = P_cc.rho[i] * P_cc.vz[i];
-            Bx[i] = P_cc.Bx[i];
-            By[i] = P_cc.By[i];
-            Bz[i] = P_cc.Bz[i];
+        for (int i = 0; i < nx; i++) {
+            for (int j = 0; j < ny; j++) {
+                rho[i][j] = P_cc.rho[i][j];
+                rhovx[i][j] = P_cc.rho[i][j] * P_cc.vx[i][j];
+                rhovy[i][j] = P_cc.rho[i][j] * P_cc.vy[i][j];
+                rhovz[i][j] = P_cc.rho[i][j] * P_cc.vz[i][j];
+                Bx[i][j] = P_cc.Bx[i][j];
+                By[i][j] = P_cc.By[i][j];
+                Bz[i][j] = P_cc.Bz[i][j];
+            }
         }
     }
 
     ~ConservativeVariablesCC() = default;
 };
-
-
 
 #endif // CONSERVATIVE_VARIABLES_CC_HPP_
