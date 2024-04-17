@@ -24,7 +24,7 @@ ReconstructedValues ComputeFluxVector(ReconstructedValues u, Dir dir) {
         flux.Bx = 0.0;
         flux.By = u.By * u.vx - u.vy * u.Bx;
         flux.Bz = u.Bz * u.vx - u.vz * u.Bx;
-        flux.P = u.P;
+        //flux.P = u.P;
     } else if (dir == Dir::Y) {
         flux.rho = u.rho * u.vy;
         flux.vx = u.rho * u.vy * u.vx - u.By * u.Bx;
@@ -33,7 +33,7 @@ ReconstructedValues ComputeFluxVector(ReconstructedValues u, Dir dir) {
         flux.Bx = u.vx * u.By - u.vy * u.Bx;
         flux.By = 0.0;
         flux.Bz = u.Bz * u.vy - u.vz * u.By;
-        flux.P = u.P;
+        //flux.P = u.P;
     }
     return flux;
 }

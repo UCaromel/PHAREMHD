@@ -58,17 +58,6 @@ public:
 
     ~PrimitiveVariablesCC() = default;
 
-    void set(int i, int j, double rho_, double vx_, double vy_, double vz_, double Bx_, double By_, double Bz_)
-    {
-        rho[i][j] = rho_;
-        vx[i][j] = vx_;
-        vy[i][j] = vy_;
-        vz[i][j] = vz_;
-        Bx[i][j] = Bx_;
-        By[i][j] = By_;
-        Bz[i][j] = Bz_;
-    }
-
     void set(const ReconstructedValues& rv, int i, int j){
         rho[i][j] = rv.rho;
         vx[i][j] = rv.vx;
