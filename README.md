@@ -2,7 +2,6 @@
 
 # By priority order in short term
 - Implement Constrained Transport.
-- Implement time integrator.
 - Use real physical initial conditions aswell as realistic values for P and T.
 - Implement diagnostics and unit testing.
 - Post-processing

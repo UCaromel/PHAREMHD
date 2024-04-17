@@ -111,6 +111,27 @@ public:
         return result;
     }
 
+    ConservativeVariablesCC operator+(const ConservativeVariablesCC& other) const {
+        ConservativeVariablesCC result(this->nx, this->ny);
+
+        if (this->nx != other.nx || this->ny != other.ny) {
+            throw("Dimension mismatch");
+        }
+
+        for (int i = 0; i < this->nx; ++i) {
+            for (int j = 0; j < this->ny; ++j) {
+                result.rho[i][j] = this->rho[i][j] + other.rho[i][j];
+                result.rhovx[i][j] = this->rhovx[i][j] + other.rhovx[i][j];
+                result.rhovy[i][j] = this->rhovy[i][j] + other.rhovy[i][j];
+                result.rhovz[i][j] = this->rhovz[i][j] + other.rhovz[i][j];
+                result.Bx[i][j] = this->Bx[i][j] + other.Bx[i][j];
+                result.By[i][j] = this->By[i][j] + other.By[i][j];
+                result.Bz[i][j] = this->Bz[i][j] + other.Bz[i][j];
+            }
+        }
+        return result;
+    }
+
     ConservativeVariablesCC& operator=(const ConservativeVariablesCC& other) {
         if (this->nx != other.nx || this->ny != other.ny) {
             throw("Dimension mismatch");
