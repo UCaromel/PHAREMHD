@@ -42,14 +42,20 @@ class Interface {
 public:
     ReconstructedValues uL, uR, fL, fR;
     double SL, SR, Splus;
-    Interface(PrimitiveVariablesCC& P_cc /* Assuming ghost cells are added */, int i /* 0 to nx */, int j /* 0 to ny */, int order, Dir dir) {
+
+    // (i,j) interface index.
+    Interface(PrimitiveVariablesCC& P_cc /* Assuming ghost cells are added */, int i /* 0 to nx */, int j /* 0 to ny */, int order, int nghost, Dir dir) {
         if (order == 1) {
             if (dir == Dir::X) {
-                uL = P_cc(i,j);
-                uR = P_cc(i+1,j);
+                i += nghost;
+                j += nghost;
+                uL = P_cc(i-1,j);
+                uR = P_cc(i,j);
             } else if (dir == Dir::Y) {
-                uL = P_cc(i,j);
-                uR = P_cc(i,j+1);
+                i += nghost;
+                j += nghost;
+                uL = P_cc(i,j-1);
+                uR = P_cc(i,j);
             }
         }
         fL = ComputeFluxVector(uL, dir);
