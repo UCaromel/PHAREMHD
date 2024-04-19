@@ -6,6 +6,8 @@
 
 #include "PrimitiveVariablesCC.hpp"
 
+class PrimitiveVariablesCC;
+
 class ConservativeVariablesCC {
 public:
     int nx;
@@ -17,7 +19,7 @@ public:
     std::vector<std::vector<double>> Bx;
     std::vector<std::vector<double>> By;
     std::vector<std::vector<double>> Bz;
-    const double P = 10.0;
+    double P;
 
         // Constructor that takes grid dimensions as arguments
     ConservativeVariablesCC(int nx, int ny) : nx(nx), ny(ny)
@@ -52,6 +54,7 @@ public:
                 Bz[i][j] = P_cc.Bz[i][j];
             }
         }
+        P = P_cc.P;
     }
 
     ~ConservativeVariablesCC() = default;
