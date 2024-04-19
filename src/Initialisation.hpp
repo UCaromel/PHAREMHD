@@ -41,7 +41,7 @@ public:
         Bx.resize(nx, std::vector<double>(ny, 1.0));  // Corrected resize
         By.resize(nx, std::vector<double>(ny, 1.0));
         Bz.resize(nx, std::vector<double>(ny, 1.0));  // Corrected resize
-        P = (5.0/3.0)/4*M_PI;
+        //P = (5.0/3.0)/4*M_PI;
         for(int i=0; i<nx; i++){
             for(int j=0; j<ny; j++){
                 By[i][j] = UserFunction1(0.01, 2*M_PI, Dx*i);

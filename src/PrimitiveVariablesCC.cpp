@@ -34,7 +34,6 @@ PrimitiveVariablesCC::PrimitiveVariablesCC(const ConservativeVariablesCC& C_cc) 
             Bz[i][j] = C_cc.Bz[i][j];
         }
     }
-    P = C_cc.P;
 }
 
 PrimitiveVariablesCC::~PrimitiveVariablesCC() = default;
@@ -57,12 +56,11 @@ void PrimitiveVariablesCC::init(const std::vector<std::vector<double>>& rho_, co
     Bx = Bx_;
     By = By_;
     Bz = Bz_;
-    P = P_;
 }
 
 ReconstructedValues PrimitiveVariablesCC::operator()(int i, int j) const {
     if (i < 0 || i >= nx || j < 0 || j >= ny)
         throw("Index out of range");
 
-    return ReconstructedValues{rho[i][j], vx[i][j], vy[i][j], vz[i][j], Bx[i][j], By[i][j], Bz[i][j], P};
+    return ReconstructedValues{rho[i][j], vx[i][j], vy[i][j], vz[i][j], Bx[i][j], By[i][j], Bz[i][j]};
 }

@@ -33,7 +33,6 @@ ConservativeVariablesCC::ConservativeVariablesCC(const PrimitiveVariablesCC& P_c
             Bz[i][j] = P_cc.Bz[i][j];
         }
     }
-    P = P_cc.P;
 }
 
 ConservativeVariablesCC::~ConservativeVariablesCC() = default;
@@ -52,7 +51,7 @@ ReconstructedValues ConservativeVariablesCC::operator()(int i, int j) const {
     if (i < 0 || i >= nx || j < 0 || j >= ny)
         throw("Index out of range");
 
-    return ReconstructedValues{rho[i][j], rhovx[i][j], rhovy[i][j], rhovz[i][j], Bx[i][j], By[i][j], Bz[i][j], P};
+    return ReconstructedValues{rho[i][j], rhovx[i][j], rhovy[i][j], rhovz[i][j], Bx[i][j], By[i][j], Bz[i][j]};
 }
 
 ConservativeVariablesCC ConservativeVariablesCC::operator*(double scalar) const {

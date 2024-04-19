@@ -55,6 +55,27 @@ void saveConcervativeVariables(const ConservativeVariablesCC& P_cc, const std::s
     }
 }
 
+void writeVectorToFile(const std::vector<ReconstructedValues>& values, const std::string& filename) {
+    std::ofstream outFile(filename);
+
+    if (outFile.is_open()) {
+        for (const auto& value : values) {
+            outFile << std::setw(15) << value.rho << " "
+                    << std::setw(15) << value.vx << " "
+                    << std::setw(15) << value.vy << " "
+                    << std::setw(15) << value.vz << " "
+                    << std::setw(15) << value.Bx << " "
+                    << std::setw(15) << value.By << " "
+                    << std::setw(15) << value.Bz << " "
+                    << std::setw(15) << value.P << std::endl;
+        }
+        outFile.close();
+        std::cout << "Wrote file: " << filename << std::endl;
+    } else {
+        std::cerr << "Unable to open file: " << filename << std::endl;
+    }
+}
+
 int main(){
     Initialisation I;
 
@@ -73,16 +94,33 @@ int main(){
 
     saveConcervativeVariables(U0, resultsDir + "U0.txt");
 
-    std::cout<<U0.rho[0][0]<<" "<<U0.rhovx[0][0]<<" "<<U0.rhovy[0][0]<<" "<<U0.rhovz[0][0]<<" "<<U0.Bx[0][0]<<" "<<U0.By[0][0]<<" "<<U0.Bz[0][0]<<" "; //OK
-    std::cout<<U0(0,0).rho<<" "<<U0(0,0).vx<<" "<<U0(0,0).vy<<" "<<U0(0,0).vz<<" "<<U0(0,0).Bx<<" "<<U0(0,0).By<<" "<<U0(0,0).Bz<<" "; //OK
+    std::cout<<U0.rho[0][0]<<" "<<U0.rhovx[0][0]<<" "<<U0.rhovy[0][0]<<" "<<U0.rhovz[0][0]<<" "<<U0.Bx[0][0]<<" "<<U0.By[0][0]<<" "<<U0.Bz[0][0]<<std::endl; //OK
+    std::cout<<U0(0,0).rho<<" "<<U0(0,0).vx<<" "<<U0(0,0).vy<<" "<<U0(0,0).vz<<" "<<U0(0,0).Bx<<" "<<U0(0,0).By<<" "<<U0(0,0).Bz<<std::endl; //OK
 
     ConservativeVariablesCC Ughost = AddGhostCells(U0, I.nghost); //OK
 
     saveConcervativeVariables(Ughost, resultsDir + "Ughost.txt");
 
-    
 
-    // debugging to be done, uninitialised P somewhere.
+
+    std::vector<ReconstructedValues> godunovfluxx = GodunovFluxX(P_cc, I.order, I.nghost); //OK
+    writeVectorToFile(godunovfluxx, resultsDir + "godunovfluxx.txt");
+
+    std::vector<ReconstructedValues> godunovfluxy = GodunovFluxY(P_cc, I.order, I.nghost); //OK
+    writeVectorToFile(godunovfluxy, resultsDir + "godunovfluxy.txt");
+
+    // to investigate
+    ConservativeVariablesCC fluxx = ComputeFluxDifferenceX(P_cc, I.order, I.nghost);
+
+    savePrimitiveVariables(fluxx, resultsDir + "fluxx.txt");
+
+    // to investigate
+    ConservativeVariablesCC fluxy = ComputeFluxDifferenceY(P_cc, I.order, I.nghost);
+
+    savePrimitiveVariables(fluxy, resultsDir + "fluxy.txt");
+
+
+    // debugging to be done, uninitialised P somewhere or error on the fluxes (it was both)
     ConservativeVariablesCC Ueuler = EulerAdvance(U0, I.Dx, I.Dy, I.Dt, I.order, I.nghost);
 
     saveConcervativeVariables(Ueuler, resultsDir + "Ueuler.txt");

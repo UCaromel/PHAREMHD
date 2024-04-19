@@ -9,7 +9,7 @@ struct ReconstructedValues {
     double Bx;
     double By;
     double Bz;
-    double P;
+    const double P = (5.0/3.0)/4*M_PI;
 
     ReconstructedValues operator+(const ReconstructedValues& rhs) const {
         ReconstructedValues result;
@@ -52,6 +52,18 @@ struct ReconstructedValues {
 
     friend ReconstructedValues operator*(double scalar, const ReconstructedValues& rhs) {
         return rhs * scalar;
+    }
+
+    ReconstructedValues operator=(const ReconstructedValues& other) {
+        rho = other.rho;
+        vx = other.vx;
+        vy = other.vy;
+        vz = other.vz;
+        Bx = other.Bx;
+        By = other.By;
+        Bz = other.Bz;
+        //P = other.P;
+        return *this;
     }
 };
 

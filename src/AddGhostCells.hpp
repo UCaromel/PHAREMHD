@@ -9,7 +9,6 @@
 template<typename Variables>
 Variables AddGhostCells(const Variables& V_cc, int nghost) {
     Variables withGhost(V_cc.nx + 2 * nghost, V_cc.ny + 2 * nghost);
-    withGhost.P = V_cc.P;
 
     // Copy interior values
     for (int i = 0; i < V_cc.nx; ++i) {

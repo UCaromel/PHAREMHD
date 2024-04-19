@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <cmath>
 
 #include "ReconstructedValues.hpp"
 #include "ConservativeVariablesCC.hpp"
@@ -20,7 +21,7 @@ public:
     std::vector<std::vector<double>> Bx;
     std::vector<std::vector<double>> By;
     std::vector<std::vector<double>> Bz;
-    double P;
+    const double P = (5.0/3.0)/4*M_PI;
 
     PrimitiveVariablesCC(int nx_, int ny_);
     PrimitiveVariablesCC(const ConservativeVariablesCC& C_cc);

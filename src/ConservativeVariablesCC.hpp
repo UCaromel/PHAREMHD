@@ -19,7 +19,7 @@ public:
     std::vector<std::vector<double>> Bx;
     std::vector<std::vector<double>> By;
     std::vector<std::vector<double>> Bz;
-    double P;
+    const double P = (5.0/3.0)/4*M_PI;
 
     ConservativeVariablesCC(int nx, int ny);
     ConservativeVariablesCC(const PrimitiveVariablesCC& P_cc);
