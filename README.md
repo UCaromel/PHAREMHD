@@ -3,6 +3,7 @@
 # By priority order in short term
 - Add a simulation framework with user input and code output.
 - Use real physical initial conditions aswell as realistic values for P and T.
+- - DEBUG
 - Implement diagnostics and testing.
 - Post-processing
 - Computation of new dt on each global loop for CFL condition ?

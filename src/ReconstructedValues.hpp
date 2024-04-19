@@ -6,11 +6,10 @@ struct ReconstructedValues {
     double vx;
     double vy;
     double vz;
-    double P;
     double Bx;
     double By;
     double Bz;
-    //double P;
+    double P;
 
     ReconstructedValues operator+(const ReconstructedValues& rhs) const {
         ReconstructedValues result;
@@ -50,10 +49,10 @@ struct ReconstructedValues {
         //result.P = P * scalar;
         return result;
     }
-};
 
-ReconstructedValues operator*(double scalar, const ReconstructedValues& rhs) {
-    return rhs * scalar;
-}
+    friend ReconstructedValues operator*(double scalar, const ReconstructedValues& rhs) {
+        return rhs * scalar;
+    }
+};
 
 #endif //RECONSTRUCTED_VALUES_HPP_
