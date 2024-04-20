@@ -1,13 +1,15 @@
 #ifndef GODUNOV_FLUX_HPP_
 #define GODUNOV_FLUX_HPP_
 
+#include <iostream>
+
 #include <vector>
 
 #include "ReconstructedValues.hpp"
 #include "Interface.hpp"
 #include "RusanovRiemannSolver.hpp"
 
-std::vector<ReconstructedValues> GodunovFluxX(PrimitiveVariablesCC& P_cc, int order, int nghost){
+std::vector<ReconstructedValues> GodunovFluxX(const PrimitiveVariablesCC& P_cc, int order, int nghost){
     std::vector<ReconstructedValues> NumFluxx;
     PrimitiveVariablesCC Pghost = AddGhostCells(P_cc, nghost);
     for(int j=0; j<P_cc.ny; j++){
@@ -18,7 +20,7 @@ std::vector<ReconstructedValues> GodunovFluxX(PrimitiveVariablesCC& P_cc, int or
     return NumFluxx;
 }
 
-std::vector<ReconstructedValues> GodunovFluxY(PrimitiveVariablesCC& P_cc, int order, int nghost){
+std::vector<ReconstructedValues> GodunovFluxY(const PrimitiveVariablesCC& P_cc, int order, int nghost){
     std::vector<ReconstructedValues> NumFluxy;
     PrimitiveVariablesCC Pghost = AddGhostCells(P_cc, nghost);
     for(int i=0; i<P_cc.nx; i++){
@@ -36,10 +38,9 @@ ConservativeVariablesCC ComputeFluxDifferenceX(PrimitiveVariablesCC& P_cc, int o
 
     for(int j=0; j<P_cc.ny; j++){
         for(int i=0; i<P_cc.nx; i++){
-            FluxDifx.set(NumFluxx[(i+1)+P_cc.nx*j] - NumFluxx[i+P_cc.nx*j], i, j);
+            FluxDifx.set(NumFluxx[(i+1)+(P_cc.nx+1)*j] - NumFluxx[i+(P_cc.nx+1)*j], i, j);
         }
     }
-
     return FluxDifx;
 }
 
@@ -50,7 +51,7 @@ ConservativeVariablesCC ComputeFluxDifferenceY(PrimitiveVariablesCC& P_cc, int o
 
     for(int i=0; i<P_cc.nx; i++){
         for(int j=0; j<P_cc.ny; j++){
-            FluxDify.set(NumFluxy[(j+1)+P_cc.ny*i] - NumFluxy[j+P_cc.ny*i], i, j);
+            FluxDify.set(NumFluxy[(j+1)+(P_cc.ny+1)*i] - NumFluxy[j+(P_cc.ny+1)*i], i, j);
         }
     }
 

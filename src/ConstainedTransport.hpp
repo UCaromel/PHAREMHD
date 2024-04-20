@@ -48,16 +48,16 @@ public:
         calculateEdge(C_cc, i, j, i+1, j+1, 3);
 
         // Left face
-        bx.push_back(C_cc.Bx[i][j] + C_cc.Bx[i-1][j]);
+        bx.push_back(0.5*(C_cc.Bx[i][j] + C_cc.Bx[i-1][j]));
 
         // Right face
-        bx.push_back(C_cc.Bx[i][j] + C_cc.Bx[i+1][j]);
+        bx.push_back(0.5*(C_cc.Bx[i][j] + C_cc.Bx[i+1][j]));
 
         // Bottom face
-        by.push_back(C_cc.Bx[i][j] + C_cc.Bx[i][j-1]);
+        by.push_back(0.5*(C_cc.Bx[i][j] + C_cc.Bx[i][j-1]));
 
         // Top face
-        by.push_back(C_cc.Bx[i][j] + C_cc.Bx[i][j+1]);
+        by.push_back(0.5*(C_cc.Bx[i][j] + C_cc.Bx[i][j+1]));
 
         bx[0] = bx[0] - (Dt/Dy)*(Ez[1]-Ez[0]);
         bx[1] = bx[1] - (Dt/Dy)*(Ez[3]-Ez[2]);

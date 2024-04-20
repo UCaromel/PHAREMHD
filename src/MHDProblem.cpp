@@ -91,17 +91,16 @@ int main(){
     savePrimitiveVariables(P_cc, resultsDir + "P_cc_initial.txt");
 
     ConservativeVariablesCC U0(P_cc); //OK
-
     saveConcervativeVariables(U0, resultsDir + "U0.txt");
 
     std::cout<<U0.rho[0][0]<<" "<<U0.rhovx[0][0]<<" "<<U0.rhovy[0][0]<<" "<<U0.rhovz[0][0]<<" "<<U0.Bx[0][0]<<" "<<U0.By[0][0]<<" "<<U0.Bz[0][0]<<std::endl; //OK
     std::cout<<U0(0,0).rho<<" "<<U0(0,0).vx<<" "<<U0(0,0).vy<<" "<<U0(0,0).vz<<" "<<U0(0,0).Bx<<" "<<U0(0,0).By<<" "<<U0(0,0).Bz<<std::endl; //OK
 
+    ConservativeVariablesCC Uset(I.nx, I.ny); Uset.set(U0(0,0), 0, 0);
+    std::cout<<Uset.rho[0][0]<<" "<<Uset.rhovx[0][0]<<" "<<Uset.rhovy[0][0]<<" "<<Uset.rhovz[0][0]<<" "<<Uset.Bx[0][0]<<" "<<Uset.By[0][0]<<" "<<Uset.Bz[0][0]<<std::endl; //OK
+
     ConservativeVariablesCC Ughost = AddGhostCells(U0, I.nghost); //OK
-
     saveConcervativeVariables(Ughost, resultsDir + "Ughost.txt");
-
-
 
     std::vector<ReconstructedValues> godunovfluxx = GodunovFluxX(P_cc, I.order, I.nghost); //OK
     writeVectorToFile(godunovfluxx, resultsDir + "godunovfluxx.txt");
@@ -109,20 +108,13 @@ int main(){
     std::vector<ReconstructedValues> godunovfluxy = GodunovFluxY(P_cc, I.order, I.nghost); //OK
     writeVectorToFile(godunovfluxy, resultsDir + "godunovfluxy.txt");
 
-    // to investigate
-    ConservativeVariablesCC fluxx = ComputeFluxDifferenceX(P_cc, I.order, I.nghost);
+    ConservativeVariablesCC fluxx = ComputeFluxDifferenceX(P_cc, I.order, I.nghost); //OK
+    saveConcervativeVariables(fluxx, resultsDir + "fluxx.txt");
 
-    savePrimitiveVariables(fluxx, resultsDir + "fluxx.txt");
+    ConservativeVariablesCC fluxy = ComputeFluxDifferenceY(P_cc, I.order, I.nghost); //OK
+    saveConcervativeVariables(fluxy, resultsDir + "fluxy.txt");
 
-    // to investigate
-    ConservativeVariablesCC fluxy = ComputeFluxDifferenceY(P_cc, I.order, I.nghost);
-
-    savePrimitiveVariables(fluxy, resultsDir + "fluxy.txt");
-
-
-    // debugging to be done, uninitialised P somewhere or error on the fluxes (it was both)
-    ConservativeVariablesCC Ueuler = EulerAdvance(U0, I.Dx, I.Dy, I.Dt, I.order, I.nghost);
-
+    ConservativeVariablesCC Ueuler = EulerAdvance(U0, I.Dx, I.Dy, I.Dt, I.order, I.nghost); //OK
     saveConcervativeVariables(Ueuler, resultsDir + "Ueuler.txt");
 
     /*for(int step = 0; step * I.Dt <= I.FinalTime; ++step){
