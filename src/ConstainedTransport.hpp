@@ -19,12 +19,12 @@ class ConstrainedTransport
     std::vector<double> by;
 
     void calculateEdge(const ConservativeVariablesCC& C_cc, int i, int j, int i2, int j2, int index) {
-        vx.push_back(0.25*((C_cc.rhovx[i][j]/C_cc.rho[i][j]) + (C_cc.rhovx[i2][j]/C_cc.rho[i2][j]) 
-                        + (C_cc.rhovx[i][j2]/C_cc.rho[i][j2]) + (C_cc.rhovx[i2][j2]/C_cc.rho[i2][j2])));
-        vy.push_back(0.25*((C_cc.rhovy[i][j]/C_cc.rho[i][j]) + (C_cc.rhovy[i2][j]/C_cc.rho[i2][j]) 
-                        + (C_cc.rhovy[i][j2]/C_cc.rho[i][j2]) + (C_cc.rhovy[i2][j2]/C_cc.rho[i2][j2])));
-        Bx.push_back(0.25*(C_cc.Bx[i][j] + C_cc.Bx[i2][j] + C_cc.Bx[i][j2] + C_cc.Bx[i2][j2]));
-        By.push_back(0.25*(C_cc.By[i][j] + C_cc.By[i2][j] + C_cc.By[i][j2] + C_cc.By[i2][j2]));
+        vx.push_back(0.25*((C_cc.rhovx[j][i]/C_cc.rho[j][i]) + (C_cc.rhovx[j][i2]/C_cc.rho[j][i2]) 
+                            + (C_cc.rhovx[j2][i]/C_cc.rho[j2][i]) + (C_cc.rhovx[j2][i2]/C_cc.rho[j2][i2])));
+        vy.push_back(0.25*((C_cc.rhovy[j][i]/C_cc.rho[j][i]) + (C_cc.rhovy[j][i2]/C_cc.rho[j][i2]) 
+                            + (C_cc.rhovy[j2][i]/C_cc.rho[j2][i]) + (C_cc.rhovy[j2][i2]/C_cc.rho[j2][i2])));
+        Bx.push_back(0.25*(C_cc.Bx[j][i] + C_cc.Bx[j][i2] + C_cc.Bx[j2][i] + C_cc.Bx[j2][i2]));
+        By.push_back(0.25*(C_cc.By[j][i] + C_cc.By[j][i2] + C_cc.By[j2][i] + C_cc.By[j2][i2]));
         Ez.push_back(vy[index]*Bx[index] - vx[index]*By[index]);
     }
 
@@ -48,16 +48,17 @@ public:
         calculateEdge(C_cc, i, j, i+1, j+1, 3);
 
         // Left face
-        bx.push_back(0.5*(C_cc.Bx[i][j] + C_cc.Bx[i-1][j]));
+        bx.push_back(0.5*(C_cc.Bx[j][i] + C_cc.Bx[j][i-1]));
 
         // Right face
-        bx.push_back(0.5*(C_cc.Bx[i][j] + C_cc.Bx[i+1][j]));
+        bx.push_back(0.5*(C_cc.Bx[j][i] + C_cc.Bx[j][i+1]));
 
         // Bottom face
-        by.push_back(0.5*(C_cc.Bx[i][j] + C_cc.Bx[i][j-1]));
+        by.push_back(0.5*(C_cc.Bx[j][i] + C_cc.Bx[j-1][i]));
 
         // Top face
-        by.push_back(0.5*(C_cc.Bx[i][j] + C_cc.Bx[i][j+1]));
+        by.push_back(0.5*(C_cc.Bx[j][i] + C_cc.Bx[j+1][i]));
+
 
         bx[0] = bx[0] - (Dt/Dy)*(Ez[1]-Ez[0]);
         bx[1] = bx[1] - (Dt/Dy)*(Ez[3]-Ez[2]);
@@ -72,13 +73,13 @@ public:
 
 void ApplyConstrainedTransport(ConservativeVariablesCC& C_cc, double Dx, double Dy, double Dt, int nghost){
     ConservativeVariablesCC Cghost = AddGhostCells(C_cc, nghost);
-    for(int i=0; i<C_cc.nx; i++){
-        for(int j=0; j<C_cc.ny; j++){
+    for(int j = 0; j < C_cc.ny; j++){
+        for(int i = 0; i < C_cc.nx; i++){
             ConstrainedTransport CT(Cghost, i, j, Dx, Dy, Dt, nghost);
-            C_cc.Bx[i][j]=CT.BX;
-            C_cc.By[i][j]=CT.BY;
+            C_cc.Bx[j][i] = CT.BX;
+            C_cc.By[j][i] = CT.BY;
         }
-    } 
+    }
 }
 
 #endif //CONSTRAINED_TRANSPORT_HPP_

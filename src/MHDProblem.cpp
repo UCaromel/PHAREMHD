@@ -13,15 +13,15 @@ void savePrimitiveVariables(const PrimitiveVariablesCC& P_cc, const std::string&
     std::ofstream outFile(filename);
 
     if (outFile.is_open()) {
-        for (int i = 0; i < P_cc.nx; ++i) {
-            for (int j = 0; j < P_cc.ny; ++j) {
-                outFile << std::setw(15) << P_cc.rho[i][j] << " "
-                        << std::setw(15) << P_cc.vx[i][j] << " "
-                        << std::setw(15) << P_cc.vy[i][j] << " "
-                        << std::setw(15) << P_cc.vz[i][j] << " "
-                        << std::setw(15) << P_cc.Bx[i][j] << " "
-                        << std::setw(15) << P_cc.By[i][j] << " "
-                        << std::setw(15) << P_cc.Bz[i][j] << " "
+        for (int j = 0; j < P_cc.ny; ++j) {
+            for (int i = 0; i < P_cc.nx; ++i) {
+                outFile << std::setw(15) << P_cc.rho[j][i] << " "
+                        << std::setw(15) << P_cc.vx[j][i] << " "
+                        << std::setw(15) << P_cc.vy[j][i] << " "
+                        << std::setw(15) << P_cc.vz[j][i] << " "
+                        << std::setw(15) << P_cc.Bx[j][i] << " "
+                        << std::setw(15) << P_cc.By[j][i] << " "
+                        << std::setw(15) << P_cc.Bz[j][i] << " "
                         << std::setw(15) << P_cc.P << std::endl;
             }
         }
@@ -36,15 +36,15 @@ void saveConcervativeVariables(const ConservativeVariablesCC& P_cc, const std::s
     std::ofstream outFile(filename);
 
     if (outFile.is_open()) {
-        for (int i = 0; i < P_cc.nx; ++i) {
-            for (int j = 0; j < P_cc.ny; ++j) {
-                outFile << std::setw(15) << P_cc.rho[i][j] << " "
-                        << std::setw(15) << P_cc.rhovx[i][j] << " "
-                        << std::setw(15) << P_cc.rhovy[i][j] << " "
-                        << std::setw(15) << P_cc.rhovz[i][j] << " "
-                        << std::setw(15) << P_cc.Bx[i][j] << " "
-                        << std::setw(15) << P_cc.By[i][j] << " "
-                        << std::setw(15) << P_cc.Bz[i][j] << " "
+        for (int j = 0; j < P_cc.ny; ++j) {
+            for (int i = 0; i < P_cc.nx; ++i) {
+                outFile << std::setw(15) << P_cc.rho[j][i] << " "
+                        << std::setw(15) << P_cc.rhovx[j][i] << " "
+                        << std::setw(15) << P_cc.rhovy[j][i] << " "
+                        << std::setw(15) << P_cc.rhovz[j][i] << " "
+                        << std::setw(15) << P_cc.Bx[j][i] << " "
+                        << std::setw(15) << P_cc.By[j][i] << " "
+                        << std::setw(15) << P_cc.Bz[j][i] << " "
                         << std::setw(15) << P_cc.P << std::endl;
             }
         }
@@ -114,23 +114,29 @@ int main(){
     ConservativeVariablesCC fluxy = ComputeFluxDifferenceY(P_cc, I.order, I.nghost); //OK
     saveConcervativeVariables(fluxy, resultsDir + "fluxy.txt");
 
-    ConservativeVariablesCC Ueuler = EulerAdvance(U0, I.Dx, I.Dy, I.Dt, I.order, I.nghost); //OK
+    ConservativeVariablesCC UnoCT= EulerAdvance(U0, I.Dx, I.Dy, I.Dt, I.order, I.nghost); //OK
+    saveConcervativeVariables(UnoCT, resultsDir + "UnoCT.txt");
+
+    ConservativeVariablesCC Ueuler = Euler(U0, I.Dx, I.Dy, I.Dt, I.order, I.nghost); //OK
     saveConcervativeVariables(Ueuler, resultsDir + "Ueuler.txt");
 
-    /*for(int step = 0; step * I.Dt <= I.FinalTime; ++step){
+    ConservativeVariablesCC URK2 = TVDRK2(U0, I.Dx, I.Dy, I.Dt, I.order, I.nghost); //OK
+    saveConcervativeVariables(URK2, resultsDir + "URK2.txt");
+
+    ConservativeVariablesCC URK3 = TVDRK3(U0, I.Dx, I.Dy, I.Dt, I.order, I.nghost); //OK
+    saveConcervativeVariables(URK3, resultsDir + "URK3.txt");
+
+  for(int step = 1; step * I.Dt <= I.FinalTime; ++step){
         ConservativeVariablesCC U0(P_cc);
 
-        // Write the vector components to files
-        std::ostringstream filename;
-        filename << resultsDir << "U0" << step << ".txt";
-        savePrimitiveVariables(U0, filename.str());
-
-        ConservativeVariablesCC Un1 = TVDRK2(U0, I.Dx, I.Dy, I.Dt, I.order, I.nghost);
-        P_cc = PrimitiveVariablesCC(Un1);
+        ConservativeVariablesCC Un1 = TVDRK2(U0, I.Dx, I.Dy, step*I.Dt, I.order, I.nghost);
 
         // Write the vector components to files
         std::ostringstream filename;
-        filename << resultsDir << "P_cc_" << step << ".txt";
-        savePrimitiveVariables(P_cc, filename.str());
-    }*/
+        filename << resultsDir << "URK2_" << step << ".txt";
+        saveConcervativeVariables(Un1, filename.str());
+
+        PrimitiveVariablesCC P_cc(Un1);
+    }
+
 }

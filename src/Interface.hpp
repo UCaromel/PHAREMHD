@@ -68,8 +68,8 @@ public:
         double caxR = std::sqrt((uR.Bx*uR.Bx)/(4*M_PI*uR.rho));
         double caL = std::sqrt((uL.Bx*uL.Bx + uL.By*uL.By + uL.Bz*uL.Bz)/(4*M_PI*uL.rho)); // Alfven speeds
         double caR = std::sqrt((uR.Bx*uR.Bx + uR.By*uR.By + uR.Bz*uR.Bz)/(4*M_PI*uR.rho));
-        double cfastL = std::sqrt((c0L*c0L + caL*caL)/2 + (std::sqrt((c0L*c0L + caL*caL)*(c0L*c0L + caL*caL) - 4*c0L*c0L*caxL*caxL))); // Fast magnetosonic speeds
-        double cfastR = std::sqrt((c0R*c0R + caR*caR)/2 + (std::sqrt((c0R*c0R + caR*caR)*(c0R*c0R + caR*caR) - 4*c0R*c0R*caxR*caxR)));
+        double cfastL = std::sqrt((c0L*c0L + caL*caL)*0.5 + (std::sqrt((c0L*c0L + caL*caL)*(c0L*c0L + caL*caL) - 4*c0L*c0L*caxL*caxL))*0.5); // Fast magnetosonic speeds
+        double cfastR = std::sqrt((c0R*c0R + caR*caR)*0.5 + (std::sqrt((c0R*c0R + caR*caR)*(c0R*c0R + caR*caR) - 4*c0R*c0R*caxR*caxR))*0.5);
 
         // Wave speeds
         if(dir == Dir::X){

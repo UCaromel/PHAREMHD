@@ -23,15 +23,15 @@ PrimitiveVariablesCC::PrimitiveVariablesCC(const ConservativeVariablesCC& C_cc) 
     By.resize(nx, std::vector<double>(ny));
     Bz.resize(nx, std::vector<double>(ny));
 
-    for (int i = 0; i < nx; i++) {
-        for (int j = 0; j < ny; j++) {
-            rho[i][j] = C_cc.rho[i][j];
-            vx[i][j] = C_cc.rhovx[i][j] / C_cc.rho[i][j];
-            vy[i][j] = C_cc.rhovy[i][j] / C_cc.rho[i][j];
-            vz[i][j] = C_cc.rhovz[i][j] / C_cc.rho[i][j];
-            Bx[i][j] = C_cc.Bx[i][j];
-            By[i][j] = C_cc.By[i][j];
-            Bz[i][j] = C_cc.Bz[i][j];
+    for (int j = 0; j < ny; j++) {
+        for (int i = 0; i < nx; i++) {
+            rho[j][i] = C_cc.rho[j][i];
+            vx[j][i] = C_cc.rhovx[j][i] / C_cc.rho[j][i];
+            vy[j][i] = C_cc.rhovy[j][i] / C_cc.rho[j][i];
+            vz[j][i] = C_cc.rhovz[j][i] / C_cc.rho[j][i];
+            Bx[j][i] = C_cc.Bx[j][i];
+            By[j][i] = C_cc.By[j][i];
+            Bz[j][i] = C_cc.Bz[j][i];
         }
     }
 }
@@ -39,13 +39,13 @@ PrimitiveVariablesCC::PrimitiveVariablesCC(const ConservativeVariablesCC& C_cc) 
 PrimitiveVariablesCC::~PrimitiveVariablesCC() = default;
 
 void PrimitiveVariablesCC::set(const ReconstructedValues& rv, int i, int j){
-    rho[i][j] = rv.rho;
-    vx[i][j] = rv.vx;
-    vy[i][j] = rv.vy;
-    vz[i][j] = rv.vz;
-    Bx[i][j] = rv.Bx;
-    By[i][j] = rv.By;
-    Bz[i][j] = rv.Bz;
+    rho[j][i] = rv.rho;
+    vx[j][i] = rv.vx;
+    vy[j][i] = rv.vy;
+    vz[j][i] = rv.vz;
+    Bx[j][i] = rv.Bx;
+    By[j][i] = rv.By;
+    Bz[j][i] = rv.Bz;
 }
 
 void PrimitiveVariablesCC::init(const std::vector<std::vector<double>>& rho_, const std::vector<std::vector<double>>& vx_, const std::vector<std::vector<double>>& vy_, const std::vector<std::vector<double>>& vz_, const std::vector<std::vector<double>>& Bx_, const std::vector<std::vector<double>>& By_, const std::vector<std::vector<double>>& Bz_, const double P_){
@@ -62,5 +62,5 @@ ReconstructedValues PrimitiveVariablesCC::operator()(int i, int j) const {
     if (i < 0 || i >= nx || j < 0 || j >= ny)
         throw("Index out of range");
 
-    return ReconstructedValues{rho[i][j], vx[i][j], vy[i][j], vz[i][j], Bx[i][j], By[i][j], Bz[i][j]};
+    return ReconstructedValues{rho[j][i], vx[j][i], vy[j][i], vz[j][i], Bx[j][i], By[j][i], Bz[j][i]};
 }

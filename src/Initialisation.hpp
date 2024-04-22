@@ -26,12 +26,12 @@ public:
 
 
     Initialisation() {
-        nx = 30;
-        ny = 30;
+        nx = 100;
+        ny = 100;
         Dx = 0.1;
         Dy = 0.1;
-        Dt = 0.1;
-        FinalTime = 10;
+        Dt = 0.01;
+        FinalTime = 1;
         order = 1;
         nghost = 1;
         rho.resize(nx, std::vector<double>(ny, (5.0/3.0)*(5.0/3.0)/4*M_PI));
@@ -44,12 +44,12 @@ public:
         //P = (5.0/3.0)/4*M_PI;
         for(int i=0; i<nx; i++){
             for(int j=0; j<ny; j++){
-                By[i][j] = UserFunction1(0.01, 2*M_PI, Dx*i);
+                By[j][i] = UserFunction1(0.01, 2*M_PI, Dx*i);
             }
         }
         for(int i=0; i<nx; i++){
             for(int j=0; j<ny; j++){
-                vy[i][j] = UserFunction1(0.004, 2*M_PI, Dx*i);
+                vy[j][i] = UserFunction1(0.004, 2*M_PI, Dx*i);
             }
         }
     }
