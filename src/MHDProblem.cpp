@@ -135,7 +135,7 @@ int main(){
     for(int step = 1; step * I.Dt <= I.FinalTime; step++){
         ConservativeVariablesCC U0(P_cc);
 
-        ConservativeVariablesCC Un1 = TVDRK2(U0, I.Dx, I.Dy, step*I.Dt, I.order, I.nghost);
+        ConservativeVariablesCC Un1 = TVDRK2(U0, I.Dx, I.Dy, I.Dt, I.order, I.nghost);
 
         std::ostringstream filename;
         filename << resultsDir << "URK2_" << step << ".txt";
