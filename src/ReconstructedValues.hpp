@@ -9,7 +9,7 @@ struct ReconstructedValues {
     double Bx;
     double By;
     double Bz;
-    const double P = (5.0/3.0)/4*M_PI;
+    double P;
 
     ReconstructedValues operator+(const ReconstructedValues& rhs) const {
         ReconstructedValues result;
@@ -20,7 +20,7 @@ struct ReconstructedValues {
         result.Bx = Bx + rhs.Bx;
         result.By = By + rhs.By;
         result.Bz = Bz + rhs.Bz;
-        //result.P = P + rhs.P;
+        result.P = P + rhs.P;
         return result;
     }
 
@@ -33,7 +33,7 @@ struct ReconstructedValues {
         result.Bx = Bx - rhs.Bx;
         result.By = By - rhs.By;
         result.Bz = Bz - rhs.Bz;
-        //result.P = P - rhs.P;
+        result.P = P - rhs.P;
         return result;
     }
 
@@ -46,7 +46,7 @@ struct ReconstructedValues {
         result.Bx = Bx * scalar;
         result.By = By * scalar;
         result.Bz = Bz * scalar;
-        //result.P = P * scalar;
+        result.P = P * scalar;
         return result;
     }
 
@@ -62,7 +62,7 @@ struct ReconstructedValues {
         Bx = other.Bx;
         By = other.By;
         Bz = other.Bz;
-        //P = other.P;
+        P = other.P;
         return *this;
     }
 };

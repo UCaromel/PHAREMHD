@@ -9,6 +9,7 @@
 class PrimitiveVariablesCC;
 
 class ConservativeVariablesCC {
+const double gamma = 5.0/3.0;
 public:
     int nx;
     int ny;
@@ -19,7 +20,7 @@ public:
     std::vector<std::vector<double>> Bx;
     std::vector<std::vector<double>> By;
     std::vector<std::vector<double>> Bz;
-    const double P = (5.0/3.0)/4*M_PI;
+    std::vector<std::vector<double>> Etot;
 
     ConservativeVariablesCC(int nx, int ny);
     ConservativeVariablesCC(const PrimitiveVariablesCC& P_cc);

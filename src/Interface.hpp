@@ -6,6 +6,7 @@
 #include "ReconstructedValues.hpp"
 #include "PrimitiveVariablesCC.hpp"
 #include "AddGhostCells.hpp"
+#include "EquationOfState.hpp"
 
 //might need a conversion to conserved variables here.
 
@@ -16,24 +17,26 @@ enum struct Dir {
 
 ReconstructedValues ComputeFluxVector(ReconstructedValues u, Dir dir) {
     ReconstructedValues flux;
+    double GeneralisedPressure = u.P + 0.5*(u.Bx * u.Bx + u.By * u.By + u.Bz * u.Bz);
+
     if (dir == Dir::X) {
         flux.rho = u.rho * u.vx;
-        flux.vx = u.rho * u.vx * u.vx + u.P - u.Bx * u.Bx;
+        flux.vx = u.rho * u.vx * u.vx + GeneralisedPressure - u.Bx * u.Bx;
         flux.vy = u.rho * u.vx * u.vy - u.Bx * u.By;
         flux.vz = u.rho * u.vx * u.vz - u.Bx * u.Bz;
         flux.Bx = 0.0;
         flux.By = u.By * u.vx - u.vy * u.Bx;
         flux.Bz = u.Bz * u.vx - u.vz * u.Bx;
-        //flux.P = u.P;
+        flux.P = (EosEtot(u) + GeneralisedPressure)*u.vx - u.Bx*(u.vx*u.Bx + u.vy*u.By + u.vz*u.Bz);
     } else if (dir == Dir::Y) {
         flux.rho = u.rho * u.vy;
         flux.vx = u.rho * u.vy * u.vx - u.By * u.Bx;
-        flux.vy = u.rho * u.vy * u.vy + u.P - u.By * u.By;
+        flux.vy = u.rho * u.vy * u.vy + GeneralisedPressure - u.By * u.By;
         flux.vz = u.rho * u.vy * u.vz - u.By * u.Bz;
         flux.Bx = u.vx * u.By - u.vy * u.Bx;
         flux.By = 0.0;
         flux.Bz = u.Bz * u.vy - u.vz * u.By;
-        //flux.P = u.P;
+        flux.P = (EosEtot(u) + GeneralisedPressure)*u.vy - u.By*(u.vx*u.Bx + u.vy*u.By + u.vz*u.Bz);
     }
     return flux;
 }
@@ -88,9 +91,11 @@ public:
         uL.vx = uL.rho * uL.vx;
         uL.vy = uL.rho * uL.vy;
         uL.vz = uL.rho * uL.vz;
+        uL.P = EosEtot(uL);
         uR.vx = uR.rho * uR.vx;
         uR.vy = uR.rho * uR.vy;
         uR.vz = uR.rho * uR.vz;
+        uR.P = EosEtot(uR);
     }
     ~Interface() = default;
 };

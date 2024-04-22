@@ -22,7 +22,7 @@ public:
     std::vector<std::vector<double>> Bx;
     std::vector<std::vector<double>> By;
     std::vector<std::vector<double>> Bz;
-    double P;
+    std::vector<std::vector<double>> P;
 
 
     Initialisation() {
@@ -36,12 +36,12 @@ public:
         nghost = 1;
         rho.resize(nx, std::vector<double>(ny, (5.0/3.0)*(5.0/3.0)/4*M_PI));
         vx.resize(nx, std::vector<double>(ny, 1.0));
-        vy.resize(nx, std::vector<double>(ny, 1.0));  // Corrected resize
+        vy.resize(nx, std::vector<double>(ny, 1.0));
         vz.resize(nx, std::vector<double>(ny, 1.0));
-        Bx.resize(nx, std::vector<double>(ny, 1.0));  // Corrected resize
+        Bx.resize(nx, std::vector<double>(ny, 1.0));
         By.resize(nx, std::vector<double>(ny, 1.0));
-        Bz.resize(nx, std::vector<double>(ny, 1.0));  // Corrected resize
-        //P = (5.0/3.0)/4*M_PI;
+        Bz.resize(nx, std::vector<double>(ny, 1.0));
+        P.resize(nx, std::vector<double>(ny, 1.0));
         for(int i=0; i<nx; i++){
             for(int j=0; j<ny; j++){
                 By[j][i] = UserFunction1(0.01, 2*M_PI, Dx*i);

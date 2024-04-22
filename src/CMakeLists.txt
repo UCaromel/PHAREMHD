@@ -12,6 +12,7 @@ set(SOURCES
     ReconstructedValues.hpp
     RusanovRiemannSolver.hpp
     TimeIntegrator.hpp
+    EquationOfState.cpp
 )
 
 # Create object libraries for each source file

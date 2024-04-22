@@ -22,7 +22,7 @@ void savePrimitiveVariables(const PrimitiveVariablesCC& P_cc, const std::string&
                         << std::setw(15) << P_cc.Bx[j][i] << " "
                         << std::setw(15) << P_cc.By[j][i] << " "
                         << std::setw(15) << P_cc.Bz[j][i] << " "
-                        << std::setw(15) << P_cc.P << std::endl;
+                        << std::setw(15) << P_cc.P[j][i] << std::endl;
             }
         }
         outFile.close();
@@ -45,7 +45,7 @@ void saveConcervativeVariables(const ConservativeVariablesCC& P_cc, const std::s
                         << std::setw(15) << P_cc.Bx[j][i] << " "
                         << std::setw(15) << P_cc.By[j][i] << " "
                         << std::setw(15) << P_cc.Bz[j][i] << " "
-                        << std::setw(15) << P_cc.P << std::endl;
+                        << std::setw(15) << P_cc.Etot[j][i] << std::endl;
             }
         }
         outFile.close();
@@ -126,17 +126,26 @@ int main(){
     ConservativeVariablesCC URK3 = TVDRK3(U0, I.Dx, I.Dy, I.Dt, I.order, I.nghost); //OK
     saveConcervativeVariables(URK3, resultsDir + "URK3.txt");
 
-  for(int step = 1; step * I.Dt <= I.FinalTime; ++step){
+    // Likely a problem with the equation of state.
+    PrimitiveVariablesCC PRK3(URK3);
+    savePrimitiveVariables(PRK3, resultsDir + "PRK3.txt");
+
+    std::cout<<"P : "<<PRK3.P[0][10]<<", "<<"P eos : "<<EosP(URK3(10,0))<<std::endl;
+
+    for(int step = 1; step * I.Dt <= I.FinalTime; step++){
         ConservativeVariablesCC U0(P_cc);
 
         ConservativeVariablesCC Un1 = TVDRK2(U0, I.Dx, I.Dy, step*I.Dt, I.order, I.nghost);
 
-        // Write the vector components to files
         std::ostringstream filename;
         filename << resultsDir << "URK2_" << step << ".txt";
         saveConcervativeVariables(Un1, filename.str());
 
         PrimitiveVariablesCC P_cc(Un1);
+
+        std::ostringstream filename2;
+        filename2 << resultsDir << "P_" << step << ".txt";
+        savePrimitiveVariables(P_cc, filename2.str());
     }
 
 }
