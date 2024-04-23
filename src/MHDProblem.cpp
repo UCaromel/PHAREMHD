@@ -141,7 +141,6 @@ int main(){
         filename << resultsDir << "URK2_" << step << ".txt";
         saveConcervativeVariables(Un1, filename.str());
 
-        PrimitiveVariablesCC P_cc(Un1);
+        P_cc = PrimitiveVariablesCC(Un1);
     }
-
 }

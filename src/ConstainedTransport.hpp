@@ -54,19 +54,19 @@ public:
         bx.push_back(0.5*(C_cc.Bx[j][i] + C_cc.Bx[j][i+1]));
 
         // Bottom face
-        by.push_back(0.5*(C_cc.Bx[j][i] + C_cc.Bx[j-1][i]));
+        by.push_back(0.5*(C_cc.By[j][i] + C_cc.By[j-1][i]));
 
         // Top face
-        by.push_back(0.5*(C_cc.Bx[j][i] + C_cc.Bx[j+1][i]));
+        by.push_back(0.5*(C_cc.By[j][i] + C_cc.By[j+1][i]));
 
 
-        bx[0] = bx[0] - (Dt/Dy)*(Ez[1]-Ez[0]);
-        bx[1] = bx[1] - (Dt/Dy)*(Ez[3]-Ez[2]);
-        by[0] = by[0] - (Dt/Dx)*(Ez[2]-Ez[0]);
-        by[1] = by[1] - (Dt/Dx)*(Ez[3]-Ez[1]);
+        double bx0 = bx[0] - (Dt/Dy)*(Ez[1]-Ez[0]);
+        double bx1 = bx[1] - (Dt/Dy)*(Ez[3]-Ez[2]);
+        double by0 = by[0] - (Dt/Dx)*(Ez[2]-Ez[0]);
+        double by1 = by[1] - (Dt/Dx)*(Ez[3]-Ez[1]);
 
-        BX = 0.5*(bx[0] + bx[1]);
-        BY = 0.5*(by[0] + by[1]);
+        BX = 0.5*(bx0 + bx1);
+        BY = 0.5*(by0 + by1);
     }
     ~ConstrainedTransport() = default;
 };
