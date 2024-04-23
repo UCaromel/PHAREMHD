@@ -48,15 +48,13 @@ public:
 
     // (i,j) interface index.
     Interface(PrimitiveVariablesCC& P_cc /* Assuming ghost cells are added */, int i /* 0 to nx */, int j /* 0 to ny */, int order, int nghost, Dir dir) {
+        i += nghost;
+        j += nghost;
         if (order == 1) {
             if (dir == Dir::X) {
-                i += nghost;
-                j += nghost;
                 uL = P_cc(i-1,j);
                 uR = P_cc(i,j);
             } else if (dir == Dir::Y) {
-                i += nghost;
-                j += nghost;
                 uL = P_cc(i,j-1);
                 uR = P_cc(i,j);
             }

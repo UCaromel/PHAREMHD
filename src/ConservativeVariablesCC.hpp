@@ -9,7 +9,6 @@
 class PrimitiveVariablesCC;
 
 class ConservativeVariablesCC {
-const double gamma = 5.0/3.0;
 public:
     int nx;
     int ny;

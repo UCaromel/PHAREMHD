@@ -91,7 +91,7 @@ int main(){
     savePrimitiveVariables(P_cc, resultsDir + "P_cc_initial.txt");
 
     ConservativeVariablesCC U0(P_cc); //OK
-    saveConcervativeVariables(U0, resultsDir + "U0.txt");
+    saveConcervativeVariables(U0, resultsDir + "URK2_0.txt");
 
     std::cout<<U0.rho[0][0]<<" "<<U0.rhovx[0][0]<<" "<<U0.rhovy[0][0]<<" "<<U0.rhovz[0][0]<<" "<<U0.Bx[0][0]<<" "<<U0.By[0][0]<<" "<<U0.Bz[0][0]<<std::endl; //OK
     std::cout<<U0(0,0).rho<<" "<<U0(0,0).vx<<" "<<U0(0,0).vy<<" "<<U0(0,0).vz<<" "<<U0(0,0).Bx<<" "<<U0(0,0).By<<" "<<U0(0,0).Bz<<std::endl; //OK
@@ -142,10 +142,6 @@ int main(){
         saveConcervativeVariables(Un1, filename.str());
 
         PrimitiveVariablesCC P_cc(Un1);
-
-        std::ostringstream filename2;
-        filename2 << resultsDir << "P_" << step << ".txt";
-        savePrimitiveVariables(P_cc, filename2.str());
     }
 
 }

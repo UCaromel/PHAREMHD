@@ -70,3 +70,23 @@ ReconstructedValues PrimitiveVariablesCC::operator()(int i, int j) const {
 
     return ReconstructedValues{rho[j][i], vx[j][i], vy[j][i], vz[j][i], Bx[j][i], By[j][i], Bz[j][i], P[j][i]};
 }
+
+PrimitiveVariablesCC& PrimitiveVariablesCC::operator=(const PrimitiveVariablesCC& other) {
+    if (this->nx != other.nx || this->ny != other.ny) {
+        throw("Dimension mismatch");
+    }
+
+    for (int j = 0; j < this->ny; j++) {
+        for (int i = 0; i < this->nx; i++) {
+            this->rho[j][i] = other.rho[j][i];
+            this->vx[j][i] = other.vx[j][i];
+            this->vy[j][i] = other.vy[j][i];
+            this->vz[j][i] = other.vz[j][i];
+            this->Bx[j][i] = other.Bx[j][i];
+            this->By[j][i] = other.By[j][i];
+            this->Bz[j][i] = other.Bz[j][i];
+            this->P[j][i] = other.P[j][i];
+        }
+    }
+    return *this;
+}

@@ -11,7 +11,6 @@
 class ConservativeVariablesCC;
 
 class PrimitiveVariablesCC {
-const double gamma = 5.0/3.0;
 public:
     int nx;
     int ny;
@@ -31,6 +30,7 @@ public:
     void set(const ReconstructedValues& rv, int i, int j);
     void init(const std::vector<std::vector<double>>& rho_, const std::vector<std::vector<double>>& vx_, const std::vector<std::vector<double>>& vy_, const std::vector<std::vector<double>>& vz_, const std::vector<std::vector<double>>& Bx_, const std::vector<std::vector<double>>& By_, const std::vector<std::vector<double>>& Bz_, const std::vector<std::vector<double>>& P_);
     ReconstructedValues operator()(int i, int j) const;
+    PrimitiveVariablesCC& operator=(const PrimitiveVariablesCC& other);
 };
 
 #endif // PRIMITIVE_VARIABLES_CC_HPP_

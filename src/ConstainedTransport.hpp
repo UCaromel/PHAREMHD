@@ -71,13 +71,13 @@ public:
     ~ConstrainedTransport() = default;
 };
 
-void ApplyConstrainedTransport(ConservativeVariablesCC& C_cc, double Dx, double Dy, double Dt, int nghost){
-    ConservativeVariablesCC Cghost = AddGhostCells(C_cc, nghost);
-    for(int j = 0; j < C_cc.ny; j++){
-        for(int i = 0; i < C_cc.nx; i++){
+void ApplyConstrainedTransport(ConservativeVariablesCC& Cn1, const ConservativeVariablesCC& Cn, double Dx, double Dy, double Dt, int nghost){
+    ConservativeVariablesCC Cghost = AddGhostCells(Cn, nghost);
+    for(int j = 0; j < Cn1.ny; j++){
+        for(int i = 0; i < Cn1.nx; i++){
             ConstrainedTransport CT(Cghost, i, j, Dx, Dy, Dt, nghost);
-            C_cc.Bx[j][i] = CT.BX;
-            C_cc.By[j][i] = CT.BY;
+            Cn1.Bx[j][i] = CT.BX;
+            Cn1.By[j][i] = CT.BY;
         }
     }
 }
