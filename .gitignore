@@ -1,3 +1,5 @@
 .vscode/
-build/
 results/
+.mkn/
+bin/
+mkn.yaml

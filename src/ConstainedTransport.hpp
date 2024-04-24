@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "ConservativeVariablesCC.hpp"
-#include "AddGhostCells.hpp"
 
 class ConstrainedTransport
 {
@@ -31,9 +30,7 @@ class ConstrainedTransport
 public:
     double BX, BY;
     // (i,j) cell index
-    ConstrainedTransport(const ConservativeVariablesCC& C_cc /* Assuming ghost cells are added */, int i /* 0 to (nx-1) */, int j /* 0 to (ny-1) */, double Dx, double Dy, double Dt, int nghost){
-        i += nghost;
-        j += nghost;
+    ConstrainedTransport(const ConservativeVariablesCC& C_cc /* Assuming ghost cells are added */, int i /* (0 to (nx-1)) + nghost */, int j /* (0 to (ny-1)) + nghost */, double Dx, double Dy, double Dt, int nghost){
 
         // Bottom-left edge
         calculateEdge(C_cc, i, j, i-1, j-1, 0);
@@ -72,10 +69,9 @@ public:
 };
 
 void ApplyConstrainedTransport(ConservativeVariablesCC& Cn1, const ConservativeVariablesCC& Cn, double Dx, double Dy, double Dt, int nghost){
-    ConservativeVariablesCC Cghost = AddGhostCells(Cn, nghost);
-    for(int j = 0; j < Cn1.ny; j++){
-        for(int i = 0; i < Cn1.nx; i++){
-            ConstrainedTransport CT(Cghost, i, j, Dx, Dy, Dt, nghost);
+    for(int j = nghost; j < Cn1.ny - nghost; j++){
+        for(int i = nghost; i < Cn1.nx - nghost; i++){
+            ConstrainedTransport CT(Cn, i, j, Dx, Dy, Dt, nghost);
             Cn1.Bx[j][i] = CT.BX;
             Cn1.By[j][i] = CT.BY;
         }

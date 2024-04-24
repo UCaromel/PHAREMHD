@@ -5,7 +5,6 @@
 
 #include "ReconstructedValues.hpp"
 #include "PrimitiveVariablesCC.hpp"
-#include "AddGhostCells.hpp"
 #include "EquationOfState.hpp"
 
 //might need a conversion to conserved variables here.
@@ -47,9 +46,7 @@ public:
     double SL, SR, Splus;
 
     // (i,j) interface index.
-    Interface(PrimitiveVariablesCC& P_cc /* Assuming ghost cells are added */, int i /* 0 to nx */, int j /* 0 to ny */, int order, int nghost, Dir dir) {
-        i += nghost;
-        j += nghost;
+    Interface(const PrimitiveVariablesCC& P_cc /* Assuming ghost cells are added */, int i /* (0 to nx) + nghost */, int j /* (0 to ny) + nghost */, int order, int nghost, Dir dir) {
         if (order == 1) {
             if (dir == Dir::X) {
                 uL = P_cc(i-1,j);

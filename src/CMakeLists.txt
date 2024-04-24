@@ -4,7 +4,6 @@ project(MHDProblem)
 set(SOURCES
     ConservativeVariablesCC.cpp
     PrimitiveVariablesCC.cpp
-    AddGhostCells.hpp
     ConstainedTransport.hpp
     GodunovFlux.hpp
     Initialisation.hpp
@@ -13,15 +12,24 @@ set(SOURCES
     RusanovRiemannSolver.hpp
     TimeIntegrator.hpp
     EquationOfState.cpp
+    AddGhostCells.hpp
 )
+
+foreach(SOURCE_FILE ${SOURCES})
+    get_filename_component(FILE_EXT ${SOURCE_FILE} EXT)
+    if(${FILE_EXT} STREQUAL ".cpp")
+        list(APPEND CPP_SOURCES ${SOURCE_FILE})
+    endif()
+endforeach()
 
 # Create object libraries for each source file
 foreach(SOURCE_FILE ${SOURCES})
     get_filename_component(FILE_NAME ${SOURCE_FILE} NAME_WE)
     add_library(${FILE_NAME} OBJECT ${SOURCE_FILE})
 
-    # Include directories if needed
-    if(${FILE_NAME} STREQUAL "ConservativeVariablesCC" OR ${FILE_NAME} STREQUAL "PrimitiveVariablesCC")
+    # Check if the file is a .cpp file and include directories if needed
+    list(FIND CPP_SOURCES ${SOURCE_FILE} IS_CPP)
+    if(IS_CPP GREATER -1)
         target_include_directories(${FILE_NAME} PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR} 
         )
