@@ -1,6 +1,6 @@
 #include "EquationOfState.hpp"
 
-const double gam = 3.0/5.0;
+const double gam = 5.0/3.0;
 
 double EosEtot(const ReconstructedValues& rv){
     double Etot = rv.P/(gam - 1) + 0.5*(rv.rho*(rv.vx*rv.vx+ rv.vy*rv.vy + rv.vz*rv.vz)) + 0.5*(rv.Bx*rv.Bx + rv.By*rv.By+ rv.Bz*rv.Bz);

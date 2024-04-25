@@ -6,7 +6,6 @@
 
 #include <cmath>
 #include <algorithm>
-#include <iostream>
 
 const double sigmaCFL = 0.8;
 

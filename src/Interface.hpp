@@ -59,7 +59,7 @@ public:
         fL = ComputeFluxVector(uL, dir);
         fR = ComputeFluxVector(uR, dir);
 
-        double gam = 5/3;
+        double gam = 5.0/3.0;
 
         double c0L = std::sqrt((gam*uL.P)/uL.rho); // Sound speeds
         double c0R = std::sqrt((gam*uR.P)/uR.rho); 
