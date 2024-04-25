@@ -98,6 +98,8 @@ int main(){
     saveConcervativeVariables(U0, resultsDir + "URK2_0.txt", I.nghost);
     UpdateGhostCells(U0, I.nghost);
 
+    ConservativeVariablesCC Un1 = U0;
+
     double time = 0.0;
 
     if(I.Dt == 0){
@@ -105,7 +107,7 @@ int main(){
         int step = 1;
 
         while(time <= I.FinalTime){
-            ConservativeVariablesCC Un1 = TVDRK2(U0, I.Dx, I.Dy, Dt, I.order, I.nghost);
+            Un1 = TVDRK2(U0, I.Dx, I.Dy, Dt, I.order, I.nghost);
             time = time + Dt;
             Dt = ComPuteNewDt(Un1, I.Dx, I.Dy, I.nghost);
             std::cout<<time<<" "<<Dt<<std::endl;
@@ -119,7 +121,7 @@ int main(){
         }
     }else{
         for(int step = 1; step * I.Dt <= I.FinalTime; step++){
-            ConservativeVariablesCC Un1 = TVDRK2(U0, I.Dx, I.Dy, I.Dt, I.order, I.nghost);
+            Un1 = TVDRK2(U0, I.Dx, I.Dy, I.Dt, I.order, I.nghost);
             time = time + I.Dt;
             std::cout<<time<<std::endl;
 
