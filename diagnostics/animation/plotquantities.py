@@ -13,7 +13,7 @@ def read_file(filename):
     df = pd.read_csv(filename, delim_whitespace=True, header=None, names=column_names)
     return df
 
-results_dir = 'src/results'
+results_dir = './results'
 
 quantities = {
     'rho': [],

@@ -31,7 +31,7 @@ public:
         Dx = 0.1;
         Dy = 0.1;
         Dt = 0.01;
-        FinalTime = 1;
+        FinalTime = 5;
         order = 1;
         nghost = 1;
         rho.resize(nx, std::vector<double>(ny, 1.0));
@@ -44,12 +44,12 @@ public:
         P.resize(nx, std::vector<double>(ny, 1.0));
         for(int i=0; i<nx; i++){
             for(int j=0; j<ny; j++){
-                By[j][i] = UserFunction1(1.0, 2*M_PI, Dx*i);
+                By[j][i] = UserFunction1(0.01, 2*M_PI, Dx*i);
             }
         }
         for(int i=0; i<nx; i++){
             for(int j=0; j<ny; j++){
-                vy[j][i] = UserFunction1(1.0, 2*M_PI, Dx*i);
+                vy[j][i] = UserFunction1(0.004, 2*M_PI, Dx*i);
             }
         }
     }

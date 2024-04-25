@@ -98,7 +98,7 @@ int main(){
     saveConcervativeVariables(U0, resultsDir + "URK2_0.txt", I.nghost);
     UpdateGhostCells(U0, I.nghost);
 
-    double Dt = I.Dt;
+    double Dt = ComPuteNewDt(U0, I.Dx, I.Dy, I.nghost);;
     double time = 0.0;
     int step = 1;
 
@@ -106,7 +106,6 @@ int main(){
         ConservativeVariablesCC Un1 = TVDRK2(U0, I.Dx, I.Dy, I.Dt, I.order, I.nghost);
         time = time + Dt;
         Dt = ComPuteNewDt(Un1, I.Dx, I.Dy, I.nghost);
-        std::cout<<"time : "<<time<<" Dt : "<<Dt<<std::endl;
 
         std::ostringstream filename;
         filename << resultsDir << "URK2_" << step << ".txt";
