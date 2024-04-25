@@ -20,7 +20,7 @@ double ComPuteNewDt(const ConservativeVariablesCC& C_cc, double Dx, double Dy, i
             double cay = std::sqrt((C_cc(i,j).By*C_cc(i,j).By)/(4*M_PI*C_cc(i,j).rho)); // Alfven speeds in y
             double ca = std::sqrt((C_cc(i,j).Bx*C_cc(i,j).Bx + C_cc(i,j).By*C_cc(i,j).By + C_cc(i,j).Bz*C_cc(i,j).Bz)/(4*M_PI*C_cc(i,j).rho)); // Alfven speeds
             double cfastx = std::sqrt((c0*c0 + ca*ca)*0.5 + (std::sqrt((c0*c0 + ca*ca)*(c0*c0 + ca*ca) - 4*c0*c0*cax*cax))*0.5); // Fast magnetosonic speeds in x
-            double cfasty = std::sqrt((c0*c0 + ca*ca)*0.5 + (std::sqrt((c0*c0 + ca*ca)*(c0*c0 + ca*ca) - 4*c0*c0*cay*cay))*0.5); // Fast magnetosonic speeds in x
+            double cfasty = std::sqrt((c0*c0 + ca*ca)*0.5 + (std::sqrt((c0*c0 + ca*ca)*(c0*c0 + ca*ca) - 4*c0*c0*cay*cay))*0.5); // Fast magnetosonic speeds in y
             sum.push_back(cfastx/Dx + cfasty/Dy);
         }
     }
