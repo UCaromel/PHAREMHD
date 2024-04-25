@@ -98,20 +98,36 @@ int main(){
     saveConcervativeVariables(U0, resultsDir + "URK2_0.txt", I.nghost);
     UpdateGhostCells(U0, I.nghost);
 
-    double Dt = ComPuteNewDt(U0, I.Dx, I.Dy, I.nghost);;
     double time = 0.0;
-    int step = 1;
 
-    while(time <= I.FinalTime){
-        ConservativeVariablesCC Un1 = TVDRK2(U0, I.Dx, I.Dy, I.Dt, I.order, I.nghost);
-        time = time + Dt;
-        Dt = ComPuteNewDt(Un1, I.Dx, I.Dy, I.nghost);
+    if(I.Dt == 0){
+        double Dt = ComPuteNewDt(U0, I.Dx, I.Dy, I.nghost);;
+        int step = 1;
 
-        std::ostringstream filename;
-        filename << resultsDir << "URK2_" << step << ".txt";
-        saveConcervativeVariables(Un1, filename.str(), I.nghost);
-        step++;
+        while(time <= I.FinalTime){
+            ConservativeVariablesCC Un1 = TVDRK2(U0, I.Dx, I.Dy, Dt, I.order, I.nghost);
+            time = time + Dt;
+            Dt = ComPuteNewDt(Un1, I.Dx, I.Dy, I.nghost);
+            std::cout<<time<<" "<<Dt<<std::endl;
 
-        U0 = Un1;
+            std::ostringstream filename;
+            filename << resultsDir << "URK2_" << step << ".txt";
+            saveConcervativeVariables(Un1, filename.str(), I.nghost);
+            step++;
+
+            U0 = Un1;
+        }
+    }else{
+        for(int step = 1; step * I.Dt <= I.FinalTime; step++){
+            ConservativeVariablesCC Un1 = TVDRK2(U0, I.Dx, I.Dy, I.Dt, I.order, I.nghost);
+            time = time + I.Dt;
+            std::cout<<time<<std::endl;
+
+            std::ostringstream filename;
+            filename << resultsDir << "URK2_" << step << ".txt";
+            saveConcervativeVariables(Un1, filename.str(), I.nghost);
+
+            U0 = Un1;
+        }
     }
 }
