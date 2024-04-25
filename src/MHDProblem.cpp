@@ -3,6 +3,7 @@
 #include "PrimitiveVariablesCC.hpp"
 #include "TimeIntegrator.hpp"
 #include "AddGhostCells.hpp"
+#include "ComputeNewDt.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -93,52 +94,25 @@ int main(){
     // Save initial values
     savePrimitiveVariables(P_cc, resultsDir + "P_cc_initial.txt", I.nghost);
 
-    ConservativeVariablesCC U0(P_cc); //OK
+    ConservativeVariablesCC U0(P_cc); 
     saveConcervativeVariables(U0, resultsDir + "URK2_0.txt", I.nghost);
     UpdateGhostCells(U0, I.nghost);
 
-    std::cout<<U0.rho[0][0]<<" "<<U0.rhovx[0][0]<<" "<<U0.rhovy[0][0]<<" "<<U0.rhovz[0][0]<<" "<<U0.Bx[0][0]<<" "<<U0.By[0][0]<<" "<<U0.Bz[0][0]<<std::endl; //OK
-    std::cout<<U0(0,0).rho<<" "<<U0(0,0).vx<<" "<<U0(0,0).vy<<" "<<U0(0,0).vz<<" "<<U0(0,0).Bx<<" "<<U0(0,0).By<<" "<<U0(0,0).Bz<<std::endl; //OK
+    double Dt = I.Dt;
+    double time = 0.0;
+    int step = 1;
 
-    ConservativeVariablesCC Uset(I.nx, I.ny); Uset.set(U0(0,0), 0, 0);
-    std::cout<<Uset.rho[0][0]<<" "<<Uset.rhovx[0][0]<<" "<<Uset.rhovy[0][0]<<" "<<Uset.rhovz[0][0]<<" "<<Uset.Bx[0][0]<<" "<<Uset.By[0][0]<<" "<<Uset.Bz[0][0]<<std::endl; //OK
-
-    std::vector<ReconstructedValues> godunovfluxx = GodunovFluxX(P_cc, I.order, I.nghost); //OK
-    writeVectorToFile(godunovfluxx, resultsDir + "godunovfluxx.txt");
-
-    std::vector<ReconstructedValues> godunovfluxy = GodunovFluxY(P_cc, I.order, I.nghost); //OK
-    writeVectorToFile(godunovfluxy, resultsDir + "godunovfluxy.txt");
-
-    ConservativeVariablesCC fluxx = ComputeFluxDifferenceX(P_cc, I.order, I.nghost); //OK
-    saveConcervativeVariables(fluxx, resultsDir + "fluxx.txt", I.nghost);
-
-    ConservativeVariablesCC fluxy = ComputeFluxDifferenceY(P_cc, I.order, I.nghost); //OK
-    saveConcervativeVariables(fluxy, resultsDir + "fluxy.txt", I.nghost);
-
-    ConservativeVariablesCC UnoCT= EulerAdvance(U0, I.Dx, I.Dy, I.Dt, I.order, I.nghost); //OK
-    saveConcervativeVariables(UnoCT, resultsDir + "UnoCT.txt", I.nghost);
-
-    ConservativeVariablesCC Ueuler = Euler(U0, I.Dx, I.Dy, I.Dt, I.order, I.nghost); //OK
-    saveConcervativeVariables(Ueuler, resultsDir + "Ueuler.txt", I.nghost);
-
-    ConservativeVariablesCC URK2 = TVDRK2(U0, I.Dx, I.Dy, I.Dt, I.order, I.nghost); //OK
-    saveConcervativeVariables(URK2, resultsDir + "URK2.txt", I.nghost);
-
-    ConservativeVariablesCC URK3 = TVDRK3(U0, I.Dx, I.Dy, I.Dt, I.order, I.nghost); //OK
-    saveConcervativeVariables(URK3, resultsDir + "URK3.txt", I.nghost);
-
-    // Likely a problem with the equation of state.
-    PrimitiveVariablesCC PRK3(URK3);
-    savePrimitiveVariables(PRK3, resultsDir + "PRK3.txt", I.nghost);
-
-    std::cout<<"P : "<<PRK3.P[0][10]<<", "<<"P eos : "<<EosP(URK3(10,0))<<std::endl;
-
-    for(int step = 1; step * I.Dt <= I.FinalTime; step++){
+    while(time <= I.FinalTime){
         ConservativeVariablesCC Un1 = TVDRK2(U0, I.Dx, I.Dy, I.Dt, I.order, I.nghost);
+        time = time + Dt;
+        Dt = ComPuteNewDt(Un1, I.Dx, I.Dy, I.nghost);
+        std::cout<<"time : "<<time<<" Dt : "<<Dt<<std::endl;
 
         std::ostringstream filename;
         filename << resultsDir << "URK2_" << step << ".txt";
         saveConcervativeVariables(Un1, filename.str(), I.nghost);
+        step++;
+
         U0 = Un1;
     }
 }
