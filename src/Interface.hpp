@@ -7,8 +7,6 @@
 #include "PrimitiveVariablesCC.hpp"
 #include "EquationOfState.hpp"
 
-//might need a conversion to conserved variables here.
-
 enum struct Dir {
     X,
     Y

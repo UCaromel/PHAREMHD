@@ -57,7 +57,7 @@ void saveConcervativeVariables(const ConservativeVariablesCC& P_cc, const std::s
     }
 }
 
-void writeVectorToFile(const std::vector<ReconstructedValues>& values, const std::string& filename) {
+void saveVectorToFile(const std::vector<ReconstructedValues>& values, const std::string& filename) {
     std::ofstream outFile(filename);
 
     if (outFile.is_open()) {
