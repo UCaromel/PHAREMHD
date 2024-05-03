@@ -5,26 +5,26 @@
 
 PrimitiveVariablesCC::PrimitiveVariablesCC(int nx_, int ny_) : nx(nx_), ny(ny_)
 {
-    rho.resize(nx, std::vector<double>(ny));
-    vx.resize(nx, std::vector<double>(ny));
-    vy.resize(nx, std::vector<double>(ny));
-    vz.resize(nx, std::vector<double>(ny));
-    Bx.resize(nx, std::vector<double>(ny));
-    By.resize(nx, std::vector<double>(ny));
-    Bz.resize(nx, std::vector<double>(ny));
-    P.resize(nx, std::vector<double>(ny));
+    rho.resize(ny, std::vector<double>(nx));
+    vx.resize(ny, std::vector<double>(nx));
+    vy.resize(ny, std::vector<double>(nx));
+    vz.resize(ny, std::vector<double>(nx));
+    Bx.resize(ny, std::vector<double>(nx));
+    By.resize(ny, std::vector<double>(nx));
+    Bz.resize(ny, std::vector<double>(nx));
+    P.resize(ny, std::vector<double>(nx));
 }
 
 PrimitiveVariablesCC::PrimitiveVariablesCC(const ConservativeVariablesCC& C_cc) : nx(C_cc.nx), ny(C_cc.ny)
 {
-    rho.resize(nx, std::vector<double>(ny));
-    vx.resize(nx, std::vector<double>(ny));
-    vy.resize(nx, std::vector<double>(ny));
-    vz.resize(nx, std::vector<double>(ny));
-    Bx.resize(nx, std::vector<double>(ny));
-    By.resize(nx, std::vector<double>(ny));
-    Bz.resize(nx, std::vector<double>(ny));
-    P.resize(nx, std::vector<double>(ny));
+    rho.resize(ny, std::vector<double>(nx));
+    vx.resize(ny, std::vector<double>(nx));
+    vy.resize(ny, std::vector<double>(nx));
+    vz.resize(ny, std::vector<double>(nx));
+    Bx.resize(ny, std::vector<double>(nx));
+    By.resize(ny, std::vector<double>(nx));
+    Bz.resize(ny, std::vector<double>(nx));
+    P.resize(ny, std::vector<double>(nx));
 
     for (int j = 0; j < ny; j++) {
         for (int i = 0; i < nx; i++) {

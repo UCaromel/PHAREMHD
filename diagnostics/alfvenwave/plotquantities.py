@@ -29,7 +29,10 @@ times = []
 
 for filename in os.listdir(results_dir):
     if filename.startswith("URK2_") and filename.endswith(".txt"):
-        time = int(filename.split('_')[1].split('.')[0])
+        # Extract time from filename and format it properly
+        time_str = filename.split('_')[1].split('.')[0]
+        time_str = time_str.replace('_', '.')  # Replace underscore with dot
+        time = float(time_str)
         times.append(time)
         
         df = read_file(os.path.join(results_dir, filename))
@@ -41,14 +44,13 @@ for quantity in quantities.keys():
     quantities[quantity] = np.array(quantities[quantity])
 times = np.array(times)
 
-
-quantity_name = 'By'
+quantity_name = 'rhovy'
 fixed_index = 0
 
 def update(frame):
     plt.clf()
     plt.plot(quantities[quantity_name][frame, fixed_index, :], color='blue') # t,y,x
-    plt.title(f'{quantity_name} at y={fixed_index}, t={times[frame]}')
+    plt.title(f'{quantity_name} at y={fixed_index}, t={frame}')  # Format time to one decimal place
     plt.xlabel('x')
     plt.ylabel(quantity_name)
     plt.grid(True)

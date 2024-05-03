@@ -25,7 +25,7 @@ void UpdateGhostCells(Variables& V_cc, int nghost) {
         }
     }
 
-    // Corners
+    // Corners (some more work for nghost > 1)
     for (int k1 = 0; k1 < nghost; k1++) {
         for (int k2 = 0; k2 < nghost; k2++) {
             V_cc.set(0.5*(V_cc(k1 + V_cc.nx - 2*nghost, k2) + V_cc(k1, k2 + V_cc.ny - 2*nghost)), k1, k2); // Bottom-left
@@ -34,6 +34,20 @@ void UpdateGhostCells(Variables& V_cc, int nghost) {
             V_cc.set(0.5*(V_cc(k1 + nghost, k2 + V_cc.ny - nghost) + V_cc(k1 + V_cc.nx - nghost, k2 + nghost)), k1 + V_cc.nx - nghost, k2 + V_cc.ny - nghost); // Top-right
         }
     }
+/*
+    for(int i=1; i < V_cc.nx - 1; ++i){
+        V_cc.set(V_cc(i, V_cc.ny - 2), i, 0);
+        V_cc.set(V_cc(i, 1), i, V_cc.ny - 1);
+    }
+    for(int j=1; j < V_cc.ny - 1; ++j){
+        V_cc.set(V_cc(V_cc.nx - 2, j), 0, j);
+        V_cc.set(V_cc(1, j), V_cc.nx - 1, j);
+    }
+    V_cc.set(V_cc(V_cc.nx-2,V_cc.ny-2),0,0);
+    V_cc.set(V_cc(V_cc.nx-2,1),0, V_cc.ny-1);
+    V_cc.set(V_cc(1,V_cc.ny-2),V_cc.nx-1,0);
+    V_cc.set(V_cc(1,1),V_cc.nx-1,V_cc.ny-1);
+*/
 }
 
 template<typename Variables>

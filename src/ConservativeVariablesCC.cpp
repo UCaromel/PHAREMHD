@@ -4,26 +4,26 @@
 
 ConservativeVariablesCC::ConservativeVariablesCC(int nx, int ny) : nx(nx), ny(ny)
 {
-    rho.resize(nx, std::vector<double>(ny));
-    rhovx.resize(nx, std::vector<double>(ny));
-    rhovy.resize(nx, std::vector<double>(ny));
-    rhovz.resize(nx, std::vector<double>(ny));
-    Bx.resize(nx, std::vector<double>(ny));
-    By.resize(nx, std::vector<double>(ny));
-    Bz.resize(nx, std::vector<double>(ny));
-    Etot.resize(nx, std::vector<double>(ny));
+    rho.resize(ny, std::vector<double>(nx));
+    rhovx.resize(ny, std::vector<double>(nx));
+    rhovy.resize(ny, std::vector<double>(nx));
+    rhovz.resize(ny, std::vector<double>(nx));
+    Bx.resize(ny, std::vector<double>(nx));
+    By.resize(ny, std::vector<double>(nx));
+    Bz.resize(ny, std::vector<double>(nx));
+    Etot.resize(ny, std::vector<double>(nx));
 }
 
 ConservativeVariablesCC::ConservativeVariablesCC(const PrimitiveVariablesCC& P_cc) : nx(P_cc.nx), ny(P_cc.ny)
 {
-    rho.resize(nx, std::vector<double>(ny));
-    rhovx.resize(nx, std::vector<double>(ny));
-    rhovy.resize(nx, std::vector<double>(ny));
-    rhovz.resize(nx, std::vector<double>(ny));
-    Bx.resize(nx, std::vector<double>(ny));
-    By.resize(nx, std::vector<double>(ny));
-    Bz.resize(nx, std::vector<double>(ny));
-    Etot.resize(nx, std::vector<double>(ny));
+    rho.resize(ny, std::vector<double>(nx));
+    rhovx.resize(ny, std::vector<double>(nx));
+    rhovy.resize(ny, std::vector<double>(nx));
+    rhovz.resize(ny, std::vector<double>(nx));
+    Bx.resize(ny, std::vector<double>(nx));
+    By.resize(ny, std::vector<double>(nx));
+    Bz.resize(ny, std::vector<double>(nx));
+    Etot.resize(ny, std::vector<double>(nx));
 
     for (int j = 0; j < ny; j++) {
         for (int i = 0; i < nx; i++) {

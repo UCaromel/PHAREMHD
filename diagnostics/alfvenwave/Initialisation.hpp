@@ -28,39 +28,30 @@ public:
     Initialisation() {
         nx = 100;
         ny = 100;
-        Dx = 0.1;
-        Dy = 0.1;
-        Dt = 0.00;
-        FinalTime = 1;
+        Dx = 0.01;
+        Dy = 0.01;
+        Dt = 0.01;
+        FinalTime = 2;
         order = 1;
         nghost = 1;
-        rho.resize(nx, std::vector<double>(ny, (5.0/3.0)*(5.0/3.0)));
-        vx.resize(nx, std::vector<double>(ny, 1.0));
-        vy.resize(nx, std::vector<double>(ny, 1.0));
-        vz.resize(nx, std::vector<double>(ny, 0.0));
-        Bx.resize(nx, std::vector<double>(ny, 1.0));
-        By.resize(nx, std::vector<double>(ny, 1.0));
-        Bz.resize(nx, std::vector<double>(ny, 0.0));
-        P.resize(nx, std::vector<double>(ny, (5.0/3.0)));
+        rho.resize(ny, std::vector<double>(nx, 1.0));
+        vx.resize(ny, std::vector<double>(nx, 0.0));
+        vy.resize(ny, std::vector<double>(nx, 1.0));
+        vz.resize(ny, std::vector<double>(nx, 0.0));
+        Bx.resize(ny, std::vector<double>(nx, 1.0));
+        By.resize(ny, std::vector<double>(nx, 1.0));
+        Bz.resize(ny, std::vector<double>(nx, 0.0));
+        P.resize(ny, std::vector<double>(nx, 0.0001));
 
         for(int i=0; i<nx; i++){
             for(int j=0; j<ny; j++){
-                vx[j][i] = UserFunction1(0.5, 1.0, Dy*i);
+                vy[j][i] = UserFunction1(1e-6, 2*M_PI, Dx*i);
             }
         }
+
         for(int i=0; i<nx; i++){
             for(int j=0; j<ny; j++){
-                vy[j][i] = UserFunction1(0.5, 1.0, Dx*i);
-            }
-        }
-        for(int i=0; i<nx; i++){
-            for(int j=0; j<ny; j++){
-                Bx[j][i] = UserFunction1(0.5, 1.0, Dx*i);
-            }
-        }
-        for(int i=0; i<nx; i++){
-            for(int j=0; j<ny; j++){
-                By[j][i] = UserFunction1(0.5, 1.0, Dy*i);
+                By[j][i] = UserFunction1(1e-6, 2*M_PI, Dx*i);
             }
         }
     }
