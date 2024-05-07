@@ -78,7 +78,7 @@ public:
             }
         }
 
-        std::cout << "Numerical Div : " << ((bx[10][11] - bx[10][10]) / Dx + (by[11][10] - by[10][10]) / Dy) << std::endl;
+        //std::cout << "Numerical Div : " << ((bx[10][11] - bx[10][10]) / Dx + (by[11][10] - by[10][10]) / Dy) << std::endl;
     }
     ~ConstrainedTransport() = default;
 };

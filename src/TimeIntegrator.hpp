@@ -30,13 +30,9 @@ ConservativeVariablesCC Euler(ConservativeVariablesCC& Un, double Dx, double Dy,
 ConservativeVariablesCC TVDRK2(ConservativeVariablesCC& Un,  double Dx, double Dy, double Dt, int order, int nghost){
     ConservativeVariablesCC Un1(Un.nx, Un.ny);
 
-    UpdateGhostCells(Un, nghost);
-    ConservativeVariablesCC U1 = EulerAdvance(Un, Dx, Dy, Dt, order, nghost);
-    ApplyConstrainedTransport(U1, Un, Dx, Dy, Dt, nghost);
+    ConservativeVariablesCC U1 = Euler(Un, Dx, Dy, Dt, order, nghost);
 
-    UpdateGhostCells(U1, nghost);
-    Un1 = Un*0.5 + EulerAdvance(U1, Dx, Dy, Dt, order, nghost)*0.5;
-    ApplyConstrainedTransport(Un1, U1, Dx, Dy, Dt, nghost);
+    Un1 = Un*0.5 + Euler(U1, Dx, Dy, Dt, order, nghost)*0.5;
 
     return Un1;
 }
@@ -44,17 +40,11 @@ ConservativeVariablesCC TVDRK2(ConservativeVariablesCC& Un,  double Dx, double D
 ConservativeVariablesCC TVDRK3(ConservativeVariablesCC& Un,  double Dx, double Dy, double Dt, int order, int nghost){
     ConservativeVariablesCC Un1(Un.nx, Un.ny);
 
-    UpdateGhostCells(Un, nghost);
-    ConservativeVariablesCC U1 = EulerAdvance(Un, Dx, Dy, Dt, order, nghost);
-    ApplyConstrainedTransport(U1, Un, Dx, Dy, Dt, nghost);
+    ConservativeVariablesCC U1 = Euler(Un, Dx, Dy, Dt, order, nghost);
 
-    UpdateGhostCells(U1, nghost);
-    ConservativeVariablesCC U2 = Un*0.75 + EulerAdvance(U1, Dx, Dy, Dt, order, nghost)*0.25;
-    ApplyConstrainedTransport(U2, U1, Dx, Dy, Dt, nghost);
+    ConservativeVariablesCC U2 = Un*0.75 + Euler(U1, Dx, Dy, Dt, order, nghost)*0.25;
 
-    UpdateGhostCells(U2, nghost);
-    Un1 = Un*(1.0/3.0) + EulerAdvance(U2, Dx, Dy, Dt, order, nghost)*(2.0/3.0);
-    ApplyConstrainedTransport(Un1, U2, Dx, Dy, Dt, nghost);
+    Un1 = Un*(1.0/3.0) + Euler(U2, Dx, Dy, Dt, order, nghost)*(2.0/3.0);
 
     return Un1;
 }

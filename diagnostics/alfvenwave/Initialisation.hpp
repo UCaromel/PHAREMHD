@@ -26,11 +26,11 @@ public:
 
 
     Initialisation() {
-        nx = 100;
-        ny = 100;
+        nx = 1000;
+        ny = 10;
         Dx = 0.01;
         Dy = 0.01;
-        Dt = 0.01;
+        Dt = 0.008;
         FinalTime = 2;
         order = 1;
         nghost = 1;
@@ -41,17 +41,17 @@ public:
         Bx.resize(ny, std::vector<double>(nx, 1.0));
         By.resize(ny, std::vector<double>(nx, 1.0));
         Bz.resize(ny, std::vector<double>(nx, 0.0));
-        P.resize(ny, std::vector<double>(nx, 0.0001));
+        P.resize(ny, std::vector<double>(nx, 1e-10));
 
         for(int i=0; i<nx; i++){
             for(int j=0; j<ny; j++){
-                vy[j][i] = UserFunction1(1e-6, 2*M_PI, Dx*i);
+                vy[j][i] = UserFunction1(-1e-6, 2*M_PI / 10, Dx*i);
             }
         }
 
         for(int i=0; i<nx; i++){
             for(int j=0; j<ny; j++){
-                By[j][i] = UserFunction1(1e-6, 2*M_PI, Dx*i);
+                By[j][i] = UserFunction1(1e-6, 2*M_PI / 10, Dx*i);
             }
         }
     }

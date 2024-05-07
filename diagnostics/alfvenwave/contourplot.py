@@ -32,7 +32,7 @@ times = read_times(file_paths)
 
 reshaped_data = [reshape_data(d, nx, ny) for d in data]
 
-time_index = 1
+time_index = 5
 
 qty = reshaped_data[time_index][:, :, 5]
 
@@ -40,7 +40,7 @@ t=times[time_index]
 lx=1
 Dx=lx/nx
 x=Dx*np.arange(nx)
-expected=1e-6*np.cos(2*np.pi*(x-t))
+expected=1e-9*np.cos(2*np.pi*(x-t))
 
 fig ,(ax1, ax2) = plt.subplots(nrows=2)
 ax1.pcolormesh(qty.T, cmap='viridis')  

@@ -62,13 +62,13 @@ public:
         double c0L = std::sqrt((gam*uL.P)/uL.rho); // Sound speeds
         double c0R = std::sqrt((gam*uR.P)/uR.rho); 
 
-        double caxL = std::sqrt((uL.Bx*uL.Bx)/(4*M_PI*uL.rho)); // Alfven speeds in x
-        double caxR = std::sqrt((uR.Bx*uR.Bx)/(4*M_PI*uR.rho));
-        double cayL = std::sqrt((uL.By*uL.By)/(4*M_PI*uL.rho)); // Alfven speeds in y
-        double cayR = std::sqrt((uR.By*uR.By)/(4*M_PI*uR.rho));
+        double caxL = std::sqrt((uL.Bx*uL.Bx)/(uL.rho)); // Alfven speeds in x
+        double caxR = std::sqrt((uR.Bx*uR.Bx)/(uR.rho));
+        double cayL = std::sqrt((uL.By*uL.By)/(uL.rho)); // Alfven speeds in y
+        double cayR = std::sqrt((uR.By*uR.By)/(uR.rho));
 
-        double caL = std::sqrt((uL.Bx*uL.Bx + uL.By*uL.By + uL.Bz*uL.Bz)/(4*M_PI*uL.rho)); // Alfven speeds
-        double caR = std::sqrt((uR.Bx*uR.Bx + uR.By*uR.By + uR.Bz*uR.Bz)/(4*M_PI*uR.rho));
+        double caL = std::sqrt((uL.Bx*uL.Bx + uL.By*uL.By + uL.Bz*uL.Bz)/(uL.rho)); // Alfven speeds
+        double caR = std::sqrt((uR.Bx*uR.Bx + uR.By*uR.By + uR.Bz*uR.Bz)/(uR.rho));
 
         double cfastxL = std::sqrt((c0L*c0L + caL*caL)*0.5 + (std::sqrt((c0L*c0L + caL*caL)*(c0L*c0L + caL*caL) - 4*c0L*c0L*caxL*caxL))*0.5); // Fast magnetosonic speeds in x
         double cfastxR = std::sqrt((c0R*c0R + caR*caR)*0.5 + (std::sqrt((c0R*c0R + caR*caR)*(c0R*c0R + caR*caR) - 4*c0R*c0R*caxR*caxR))*0.5);

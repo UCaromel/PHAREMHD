@@ -141,37 +141,11 @@ int main(){
     UpdateGhostCells(U0, I.nghost);
 
     ConservativeVariablesCC Un1 = U0;
-    ConstrainedTransport CT(U0, I.Dx, I.Dy, I.Dt, I.nghost);
+/*    ConstrainedTransport CT(U0, I.Dx, I.Dy, I.Dt, I.nghost);
     
     saveVectorToFile(CT.bx, resultsDir + "CTbx");
-    saveVectorToFile(CT.by, resultsDir + "CTby");
+    saveVectorToFile(CT.by, resultsDir + "CTby");*/
 
-    saveVectorToFile(CT.vx, resultsDir + "CTvx");
-    saveVectorToFile(CT.vy, resultsDir + "CTvy");
-    saveVectorToFile(CT.Bx, resultsDir + "CTBx");
-    saveVectorToFile(CT.By, resultsDir + "CTBy");
-    saveVectorToFile(CT.Ez, resultsDir + "CTEz");
-
-    saveVectorToFile(CT.BX, resultsDir + "CTBX");
-    saveVectorToFile(CT.BY, resultsDir + "CTBY");
-
-    ConservativeVariablesCC U1 = EulerAdvance(U0, I.Dx, I.Dy, I.Dt, I.order, I.nghost);
-    UpdateGhostCells(U1, I.nghost);
-
-    ConstrainedTransport CT2(U1, I.Dx, I.Dy, I.Dt, I.nghost);
-
-    saveVectorToFile(CT2.bx, resultsDir + "CT2bx");
-    saveVectorToFile(CT2.by, resultsDir + "CT2by");
-
-    saveVectorToFile(CT2.vx, resultsDir + "CT2vx");
-    saveVectorToFile(CT2.vy, resultsDir + "CT2vy");
-    saveVectorToFile(CT2.Bx, resultsDir + "CT2Bx");
-    saveVectorToFile(CT2.By, resultsDir + "CT2By");
-    saveVectorToFile(CT2.Ez, resultsDir + "CT2Ez");
-
-    saveVectorToFile(CT2.BX, resultsDir + "CT2BX");
-    saveVectorToFile(CT2.BY, resultsDir + "CT2BY");
-/*
     double time = 0.0;
 
     if(I.Dt == 0.0){
@@ -194,7 +168,8 @@ int main(){
         }
     }else{
         for(int step = 1; step * I.Dt <= I.FinalTime; step++){
-            Un1 = TVDRK2(U0, I.Dx, I.Dy, I.Dt, I.order, I.nghost);
+            Un1 = Euler(U0, I.Dx, I.Dy, I.Dt, I.order, I.nghost);
+
             time = time + I.Dt;
             std::cout<<time<<std::endl;
 
@@ -204,5 +179,5 @@ int main(){
 
             U0 = Un1;
         }
-    }*/
+    }
 }
