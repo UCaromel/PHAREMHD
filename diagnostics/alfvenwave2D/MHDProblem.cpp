@@ -149,7 +149,7 @@ int main(){
         int step = 1;
 
         while(time <= I.FinalTime){
-            Un1 = TVDRK2(Un1, I.Dx, I.Dy, Dt, I.order, I.nghost);
+            Un1 = TVDRK2(U0, I.Dx, I.Dy, Dt, I.order, I.nghost);
             //UpdateGhostCells(Un1, I.nghost);
 
             time = time + Dt;
@@ -159,10 +159,12 @@ int main(){
             std::ostringstream filename;
             filename << resultsDir << "URK2_" << formatTime(time) << ".txt";
             saveConcervativeVariables(Un1, filename.str(), I.nghost);
+
+            U0 = Un1;
         }
     }else{
         for(int step = 1; step * I.Dt <= I.FinalTime; step++){
-            Un1 = TVDRK2(Un1, I.Dx, I.Dy, I.Dt, I.order, I.nghost);
+            Un1 = TVDRK2(U0, I.Dx, I.Dy, I.Dt, I.order, I.nghost);
 
             time = time + I.Dt;
             std::cout<<time<<std::endl;
@@ -170,6 +172,8 @@ int main(){
             std::ostringstream filename;
             filename << resultsDir << "URK2_" << step << ".txt";
             saveConcervativeVariables(Un1, filename.str(), I.nghost);
+
+            U0 = Un1;
         }
     }
 }

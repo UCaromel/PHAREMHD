@@ -64,6 +64,7 @@ def update(frame):
 
     plt.clf()
     plt.plot(x,quantities[quantity_name][frame, fixed_index, :], color='blue') # t,y,x
+    plt.plot(x,quantities["rhovx"][frame, fixed_index, :], color='red') # t,y,x
     plt.plot(x,expected)
     plt.title(f'{quantity_name} at y={fixed_index}, t={frame}')  # Format time to one decimal place
     plt.xlabel('x')
