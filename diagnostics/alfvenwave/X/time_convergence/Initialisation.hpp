@@ -26,11 +26,11 @@ public:
 
 
     Initialisation() {
-        nx = 1000;
-        ny = 10;
-        Dx = 0.01;
-        Dy = 0.01;
-        Dt = 0.008;
+        nx = 10000;
+        ny = 3;
+        Dx = 0.0001;
+        Dy = 0.0001;
+        Dt = 0.00005;
         FinalTime = 2;
         order = 1;
         nghost = 1;
@@ -44,8 +44,8 @@ public:
         P.resize(ny, std::vector<double>(nx, 0.1));
 
 
-        double kx = (2*M_PI / 10) * Dx;
-        double ky = (2*M_PI / 10) * Dy;
+        double kx = (2*M_PI) * Dx;
+        double ky = (2*M_PI) * Dy;
 
         for(int i=0; i<nx; i++){
             for(int j=0; j<ny; j++){

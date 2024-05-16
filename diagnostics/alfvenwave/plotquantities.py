@@ -4,14 +4,14 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import os
 
-nx = 1000
-ny = 10
-Dt=0.008
+nx = 100
+ny = 3
+Dt=0.8e-6
 
 quantity_name = 'By'
 fixed_index = 0
 
-lx=10
+lx=1
 
 column_names = ['rho', 'rhovx', 'rhovy', 'rhovz', 'Bx', 'By', 'Bz', 'Etot']
 
@@ -34,9 +34,9 @@ quantities = {
 times = []
 
 for filename in os.listdir(results_dir):
-    if filename.startswith("URK2_") and filename.endswith(".txt"):
+    if filename.startswith("0_URK2_") and filename.endswith(".txt"):
         # Extract time from filename and format it properly
-        time_str = filename.split('_')[1].split('.')[0]
+        time_str = filename.split('_')[2].split('.')[0]
         time_str = time_str.replace('_', '.')  # Replace underscore with dot
         time = float(time_str)
         times.append(time)
@@ -60,11 +60,12 @@ x=Dx*np.arange(nx)
 
 def update(frame):    
     t=times[frame]
-    expected=1e-6*np.cos(2*np.pi*(x-t)/10)
+    expected=1e-6*np.cos(2*np.pi*(x-t))
 
     plt.clf()
-    plt.plot(x,quantities[quantity_name][frame, fixed_index, :], color='blue') # t,y,x
-    plt.plot(x,expected)
+    #plt.plot(x,quantities[quantity_name][frame, fixed_index, :], color='blue') # t,y,x
+    #plt.plot(x,expected)
+    plt.loglog(x,abs(quantities[quantity_name][frame, fixed_index, :] - expected))
     plt.title(f'{quantity_name} at y={fixed_index}, t={frame}')  # Format time to one decimal place
     plt.xlabel('x')
     plt.ylabel(quantity_name)

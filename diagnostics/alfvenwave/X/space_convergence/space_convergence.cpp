@@ -60,45 +60,49 @@ void saveConcervativeVariables(const ConservativeVariablesCC& P_cc, const std::s
 int main(){
     Initialisation I;
 
-    PrimitiveVariablesCC P0cc(I.nx, I.ny);
-    P0cc.init(I.rho, I.vx, I.vy, I.vz, I.Bx, I.By, I.Bz, I.P); //OK
-
-    PrimitiveVariablesCC P0 = InitialiseGhostCells(P0cc, I.nghost);
-
-    std::string resultsDir = "results/";
+    std::string resultsDir = "space_results/";
 
     // Create the results directory if it doesn't exist
     system(("mkdir -p " + resultsDir).c_str());
 
-    ConservativeVariablesCC U0(P0); 
-    UpdateGhostCells(U0, I.nghost);
-
-    ConservativeVariablesCC Un1 = U0;
-
-    double Dt = 0.8e-6;
+    double Dt = 5e-4;
+    double finalTime = 1;
     int stepDx = 0;
-    
+
+    int dumpFrequency = 10;
+    double Dx = 0.02; int nx = 50;
 
     // Loop in x
-    for(double Dx = I.Dx; Dx >= I.Dx/1000.0; Dx /= 10.0){
+    for(;(Dx > I.Dx / 32.0) && (nx < 1600); Dx /= 2.0, nx *= 2){
         double time = 0.0;
-        Un1 = U0;
+
+        int ny = 3;
+        Initialisation Isim(nx, ny, Dx, I.Dy, Dt);
+        std::cout<<"Dx : "<<Dx<<" nx : "<<nx<<std::endl;
+
+        PrimitiveVariablesCC P0cc(nx, ny);
+        P0cc.init(Isim.rho, Isim.vx, Isim.vy, Isim.vz, Isim.Bx, Isim.By, Isim.Bz, Isim.P); 
+        PrimitiveVariablesCC P0 = InitialiseGhostCells(P0cc, I.nghost);
+        ConservativeVariablesCC U0(P0);
+        UpdateGhostCells(U0, I.nghost);
+        ConservativeVariablesCC Un1 = U0;
 
         std::ostringstream f1;
-        f1 << resultsDir << stepDx << "_" << "URR2_0.txt";
+        f1 << resultsDir << stepDx << "_" << "URK2_0.txt";
         saveConcervativeVariables(Un1, f1.str(), I.nghost);
 
-        for(int step = 1; step <= 100; step++){
+        for(int step = 1; step * Dt <= finalTime; step++){
             Un1 = TVDRK2(Un1, Dx, I.Dy, Dt, I.order, I.nghost);
 
             time = time + Dt;
             std::cout<<time<<std::endl;
 
-            std::ostringstream filename;
-            filename << resultsDir <<stepDx<<"_"<< "URK2_" << step << ".txt";
-            saveConcervativeVariables(Un1, filename.str(), I.nghost);
+            if(step%dumpFrequency==0 || time >= finalTime){
+                std::ostringstream filename;
+                filename << resultsDir <<stepDx<<"_"<< "URK2_" << step << ".txt";
+                saveConcervativeVariables(Un1, filename.str(), I.nghost);
+            }
         }
         stepDx++;
     }
-
 }

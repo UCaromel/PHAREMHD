@@ -4,14 +4,14 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import os
 
-nx = 1000
-ny = 10
+nx = 100
+ny = 100
 Dt=0.008
 
 quantity_name = 'By'
 fixed_index = 0
 
-lx=10
+lx=1
 
 column_names = ['rho', 'rhovx', 'rhovy', 'rhovz', 'Bx', 'By', 'Bz', 'Etot']
 
@@ -59,13 +59,13 @@ x=Dx*np.arange(nx)
 
 
 def update(frame):    
-    t=times[frame]
-    expected=1e-6*np.cos(2*np.pi*(x-t)/10)
+    #t=times[frame]
+    #expected=1e-6*np.cos(2*np.pi*(x-t))
 
     plt.clf()
     plt.plot(x,quantities[quantity_name][frame, fixed_index, :], color='blue') # t,y,x
     plt.plot(x,quantities["rhovx"][frame, fixed_index, :], color='red') # t,y,x
-    plt.plot(x,expected)
+    #plt.plot(x,expected)
     plt.title(f'{quantity_name} at y={fixed_index}, t={frame}')  # Format time to one decimal place
     plt.xlabel('x')
     plt.ylabel(quantity_name)

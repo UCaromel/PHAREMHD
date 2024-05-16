@@ -128,7 +128,7 @@ int main(){
 
     PrimitiveVariablesCC P0 = InitialiseGhostCells(P0cc, I.nghost);
 
-    std::string resultsDir = "results/";
+    std::string resultsDir = "time_results/";
 
     // Create the results directory if it doesn't exist
     system(("mkdir -p " + resultsDir).c_str());
@@ -141,8 +141,11 @@ int main(){
     ConservativeVariablesCC URK3 = U0;
 
     int stepDt = 0;
+    double finalTime = 0.001;
 
-    for(double Dt = I.Dt; Dt >= I.Dt/1000.0; Dt/=10){
+    int dumpFrequency = 10;
+
+    for(double Dt = I.Dt; Dt >= I.Dt / 32.0; Dt /= 2.0){
 
         double time = 0.0;
         UEuler = U0;
@@ -161,7 +164,7 @@ int main(){
         f3 << resultsDir << stepDt << "_" << "URK3_0.txt";
         saveConcervativeVariables(URK3, f3.str(), I.nghost);
 
-        for(int step = 1; step <= 100; step++){
+        for(int step = 1; step * Dt <= finalTime; step++){
             UEuler = Euler(UEuler, I.Dx, I.Dy, Dt, I.order, I.nghost);
             URK2 = TVDRK2(URK2, I.Dx, I.Dy, Dt, I.order, I.nghost);
             URK3 = TVDRK3(URK3, I.Dx, I.Dy, Dt, I.order, I.nghost);
@@ -169,17 +172,19 @@ int main(){
             time = time + Dt;
             std::cout<<time<<std::endl;
 
-            std::ostringstream filename;
-            filename << resultsDir << stepDt << "_" << "UEuler_" << step << ".txt";
-            saveConcervativeVariables(UEuler, filename.str(), I.nghost);
+            if(step%dumpFrequency==0 || time >= finalTime){
+                std::ostringstream filename;
+                filename << resultsDir << stepDt << "_" << "UEuler_" << step << ".txt";
+                saveConcervativeVariables(UEuler, filename.str(), I.nghost);
 
-            std::ostringstream filename2;
-            filename2 << resultsDir << stepDt << "_" << "URK2_" << step << ".txt";
-            saveConcervativeVariables(URK2, filename2.str(), I.nghost);
+                std::ostringstream filename2;
+                filename2 << resultsDir << stepDt << "_" << "URK2_" << step << ".txt";
+                saveConcervativeVariables(URK2, filename2.str(), I.nghost);
 
-            std::ostringstream filename3;
-            filename3 << resultsDir << stepDt << "_" << "URK3_" << step << ".txt";
-            saveConcervativeVariables(URK3, filename3.str(), I.nghost);
+                std::ostringstream filename3;
+                filename3 << resultsDir << stepDt << "_" << "URK3_" << step << ".txt";
+                saveConcervativeVariables(URK3, filename3.str(), I.nghost);
+            }
         }
         stepDt++;
     }  

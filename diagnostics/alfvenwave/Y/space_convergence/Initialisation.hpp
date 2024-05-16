@@ -26,7 +26,7 @@ public:
 
 
     Initialisation() {
-        nx = 100;
+        nx = 3;
         ny = 100;
         Dx = 0.01;
         Dy = 0.01;
@@ -36,9 +36,9 @@ public:
         nghost = 1;
         rho.resize(ny, std::vector<double>(nx, 1.0));
         vx.resize(ny, std::vector<double>(nx, 0.0));
-        vy.resize(ny, std::vector<double>(nx, 1.0));
+        vy.resize(ny, std::vector<double>(nx, 0.0));
         vz.resize(ny, std::vector<double>(nx, 0.0));
-        Bx.resize(ny, std::vector<double>(nx, 1.0));
+        Bx.resize(ny, std::vector<double>(nx, 0.0));
         By.resize(ny, std::vector<double>(nx, 1.0));
         Bz.resize(ny, std::vector<double>(nx, 0.0));
         P.resize(ny, std::vector<double>(nx, 0.1));
@@ -49,13 +49,47 @@ public:
 
         for(int i=0; i<nx; i++){
             for(int j=0; j<ny; j++){
-                vy[j][i] = UserFunction1(-1e-6, kx, i);
+                vx[j][i] = UserFunction1(-1e-6, ky, j);
             }
         }
 
         for(int i=0; i<nx; i++){
             for(int j=0; j<ny; j++){
-                By[j][i] = UserFunction1(1e-6, kx, i);
+                Bx[j][i] = UserFunction1(1e-6, ky, j);
+            }
+        }
+    }
+    Initialisation(int nx_, int ny_, double Dx_, double Dy_, double Dt_){
+        nx = nx_;
+        ny = ny_;
+        Dx = Dx_;
+        Dy = Dy_;
+        Dt = Dt_;
+        FinalTime = 2;
+        order = 1;
+        nghost = 1;
+        rho.resize(ny, std::vector<double>(nx, 1.0));
+        vx.resize(ny, std::vector<double>(nx, 0.0));
+        vy.resize(ny, std::vector<double>(nx, 0.0));
+        vz.resize(ny, std::vector<double>(nx, 0.0));
+        Bx.resize(ny, std::vector<double>(nx, 0.0));
+        By.resize(ny, std::vector<double>(nx, 1.0));
+        Bz.resize(ny, std::vector<double>(nx, 0.0));
+        P.resize(ny, std::vector<double>(nx, 0.1));
+
+
+        double kx = (2*M_PI) * Dx;
+        double ky = (2*M_PI) * Dy;
+
+        for(int i=0; i<nx; i++){
+            for(int j=0; j<ny; j++){
+                vx[j][i] = UserFunction1(-1e-6, ky, j);
+            }
+        }
+
+        for(int i=0; i<nx; i++){
+            for(int j=0; j<ny; j++){
+                Bx[j][i] = UserFunction1(1e-6, ky, j);
             }
         }
     }

@@ -1,5 +1,7 @@
 .vscode/
 results/
+space_results/
+time_results/
 .mkn/
 bin/
 mkn.yaml

@@ -6,7 +6,7 @@ set(SOURCES
     PrimitiveVariablesCC.cpp
     ConstainedTransport.hpp
     GodunovFlux.hpp
-    Initialisation.hpp
+    ../diagnostics/alfvenwave/Initialisation.hpp
     Interface.hpp
     ReconstructedValues.hpp
     RusanovRiemannSolver.hpp
@@ -40,7 +40,7 @@ foreach(SOURCE_FILE ${SOURCES})
 endforeach()
 
 # Add the executable
-add_executable(MHDProblem MHDProblem.cpp)
+add_executable(MHDProblem ../diagnostics/alfvenwave/MHDProblem.cpp)
 
 # Link all object libraries to the executable
 target_link_libraries(MHDProblem ${OBJECT_LIBRARIES})
