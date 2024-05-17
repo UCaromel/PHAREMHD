@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.colors import Normalize
 from matplotlib.animation import FuncAnimation
 import os
 
@@ -10,14 +11,14 @@ def read_data(file_path):
 
 # Function to reshape data
 def reshape_data(data, nx, ny):
-    reshaped_data = data.reshape((ny, nx, -1), order='F') # Assuming Fortran-like order
+    reshaped_data = data.reshape((ny, nx, -1), order='F')
     return reshaped_data
 
 # Function to read times
 def read_times(file_paths):
     times = []
     for file_path in file_paths:
-        time_str = file_path.split('_')[1].split('.')[0].replace('_', '.')
+        time_str = file_path.split('_')[1]+'.'+file_path.split('_')[2].split('.')[0]
         time = float(time_str)
         times.append(time)
     return times
@@ -34,15 +35,17 @@ times = read_times(file_paths)
 reshaped_data = [reshape_data(d, nx, ny) for d in data]
 
 fig, ax = plt.subplots()
-im = ax.pcolormesh(reshaped_data[0][:, :, 5].T, cmap='viridis')
+im = ax.pcolormesh(reshaped_data[0][:, :, 5].T, cmap='coolwarm', norm=Normalize(vmin=-1.3e-6,vmax=1.3e-6))
+fig.colorbar(im, ax=ax)
 
 def update(frame):
     im.set_array(reshaped_data[frame][:, :, 5].T.ravel())
+    plt.title(f'Contour Plot of qty at t={times[frame]}')
     return im,
 
 ani = FuncAnimation(fig, update, frames=len(times), interval=100)
 
-plt.title('Contour Plot of qty')
+
 plt.xlabel('X')
 plt.ylabel('Y')
 plt.show()

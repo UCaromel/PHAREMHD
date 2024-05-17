@@ -28,10 +28,10 @@ public:
     Initialisation() {
         nx = 100;
         ny = 100;
-        Dx = 0.01;
-        Dy = 0.01;
-        Dt = 0.008;
-        FinalTime = 2;
+        Dx = 0.1;
+        Dy = 0.1;
+        Dt = 0.00;
+        FinalTime = 10;
         order = 1;
         nghost = 1;
         rho.resize(ny, std::vector<double>(nx, 1.0));
@@ -44,25 +44,29 @@ public:
         P.resize(ny, std::vector<double>(nx, 0.1));
 
 
-        double kx = (2*M_PI) * Dx;
-        double ky = (2*M_PI) * Dy;
+        //double kx = (2*M_PI/10) * Dx + Dx/2.0;
+        //double ky = (2*M_PI/10) * Dy + Dy/2.0;
+        double k = (2*M_PI/10);
+        double alpha = 45 * M_PI/180;
 
         for(int i=0; i<nx; i++){
             for(int j=0; j<ny; j++){
-                vy[j][i] = UserFunction1(-1e-6, kx*i + ky*j);
+                vx[j][i] = UserFunction1(-1e-6, k*(0.5 + i)*std::cos(alpha)*Dx + k*(0.5 + j)*std::sin(alpha)*Dy) * std::sin(alpha);
+                vy[j][i] = UserFunction1(-1e-6, k*(0.5 + i)*std::cos(alpha)*Dx + k*(0.5 + j)*std::sin(alpha)*Dy) * std::cos(alpha);
             }
         }
 
         for(int i=0; i<nx; i++){
             for(int j=0; j<ny; j++){
-                By[j][i] = UserFunction1(1e-6, kx*i + ky*j);
+                Bx[j][i] += UserFunction1(1e-6, k*(0.5 + i)*std::cos(alpha)*Dx + k*(0.5 + j)*std::sin(alpha)*Dy) * std::sin(alpha);
+                By[j][i] += UserFunction1(1e-6, k*(0.5 + i)*std::cos(alpha)*Dx + k*(0.5 + j)*std::sin(alpha)*Dy) * std::cos(alpha);
             }
         }
     }
     ~Initialisation() = default;
 private:
     double UserFunction1(double ampl, double kx){
-        return ampl*cos(kx);
+        return ampl*sin(kx);
     }
 };
 

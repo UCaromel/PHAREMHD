@@ -6,3 +6,4 @@ time_results/
 bin/
 mkn.yaml
 tpp/
+__pycache__

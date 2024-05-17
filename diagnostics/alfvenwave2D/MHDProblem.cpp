@@ -130,14 +130,14 @@ int main(){
 
     std::string resultsDir = "results/";
 
-    // Create the results directory if it doesn't exist
+    system(("rm -rf " + resultsDir).c_str());
     system(("mkdir -p " + resultsDir).c_str());
 
     // Save initial values
     savePrimitiveVariables(P0, resultsDir + "Pcc_0.txt", I.nghost);
 
     ConservativeVariablesCC U0(P0); 
-    saveConcervativeVariables(U0, resultsDir + "URK2_0.txt", I.nghost);
+    saveConcervativeVariables(U0, resultsDir + "URK2_0_0.txt", I.nghost);
     UpdateGhostCells(U0, I.nghost);
 
     ConservativeVariablesCC Un1 = U0;
