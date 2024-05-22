@@ -9,7 +9,7 @@
 #include "Interface.hpp"
 #include "RusanovRiemannSolver.hpp"
 
-std::vector<ReconstructedValues> GodunovFluxX(const PrimitiveVariablesCC& P_cc, int order, int nghost){
+inline std::vector<ReconstructedValues> GodunovFluxX(const PrimitiveVariablesCC& P_cc, int order, int nghost){
     std::vector<ReconstructedValues> NumFluxx;
     for(int j = nghost; j < P_cc.ny - nghost; j++){
         for(int i = nghost; i < P_cc.nx + 1 - nghost; i++){
@@ -19,7 +19,7 @@ std::vector<ReconstructedValues> GodunovFluxX(const PrimitiveVariablesCC& P_cc, 
     return NumFluxx;
 }
 
-std::vector<ReconstructedValues> GodunovFluxY(const PrimitiveVariablesCC& P_cc, int order, int nghost){
+inline std::vector<ReconstructedValues> GodunovFluxY(const PrimitiveVariablesCC& P_cc, int order, int nghost){
     std::vector<ReconstructedValues> NumFluxy;
     for(int i = nghost; i < P_cc.nx - nghost; i++){
         for(int j = nghost; j<P_cc.ny + 1 - nghost; j++){
@@ -29,7 +29,7 @@ std::vector<ReconstructedValues> GodunovFluxY(const PrimitiveVariablesCC& P_cc, 
     return NumFluxy;
 }
 
-ConservativeVariablesCC ComputeFluxDifferenceX(PrimitiveVariablesCC& P_cc, int order, int nghost){
+inline ConservativeVariablesCC ComputeFluxDifferenceX(PrimitiveVariablesCC& P_cc, int order, int nghost){
     std::vector<ReconstructedValues> NumFluxx = GodunovFluxX(P_cc, order, nghost);
 
     ConservativeVariablesCC FluxDifx(P_cc.nx, P_cc.ny);
@@ -42,7 +42,7 @@ ConservativeVariablesCC ComputeFluxDifferenceX(PrimitiveVariablesCC& P_cc, int o
     return FluxDifx;
 }
 
-ConservativeVariablesCC ComputeFluxDifferenceY(PrimitiveVariablesCC& P_cc, int order, int nghost){
+inline ConservativeVariablesCC ComputeFluxDifferenceY(PrimitiveVariablesCC& P_cc, int order, int nghost){
     std::vector<ReconstructedValues> NumFluxy = GodunovFluxY(P_cc, order, nghost);
 
     ConservativeVariablesCC FluxDify(P_cc.nx, P_cc.ny);

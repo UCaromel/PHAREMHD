@@ -26,7 +26,7 @@ def read_times(file_paths):
 results_dir = "results/"
 file_paths = [results_dir + file for file in os.listdir(results_dir) if file.startswith("URK2_") and file.endswith(".txt")]
 
-nx = 100
+nx = 200
 ny = 100
 
 data = [read_data(file_path) for file_path in file_paths]
@@ -35,11 +35,12 @@ times = read_times(file_paths)
 reshaped_data = [reshape_data(d, nx, ny) for d in data]
 
 fig, ax = plt.subplots()
-im = ax.pcolormesh(reshaped_data[0][:, :, 5].T, cmap='coolwarm', norm=Normalize(vmin=-1.3e-6,vmax=1.3e-6))
+im = ax.pcolormesh(reshaped_data[0][:, :, 5], cmap='coolwarm')
+ax.set_aspect('equal')
 fig.colorbar(im, ax=ax)
 
 def update(frame):
-    im.set_array(reshaped_data[frame][:, :, 5].T.ravel())
+    im.set_array(reshaped_data[frame][:, :, 5].ravel())
     plt.title(f'Contour Plot of qty at t={times[frame]}')
     return im,
 

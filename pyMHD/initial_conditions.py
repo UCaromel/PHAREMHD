@@ -1,4 +1,5 @@
 import numpy as np
+import pyMHD as p
 
 nx = 1000
 ny = 10
@@ -8,6 +9,11 @@ Dt = 0.008
 FinalTime = 2
 order = 1
 nghost = 1
+
+reconstruction = p.Reconstruction.Constant
+riemannsolver = p.RiemannSolver.Rusanov
+constainedtransport = p.CTMethod.Average
+timeintegrator = p.Integrator.TVDRK2Integrator
 
 def rho_(x, y):
     return 1.0

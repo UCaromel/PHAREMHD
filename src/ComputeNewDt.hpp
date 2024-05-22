@@ -9,7 +9,7 @@
 
 const double sigmaCFL = 0.8;
 
-double ComPuteNewDt(const ConservativeVariablesCC& C_cc, double Dx, double Dy, int nghost){
+inline double ComPuteNewDt(const ConservativeVariablesCC& C_cc, double Dx, double Dy, int nghost){
     std::vector<double> sum;
 
     for (int j = nghost; j < C_cc.ny - nghost; ++j) {

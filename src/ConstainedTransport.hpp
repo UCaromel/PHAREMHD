@@ -83,7 +83,7 @@ public:
     ~ConstrainedTransport() = default;
 };
 
-void ApplyConstrainedTransport(ConservativeVariablesCC& Cn1, const ConservativeVariablesCC& Cn, double Dx, double Dy, double Dt, int nghost){
+inline void ApplyConstrainedTransport(ConservativeVariablesCC& Cn1, const ConservativeVariablesCC& Cn, double Dx, double Dy, double Dt, int nghost){
     ConstrainedTransport CT(Cn, Dx, Dy, Dt, nghost);
     for(int j = nghost; j < Cn1.ny - nghost; ++j){
         for(int i = nghost; i < Cn1.nx - nghost; ++i){

@@ -24,7 +24,7 @@ def read_times(file_paths):
 results_dir = "results/"
 file_paths = [results_dir + file for file in os.listdir(results_dir) if file.startswith("URK2_") and file.endswith(".txt")]
 
-nx = 100
+nx = 200
 ny = 100
 
 data = [read_data(file_path) for file_path in file_paths]
@@ -38,7 +38,7 @@ qty = reshaped_data[time_index][:, :, 5]
 
 t=times[time_index]
 
-plt.pcolormesh(qty.T, cmap='viridis')  
+plt.pcolormesh(qty.T, cmap='coolwarm')  
 plt.title('Contour Plot of qty')
 plt.xlabel('X')
 plt.ylabel('Y')

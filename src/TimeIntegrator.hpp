@@ -8,7 +8,7 @@
 #include "ConstainedTransport.hpp"
 #include "AddGhostCells.hpp"
 
-ConservativeVariablesCC EulerAdvance(const ConservativeVariablesCC& Un, double Dx, double Dy, double Dt, int order, int nghost){
+inline ConservativeVariablesCC EulerAdvance(const ConservativeVariablesCC& Un, double Dx, double Dy, double Dt, int order, int nghost){
     ConservativeVariablesCC Un1(Un.nx, Un.ny);
     PrimitiveVariablesCC P_cc(Un);
     ConservativeVariablesCC FluxDifx = ComputeFluxDifferenceX(P_cc, order, nghost);
@@ -17,7 +17,7 @@ ConservativeVariablesCC EulerAdvance(const ConservativeVariablesCC& Un, double D
     return Un1;
 }
 
-ConservativeVariablesCC Euler(ConservativeVariablesCC& Un, double Dx, double Dy, double Dt, int order, int nghost){
+inline ConservativeVariablesCC Euler(ConservativeVariablesCC& Un, double Dx, double Dy, double Dt, int order, int nghost){
     ConservativeVariablesCC Un1(Un.nx, Un.ny);
 
     UpdateGhostCells(Un, nghost);
@@ -27,7 +27,7 @@ ConservativeVariablesCC Euler(ConservativeVariablesCC& Un, double Dx, double Dy,
     return Un1;
 }
 
-ConservativeVariablesCC TVDRK2(ConservativeVariablesCC& Un,  double Dx, double Dy, double Dt, int order, int nghost){
+inline ConservativeVariablesCC TVDRK2(ConservativeVariablesCC& Un,  double Dx, double Dy, double Dt, int order, int nghost){
     ConservativeVariablesCC Un1(Un.nx, Un.ny);
 
     ConservativeVariablesCC U1 = Euler(Un, Dx, Dy, Dt, order, nghost);
@@ -37,7 +37,7 @@ ConservativeVariablesCC TVDRK2(ConservativeVariablesCC& Un,  double Dx, double D
     return Un1;
 }
 
-ConservativeVariablesCC TVDRK3(ConservativeVariablesCC& Un,  double Dx, double Dy, double Dt, int order, int nghost){
+inline ConservativeVariablesCC TVDRK3(ConservativeVariablesCC& Un,  double Dx, double Dy, double Dt, int order, int nghost){
     ConservativeVariablesCC Un1(Un.nx, Un.ny);
 
     ConservativeVariablesCC U1 = Euler(Un, Dx, Dy, Dt, order, nghost);

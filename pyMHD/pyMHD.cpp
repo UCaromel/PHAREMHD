@@ -1,12 +1,6 @@
 #include "ConservativeVariablesCC.hpp"
 #include "PrimitiveVariablesCC.hpp"
-#include "TimeIntegrator.hpp"
-#include "AddGhostCells.hpp"
-#include "ComputeNewDt.hpp"
-#include "EquationOfState.hpp"
-#include "Interface.hpp"
-#include "GodunovFlux.hpp"
-#include "ConstainedTransport.hpp"
+#include "PhareMHD.hpp"
 
 #include <pybind11/operators.h>
 #include <pybind11/stl.h>
@@ -88,6 +82,26 @@ PYBIND11_MODULE(pyMHD, m)
             self = other;
         });
 
+    py::enum_<Reconstruction>(m, "Reconstruction")
+        .value("Constant", Constant);
+
+    py::enum_<RiemannSolver>(m, "RiemannSolver")
+        .value("Rusanov", Rusanov);
+
+    py::enum_<CTMethod>(m, "CTMethod")
+        .value("Average", Average);
+
+    py::enum_<Integrator>(m, "Integrator")
+        .value("EulerIntegrator", EulerIntegrator)
+        .value("TVDRK2Integrator", TVDRK2Integrator)
+        .value("TVDRK3Integrator", TVDRK3Integrator);
+    
+     m.def("PhareMHD", &PhareMHD, 
+          py::arg("primvar0"), py::arg("resultdir"), py::arg("order"), py::arg("nghost"), 
+          py::arg("reconstruction"), py::arg("riemannsolver"), py::arg("constainedtransport"), py::arg("timeintegrator"), 
+          py::arg("Dx"), py::arg("Dy"), py::arg("FinalTime"), py::arg("Dt") = 0.0);
+
+/*
     py::class_<ConservativeVariablesCC>(m, "ConservativeVariablesCC")
 
         .def_readwrite("nx", &ConservativeVariablesCC::nx)
@@ -205,6 +219,7 @@ PYBIND11_MODULE(pyMHD, m)
     m.def("TVDRK3", &TVDRK3);
 
     m.def("ComPuteNewDt", &ComPuteNewDt);
+*/
 }
 
 /*

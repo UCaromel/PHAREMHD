@@ -12,7 +12,7 @@ enum struct Dir {
     Y
 };
 
-ReconstructedValues ComputeFluxVector(ReconstructedValues u, Dir dir) {
+inline ReconstructedValues ComputeFluxVector(ReconstructedValues u, Dir dir) {
     ReconstructedValues flux;
     double GeneralisedPressure = u.P + 0.5*(u.Bx * u.Bx + u.By * u.By + u.Bz * u.Bz);
 
