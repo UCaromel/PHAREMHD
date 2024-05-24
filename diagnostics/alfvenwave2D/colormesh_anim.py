@@ -1,8 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.colors import Normalize
-from matplotlib.animation import FuncAnimation
 import os
+from matplotlib.animation import FuncAnimation
 
 # Function to read data from file
 def read_data(file_path):
@@ -10,8 +9,8 @@ def read_data(file_path):
     return data
 
 # Function to reshape data
-def reshape_data(data, nx, ny):
-    reshaped_data = data.reshape((ny, nx, -1), order='F')
+def reshape_data(data, ny, nx):
+    reshaped_data = data.reshape((ny, nx, -1), order='F') # Assuming Fortran-like order
     return reshaped_data
 
 # Function to read times
@@ -23,7 +22,7 @@ def read_times(file_paths):
         times.append(time)
     return times
 
-results_dir = "results/"
+results_dir = "2Dwave/"
 file_paths = [results_dir + file for file in os.listdir(results_dir) if file.startswith("URK2_") and file.endswith(".txt")]
 
 nx = 200
@@ -35,12 +34,12 @@ times = read_times(file_paths)
 reshaped_data = [reshape_data(d, nx, ny) for d in data]
 
 fig, ax = plt.subplots()
-im = ax.pcolormesh(reshaped_data[0][:, :, 5], cmap='coolwarm')
+im = ax.pcolormesh(reshaped_data[0][:, :, 5].T, cmap='coolwarm')
 ax.set_aspect('equal')
 fig.colorbar(im, ax=ax)
 
 def update(frame):
-    im.set_array(reshaped_data[frame][:, :, 5].ravel())
+    im.set_array(reshaped_data[frame][:, :, 5].T)
     plt.title(f'Contour Plot of qty at t={times[frame]}')
     return im,
 

@@ -85,8 +85,9 @@ PYBIND11_MODULE(pyMHD, m)
     py::enum_<Reconstruction>(m, "Reconstruction")
         .value("Constant", Constant);
 
-    py::enum_<RiemannSolver>(m, "RiemannSolver")
-        .value("Rusanov", Rusanov);
+    py::enum_<Riemann>(m, "RiemannSolver")
+        .value("Rusanov", Rusanov)
+        .value("HLL", HLL);
 
     py::enum_<CTMethod>(m, "CTMethod")
         .value("Average", Average);
@@ -142,7 +143,7 @@ PYBIND11_MODULE(pyMHD, m)
         .def("assign", [](ConservativeVariablesCC& self, const ConservativeVariablesCC& other) {
             self = other;
         });
-    
+ 
     py::class_<ReconstructedValues>(m, "ReconstructedValues")
 
         .def_readwrite("rho", &ReconstructedValues::rho)

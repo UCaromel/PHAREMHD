@@ -2,6 +2,7 @@
 results/
 space_results/
 time_results/
+2Dwave/
 .mkn/
 bin/
 mkn.yaml

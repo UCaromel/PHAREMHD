@@ -65,6 +65,19 @@ struct ReconstructedValues {
         P = other.P;
         return *this;
     }
+
+    ReconstructedValues operator/(double scalar) const {
+        ReconstructedValues result;
+        result.rho = rho / scalar;
+        result.vx = vx / scalar;
+        result.vy = vy / scalar;
+        result.vz = vz / scalar;
+        result.Bx = Bx / scalar;
+        result.By = By / scalar;
+        result.Bz = Bz / scalar;
+        result.P = P / scalar;
+        return result;
+    }
 };
 
 #endif //RECONSTRUCTED_VALUES_HPP_
