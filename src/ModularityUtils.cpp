@@ -9,11 +9,19 @@ RiemannSolverFunction getRiemannSolver(Riemann rs){
     }
 }
 
-IntegratorFunction getIntegrator(Integrator intg) {
+IntegratorFunction getIntegrator(Integrator intg){
     switch (intg) {
         case EulerIntegrator: return &Euler;
         case TVDRK2Integrator: return &TVDRK2;
         case TVDRK3Integrator: return &TVDRK3;
         default: throw std::invalid_argument("Unknown integrator");
+    }
+}
+
+CTFunction getCT(CTMethod ct){
+    switch (ct){
+        case Average: return &ConstrainedTransportAverage;
+        case UCT_HLL: return &UCTHLL;
+        default: throw std::invalid_argument("Unknown constrained transport");
     }
 }

@@ -19,7 +19,7 @@ nghost = 1
 
 reconstruction = p.Reconstruction.Constant
 riemannsolver = p.RiemannSolver.HLL
-constainedtransport = p.CTMethod.Average
+constainedtransport = p.CTMethod.UCT_HLL
 timeintegrator = p.Integrator.TVDRK2Integrator
 
 ##############################################################################################################################################################################

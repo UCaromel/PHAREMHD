@@ -19,7 +19,7 @@ void PhareMHD(const PrimitiveVariablesCC& P0cc, std::string resultDir, int order
         int step = 1;
 
         while(time <= FinalTime){
-            Un1 = ChosenIntegrator(Un1, Dx, Dy, Dt, order, nghost, rs);
+            Un1 = ChosenIntegrator(Un1, Dx, Dy, Dt, nghost, rec, rs, ct);
 
             time = time + Dt;
             Dt = ComPuteNewDt(Un1, Dx, Dy, nghost);
@@ -31,7 +31,7 @@ void PhareMHD(const PrimitiveVariablesCC& P0cc, std::string resultDir, int order
         }
     }else{
         for(int step = 1; step * Dt <= FinalTime; step++){
-            Un1 = ChosenIntegrator(Un1, Dx, Dy, Dt, order, nghost, rs);
+            Un1 = ChosenIntegrator(Un1, Dx, Dy, Dt, nghost, rec, rs, ct);
 
             time = time + Dt;
             std::cout<<time<<std::endl;

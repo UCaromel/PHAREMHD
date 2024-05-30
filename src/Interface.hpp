@@ -6,6 +6,7 @@
 #include "ReconstructedValues.hpp"
 #include "PrimitiveVariablesCC.hpp"
 #include "EquationOfState.hpp"
+#include "Enums.hpp"
 
 enum struct Dir {
     X,
@@ -42,10 +43,14 @@ class Interface {
 public:
     ReconstructedValues uL, uR, fL, fR;
     double SL, SR, Splus;
+    double cfastxL, cfastxR, cfastyL, cfastyR;
+
+    // For vector initialisation in UCT
+    Interface() = default;
 
     // (i,j) interface index.
-    Interface(const PrimitiveVariablesCC& P_cc /* Assuming ghost cells are added */, int i /* (0 to nx) + nghost */, int j /* (0 to ny) + nghost */, int order, int nghost, Dir dir) {
-        if (order == 1) {
+    Interface(const PrimitiveVariablesCC& P_cc /* Assuming ghost cells are added */, int i /* (0 to nx) + nghost */, int j /* (0 to ny) + nghost */, Reconstruction rec, int nghost, Dir dir) {
+        if (rec == Reconstruction::Constant) {
             if (dir == Dir::X) {
                 uL = P_cc(i-1,j);
                 uR = P_cc(i,j);
@@ -54,6 +59,8 @@ public:
                 uR = P_cc(i,j);
             }
         }
+
+
         fL = ComputeFluxVector(uL, dir);
         fR = ComputeFluxVector(uR, dir);
 
@@ -70,10 +77,10 @@ public:
         double caL = std::sqrt((uL.Bx*uL.Bx + uL.By*uL.By + uL.Bz*uL.Bz)/(uL.rho)); // Alfven speeds
         double caR = std::sqrt((uR.Bx*uR.Bx + uR.By*uR.By + uR.Bz*uR.Bz)/(uR.rho));
 
-        double cfastxL = std::sqrt((c0L*c0L + caL*caL)*0.5 + (std::sqrt((c0L*c0L + caL*caL)*(c0L*c0L + caL*caL) - 4*c0L*c0L*caxL*caxL))*0.5); // Fast magnetosonic speeds in x
-        double cfastxR = std::sqrt((c0R*c0R + caR*caR)*0.5 + (std::sqrt((c0R*c0R + caR*caR)*(c0R*c0R + caR*caR) - 4*c0R*c0R*caxR*caxR))*0.5);
-        double cfastyL = std::sqrt((c0L*c0L + caL*caL)*0.5 + (std::sqrt((c0L*c0L + caL*caL)*(c0L*c0L + caL*caL) - 4*c0L*c0L*cayL*cayL))*0.5); // Fast magnetosonic speeds in y
-        double cfastyR = std::sqrt((c0R*c0R + caR*caR)*0.5 + (std::sqrt((c0R*c0R + caR*caR)*(c0R*c0R + caR*caR) - 4*c0R*c0R*cayR*cayR))*0.5);
+        cfastxL = std::sqrt((c0L*c0L + caL*caL)*0.5 + (std::sqrt((c0L*c0L + caL*caL)*(c0L*c0L + caL*caL) - 4*c0L*c0L*caxL*caxL))*0.5); // Fast magnetosonic speeds in x
+        cfastxR = std::sqrt((c0R*c0R + caR*caR)*0.5 + (std::sqrt((c0R*c0R + caR*caR)*(c0R*c0R + caR*caR) - 4*c0R*c0R*caxR*caxR))*0.5);
+        cfastyL = std::sqrt((c0L*c0L + caL*caL)*0.5 + (std::sqrt((c0L*c0L + caL*caL)*(c0L*c0L + caL*caL) - 4*c0L*c0L*cayL*cayL))*0.5); // Fast magnetosonic speeds in y
+        cfastyR = std::sqrt((c0R*c0R + caR*caR)*0.5 + (std::sqrt((c0R*c0R + caR*caR)*(c0R*c0R + caR*caR) - 4*c0R*c0R*cayR*cayR))*0.5);
 
         // Wave speeds
         if(dir == Dir::X){

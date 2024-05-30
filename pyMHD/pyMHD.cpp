@@ -90,7 +90,8 @@ PYBIND11_MODULE(pyMHD, m)
         .value("HLL", HLL);
 
     py::enum_<CTMethod>(m, "CTMethod")
-        .value("Average", Average);
+        .value("Average", Average)
+        .value("UCT_HLL", UCT_HLL);
 
     py::enum_<Integrator>(m, "Integrator")
         .value("EulerIntegrator", EulerIntegrator)

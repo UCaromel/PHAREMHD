@@ -19,5 +19,4 @@ inline ReconstructedValues HLLRiemannSolver(const Interface& inter){
     }
 }
 
-
 #endif //RIEMANN_SOLVER_HPP_
