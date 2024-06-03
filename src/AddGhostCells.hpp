@@ -1,6 +1,8 @@
 #ifndef ADD_GHOST_CELLS_HPP_
 #define ADD_GHOST_CELLS_HPP_
 
+#include <stdexcept>
+
 #include "ReconstructedValues.hpp"
 #include "PrimitiveVariablesCC.hpp"
 #include "ConservativeVariablesCC.hpp"
@@ -28,10 +30,10 @@ void UpdateGhostCells(Variables& V_cc, int nghost) {
     // Corners (some more work for nghost > 1)
     for (int k1 = 0; k1 < nghost; k1++) {
         for (int k2 = 0; k2 < nghost; k2++) {
-            V_cc.set(0.5*(V_cc(k1 + V_cc.nx - 2*nghost, k2) + V_cc(k1, k2 + V_cc.ny - 2*nghost)), k1, k2); // Bottom-left
-            V_cc.set(0.5*(V_cc(k1 + V_cc.nx - 2*nghost, k2 + V_cc.ny - nghost) + V_cc(k1, k2 + nghost)), k1, k2 + V_cc.ny - nghost); // Top-left
-            V_cc.set(0.5*(V_cc(k1 + nghost, k2) + V_cc(k1 + V_cc.nx - nghost, k2 + V_cc.ny - 2*nghost)), k1 + V_cc.nx - nghost, k2); // Bottom-right
-            V_cc.set(0.5*(V_cc(k1 + nghost, k2 + V_cc.ny - nghost) + V_cc(k1 + V_cc.nx - nghost, k2 + nghost)), k1 + V_cc.nx - nghost, k2 + V_cc.ny - nghost); // Top-right
+            V_cc.set(V_cc((V_cc.nx - 1) - k1 - nghost, (V_cc.ny - 1) - k2 - nghost), k1, k2); // Bottom-left
+            V_cc.set(V_cc((V_cc.nx - 1) - k1 - nghost,  k2 + nghost), k1, k2 + V_cc.ny - nghost); // Top-left
+            V_cc.set(V_cc(k1 + nghost, (V_cc.ny - 1) - k2 - nghost), k1 + V_cc.nx - nghost, k2); // Bottom-right
+            V_cc.set(V_cc(k1 + nghost, k2 + nghost), k1 + V_cc.nx - nghost, k2 + V_cc.ny - nghost); // Top-right
         }
     }
 /*
@@ -62,7 +64,7 @@ Variables InitialiseGhostCells(const Variables& P_cc, int nghost){
     }
 
     if(nghost>P_cc.nx || nghost>P_cc.ny){
-        throw("nghost too big for the domain");
+        throw std::runtime_error("nghost too big for the domain");
     }
 
     if (nghost == 0) {

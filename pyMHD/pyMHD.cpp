@@ -1,6 +1,7 @@
 #include "ConservativeVariablesCC.hpp"
 #include "PrimitiveVariablesCC.hpp"
 #include "PhareMHD.hpp"
+#include "ModularityUtils.hpp"
 
 #include <pybind11/operators.h>
 #include <pybind11/stl.h>
@@ -83,7 +84,11 @@ PYBIND11_MODULE(pyMHD, m)
         });
 
     py::enum_<Reconstruction>(m, "Reconstruction")
-        .value("Constant", Constant);
+        .value("Constant", Constant)
+        .value("Linear", Linear);
+    
+    py::enum_<Slope>(m, "Slope")
+        .value("VanLeer", VanLeer);
 
     py::enum_<Riemann>(m, "RiemannSolver")
         .value("Rusanov", Rusanov)
@@ -98,9 +103,9 @@ PYBIND11_MODULE(pyMHD, m)
         .value("TVDRK2Integrator", TVDRK2Integrator)
         .value("TVDRK3Integrator", TVDRK3Integrator);
     
-     m.def("PhareMHD", &PhareMHD, 
+    m.def("PhareMHD", &PhareMHD, 
           py::arg("primvar0"), py::arg("resultdir"), py::arg("order"), py::arg("nghost"), 
-          py::arg("reconstruction"), py::arg("riemannsolver"), py::arg("constainedtransport"), py::arg("timeintegrator"), 
+          py::arg("reconstruction"), py::arg("slopelimiter"), py::arg("riemannsolver"), py::arg("constainedtransport"), py::arg("timeintegrator"), 
           py::arg("Dx"), py::arg("Dy"), py::arg("FinalTime"), py::arg("Dt") = 0.0);
 
 /*

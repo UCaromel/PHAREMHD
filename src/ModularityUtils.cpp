@@ -1,5 +1,13 @@
 #include "ModularityUtils.hpp"
 
+SLFunction getSlopeLimiter(Slope sl){
+    switch (sl)
+    {
+        case VanLeer: return &VanLeerSlope;
+        default: throw std::invalid_argument("Unknown slope limiter");
+    }
+}
+
 RiemannSolverFunction getRiemannSolver(Riemann rs){
     switch (rs)
     {

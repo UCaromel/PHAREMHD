@@ -1,6 +1,6 @@
 #include "ConstainedTransport.hpp"
 
-std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> ConstrainedTransportAverage(const ConservativeVariablesCC &Cn /* Assuming ghost cells are added */, double Dx, double Dy, double Dt, int nghost, Reconstruction rec)
+std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> ConstrainedTransportAverage(const ConservativeVariablesCC &Cn /* Assuming ghost cells are added */, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl)
 {
     // Edge-centered
     std::vector<std::vector<double>> vx(Cn.ny + 1 - 2 * nghost, std::vector<double>(Cn.nx + 1 - 2 * nghost));
@@ -58,7 +58,7 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> Co
     return {BX, BY};
 }
 
-std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> UCTHLL(const ConservativeVariablesCC &Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec){
+std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> UCTHLL(const ConservativeVariablesCC &Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl){
     PrimitiveVariablesCC Pn(Cn);
     std::vector<std::vector<Interface>> InterfacesX(Pn.ny + 2 - 2 * nghost, std::vector<Interface>(Pn.nx + 1 - 2 * nghost));
     std::vector<std::vector<Interface>> InterfacesY(Pn.ny + 1 - 2 * nghost, std::vector<Interface>(Pn.nx + 2 - 2 * nghost));
@@ -75,7 +75,7 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> UC
     {
         for (int i = nghost; i <= Cn.nx - nghost; ++i)
         {
-            InterfacesX[j - nghost + 1][i - nghost] = Interface(Pn, i, j, rec, nghost, Dir::X);
+            InterfacesX[j - nghost + 1][i - nghost] = Interface(Pn, i, j, rec, sl, nghost, Dir::X);
         }
     }
 
@@ -83,7 +83,7 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> UC
     {
         for (int i = nghost - 1; i < Cn.nx - nghost + 1; ++i)
         {
-            InterfacesY[j - nghost][i - nghost + 1] = Interface(Pn, i, j, rec, nghost, Dir::Y);
+            InterfacesY[j - nghost][i - nghost + 1] = Interface(Pn, i, j, rec, sl, nghost, Dir::Y);
         }
     }
 
@@ -189,10 +189,10 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> UC
 
 }
 
-void ApplyConstrainedTransport(ConservativeVariablesCC& Cn1, const ConservativeVariablesCC& Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, CTMethod ct)
+void ApplyConstrainedTransport(ConservativeVariablesCC& Cn1, const ConservativeVariablesCC& Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, CTMethod ct)
 {
     CTFunction ChosenCT = getCT(ct);
-    auto [BX, BY] = ChosenCT(Cn, Dx, Dy, Dt, nghost, rec);
+    auto [BX, BY] = ChosenCT(Cn, Dx, Dy, Dt, nghost, rec, sl);
     
     for(int j = nghost; j < Cn1.ny - nghost; ++j)
     {

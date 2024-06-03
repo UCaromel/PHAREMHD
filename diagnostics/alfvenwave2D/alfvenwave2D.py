@@ -15,12 +15,13 @@ Dy = 0.01
 Dt = 0.0
 FinalTime = 1
 order = 1
-nghost = 1
+nghost = 2
 
-reconstruction = p.Reconstruction.Constant
+reconstruction = p.Reconstruction.Linear
+slopelimiter = p.Slope.VanLeer
 riemannsolver = p.RiemannSolver.HLL
 constainedtransport = p.CTMethod.UCT_HLL
-timeintegrator = p.Integrator.TVDRK2Integrator
+timeintegrator = p.Integrator.EulerIntegrator
 
 ##############################################################################################################################################################################
 lx=nx*Dx
@@ -82,5 +83,5 @@ P0cc = p.PrimitiveVariablesCC(nx, ny)
 P0cc.init(rho, vx, vy, vz, Bx, By, Bz, P)
 
 p.PhareMHD(P0cc, result_dir, order, nghost, 
-           reconstruction, riemannsolver, constainedtransport, timeintegrator,
+           reconstruction, slopelimiter, riemannsolver, constainedtransport, timeintegrator,
            Dx, Dy, FinalTime)

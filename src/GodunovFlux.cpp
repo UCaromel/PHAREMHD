@@ -1,31 +1,31 @@
 #include "GodunovFlux.hpp"
 
-std::vector<ReconstructedValues> GodunovFluxX(const PrimitiveVariablesCC& P_cc, int nghost, Reconstruction rec, Riemann rs){
+std::vector<ReconstructedValues> GodunovFluxX(const PrimitiveVariablesCC& P_cc, int nghost, Reconstruction rec, Slope sl, Riemann rs){
     RiemannSolverFunction ChosenRiemannSolver = getRiemannSolver(rs);
     std::vector<ReconstructedValues> NumFluxx;
 
     for(int j = nghost; j < P_cc.ny - nghost; j++){
         for(int i = nghost; i < P_cc.nx + 1 - nghost; i++){
-            NumFluxx.push_back(ChosenRiemannSolver(Interface(P_cc, i, j, rec, nghost, Dir::X)));
+            NumFluxx.push_back(ChosenRiemannSolver(Interface(P_cc, i, j, rec, sl, nghost, Dir::X)));
         }
     }
     return NumFluxx;
 }
 
-std::vector<ReconstructedValues> GodunovFluxY(const PrimitiveVariablesCC& P_cc, int nghost, Reconstruction rec, Riemann rs){
+std::vector<ReconstructedValues> GodunovFluxY(const PrimitiveVariablesCC& P_cc, int nghost, Reconstruction rec, Slope sl, Riemann rs){
     RiemannSolverFunction ChosenRiemannSolver = getRiemannSolver(rs);
     std::vector<ReconstructedValues> NumFluxy;
     
     for(int i = nghost; i < P_cc.nx - nghost; i++){
         for(int j = nghost; j<P_cc.ny + 1 - nghost; j++){
-            NumFluxy.push_back(ChosenRiemannSolver(Interface(P_cc, i, j, rec, nghost, Dir::Y)));
+            NumFluxy.push_back(ChosenRiemannSolver(Interface(P_cc, i, j, rec, sl, nghost, Dir::Y)));
         }
     }
     return NumFluxy;
 }
 
-ConservativeVariablesCC ComputeFluxDifferenceX(PrimitiveVariablesCC& P_cc, int nghost, Reconstruction rec, Riemann rs){
-    std::vector<ReconstructedValues> NumFluxx = GodunovFluxX(P_cc, nghost, rec, rs);
+ConservativeVariablesCC ComputeFluxDifferenceX(PrimitiveVariablesCC& P_cc, int nghost, Reconstruction rec, Slope sl, Riemann rs){
+    std::vector<ReconstructedValues> NumFluxx = GodunovFluxX(P_cc, nghost, rec, sl, rs);
 
     ConservativeVariablesCC FluxDifx(P_cc.nx, P_cc.ny);
 
@@ -37,8 +37,8 @@ ConservativeVariablesCC ComputeFluxDifferenceX(PrimitiveVariablesCC& P_cc, int n
     return FluxDifx;
 }
 
-ConservativeVariablesCC ComputeFluxDifferenceY(PrimitiveVariablesCC& P_cc, int nghost, Reconstruction rec, Riemann rs){
-    std::vector<ReconstructedValues> NumFluxy = GodunovFluxY(P_cc, nghost, rec, rs);
+ConservativeVariablesCC ComputeFluxDifferenceY(PrimitiveVariablesCC& P_cc, int nghost, Reconstruction rec, Slope sl, Riemann rs){
+    std::vector<ReconstructedValues> NumFluxy = GodunovFluxY(P_cc, nghost, rec, sl, rs);
 
     ConservativeVariablesCC FluxDify(P_cc.nx, P_cc.ny);
 

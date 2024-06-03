@@ -9,12 +9,12 @@
 #include "Interface.hpp"
 #include "RiemannSolver.hpp"
 
-std::vector<ReconstructedValues> GodunovFluxX(const PrimitiveVariablesCC& P_cc, int nghost, Reconstruction rec, Riemann rs);
+std::vector<ReconstructedValues> GodunovFluxX(const PrimitiveVariablesCC& P_cc, int nghost, Reconstruction rec, Slope sl, Riemann rs);
 
-std::vector<ReconstructedValues> GodunovFluxY(const PrimitiveVariablesCC& P_cc, int nghost, Reconstruction rec, Riemann rs);
+std::vector<ReconstructedValues> GodunovFluxY(const PrimitiveVariablesCC& P_cc, int nghost, Reconstruction rec, Slope sl, Riemann rs);
 
-ConservativeVariablesCC ComputeFluxDifferenceX(PrimitiveVariablesCC& P_cc, int nghost, Reconstruction rec, Riemann rs);
+ConservativeVariablesCC ComputeFluxDifferenceX(PrimitiveVariablesCC& P_cc, int nghost, Reconstruction rec, Slope sl, Riemann rs);
 
-ConservativeVariablesCC ComputeFluxDifferenceY(PrimitiveVariablesCC& P_cc, int nghost, Reconstruction rec, Riemann rs);
+ConservativeVariablesCC ComputeFluxDifferenceY(PrimitiveVariablesCC& P_cc, int nghost, Reconstruction rec, Slope sl, Riemann rs);
 
 #endif //GODUNOV_FLUX_HPP_

@@ -10,12 +10,12 @@
 #include "ConstainedTransport.hpp"
 #include "AddGhostCells.hpp"
 
-ConservativeVariablesCC EulerAdvance(const ConservativeVariablesCC& Un, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Riemann rs);
+ConservativeVariablesCC EulerAdvance(const ConservativeVariablesCC& Un, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs);
 
-ConservativeVariablesCC Euler(ConservativeVariablesCC& Un, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Riemann rs, CTMethod ct);
+ConservativeVariablesCC Euler(ConservativeVariablesCC& Un, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs, CTMethod ct);
 
-ConservativeVariablesCC TVDRK2(ConservativeVariablesCC& Un, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Riemann rs, CTMethod ct);
+ConservativeVariablesCC TVDRK2(ConservativeVariablesCC& Un, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs, CTMethod ct);
 
-ConservativeVariablesCC TVDRK3(ConservativeVariablesCC& Un, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Riemann rs, CTMethod ct);
+ConservativeVariablesCC TVDRK3(ConservativeVariablesCC& Un, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs, CTMethod ct);
 
 #endif // TIME_INTEGRATOR_HPP_
