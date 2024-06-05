@@ -66,12 +66,12 @@ Interface::Interface(const PrimitiveVariablesCC& P_cc /* Assuming ghost cells ar
         ReconstructedValues Dui12 = ui1 - ui;
         ReconstructedValues Di = ChosenSL(Dui12, Dui_12);
 
-        ReconstructedValues Dui1_12 = ui1 - ui;
+        ReconstructedValues Dui1_12 = Dui12;
         ReconstructedValues Dui112 = ui2 - ui1;
         ReconstructedValues Di1 = ChosenSL(Dui112, Dui1_12);
 
         ReconstructedValues uiR = ui + 0.5 * Di;
-        ReconstructedValues ui1L = ui - 0.5 * Di1;
+        ReconstructedValues ui1L = ui1 - 0.5 * Di1;
 
         uL = uiR;
         uR = ui1L;

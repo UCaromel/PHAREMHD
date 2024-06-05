@@ -28,12 +28,12 @@ void UpdateGhostCells(Variables& V_cc, int nghost) {
     }
 
     // Corners (some more work for nghost > 1)
-    for (int k1 = 0; k1 < nghost; k1++) {
-        for (int k2 = 0; k2 < nghost; k2++) {
-            V_cc.set(V_cc((V_cc.nx - 1) - k1 - nghost, (V_cc.ny - 1) - k2 - nghost), k1, k2); // Bottom-left
-            V_cc.set(V_cc((V_cc.nx - 1) - k1 - nghost,  k2 + nghost), k1, k2 + V_cc.ny - nghost); // Top-left
-            V_cc.set(V_cc(k1 + nghost, (V_cc.ny - 1) - k2 - nghost), k1 + V_cc.nx - nghost, k2); // Bottom-right
-            V_cc.set(V_cc(k1 + nghost, k2 + nghost), k1 + V_cc.nx - nghost, k2 + V_cc.ny - nghost); // Top-right
+    for (int k1 = 1; k1 <= nghost; k1++) {
+        for (int k2 = 1; k2 <= nghost; k2++) {
+            V_cc.set(V_cc(V_cc.nx - k1 - nghost, V_cc.ny - k2 - nghost), nghost - k1, nghost - k2); // Bottom-left
+            V_cc.set(V_cc(V_cc.nx - k1 - nghost,  k2 - 1 + nghost), nghost - k1, k2 - 1 + V_cc.ny - nghost); // Top-left
+            V_cc.set(V_cc(k1 - 1 + nghost, V_cc.ny - k2 - nghost), k1 - 1 + V_cc.nx - nghost, nghost - k2); // Bottom-right
+            V_cc.set(V_cc(k1 - 1 + nghost, k2 - 1 + nghost), k1 - 1 + V_cc.nx - nghost, k2 - 1 + V_cc.ny - nghost); // Top-right
         }
     }
 /*

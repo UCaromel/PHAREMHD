@@ -106,7 +106,7 @@ PYBIND11_MODULE(pyMHD, m)
     m.def("PhareMHD", &PhareMHD, 
           py::arg("primvar0"), py::arg("resultdir"), py::arg("order"), py::arg("nghost"), 
           py::arg("reconstruction"), py::arg("slopelimiter"), py::arg("riemannsolver"), py::arg("constainedtransport"), py::arg("timeintegrator"), 
-          py::arg("Dx"), py::arg("Dy"), py::arg("FinalTime"), py::arg("Dt") = 0.0);
+          py::arg("Dx"), py::arg("Dy"), py::arg("FinalTime"), py::arg("Dt") = 0.0, py::arg("dumpfrequency") = 1);
 
 /*
     py::class_<ConservativeVariablesCC>(m, "ConservativeVariablesCC")

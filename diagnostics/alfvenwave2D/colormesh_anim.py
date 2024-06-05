@@ -10,7 +10,7 @@ def read_data(file_path):
 
 # Function to reshape data
 def reshape_data(data, ny, nx):
-    reshaped_data = data.reshape((ny, nx, -1), order='F') # Assuming Fortran-like order
+    reshaped_data = data.reshape((ny, nx, -1), order='F') 
     return reshaped_data
 
 # Function to read times

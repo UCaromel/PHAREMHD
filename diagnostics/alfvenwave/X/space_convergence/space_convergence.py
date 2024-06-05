@@ -1,121 +1,92 @@
+import sys
+sys.path.append('/home/caromel/Documents/MHD_PHARE/pyMHD')
+
 import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
+import pyMHD as p
 import os
+import shutil
 
-results_dir = './space_results'
-
-nx_initial = 50
-ny = 3
+# Initial parameters
+initial_nx = 50
+initial_Dx = 0.02
+final_time = 1
 Dt = 5e-4
+ny = 3
+Dy = 0.01
+order = 1
+nghost = 1
+reconstruction = p.Reconstruction.Constant
+slopelimiter = p.Slope.VanLeer
+riemannsolver = p.RiemannSolver.Rusanov
+constainedtransport = p.CTMethod.Average
+timeintegrator = p.Integrator.TVDRK2Integrator
+dump_frequency = 10
 
-fixed_index = 0
-time_index = -1
+###########################################################################################################################################################################
 
-studied_quantity = 'By'
+kx = 2 * np.pi
 
-quantities = {
-    'rho': {},
-    'rhovx': {},
-    'rhovy': {},
-    'rhovz': {},
-    'Bx': {},
-    'By': {},
-    'Bz': {},
-    'Etot': {},
-}
-n_errors = 5
-times = []
-errors = np.zeros(n_errors)
-nx_values = {}
+def rho_(x, y):
+    return 1.0
 
-# List and sort the files in the results directory
-filenames = os.listdir(results_dir)
-filenames.sort(key=lambda x: (int(x.split('_')[0]), float(x.split('_')[2].split('.')[0].replace('_', '.'))))
+def vx_(x, y):
+    return 0.0
 
-for filename in filenames:
-    stepDx_str = filename.split('_')[0]  # Extract the part before "URK2_"
-    stepDx = int(stepDx_str)
+def vy_(x, y):
+    return -0.1 * np.cos(kx * x)
+
+def vz_(x, y):
+    return 0.0
+
+def Bx_(x, y):
+    return 1.0
+
+def By_(x, y):
+    return 0.1 * np.cos(kx * x)
+
+def Bz_(x, y):
+    return 0.0
+
+def P_(x, y):
+    return 0.1
+
+
+def initialize_variables(nx, ny, Dx, Dy):
+    x = np.arange(nx) * Dx + 0.5 * Dx
+    y = np.arange(ny) * Dy + 0.5 * Dy
+    xx, yy = np.meshgrid(x, y, indexing='ij')
+    rho = np.full((nx, ny), rho_(xx, yy)).T
+    vx = np.full((nx, ny), vx_(xx, yy)).T
+    vy = np.full((nx, ny), vy_(xx, yy)).T
+    vz = np.full((nx, ny), vz_(xx, yy)).T
+    Bx = np.full((nx, ny), Bx_(xx, yy)).T
+    By = np.full((nx, ny), By_(xx, yy)).T
+    Bz = np.full((nx, ny), Bz_(xx, yy)).T
+    P = np.full((nx, ny), P_(xx, yy)).T
+    return rho, vx, vy, vz, Bx, By, Bz, P
+
+############################################################################################################################################################################
+results_dir = 'space_results/'
+
+if os.path.exists(results_dir):
+    shutil.rmtree(results_dir)
+os.makedirs(results_dir, exist_ok=True)
+
+Dx = initial_Dx
+nx = initial_nx
+stepDx = 0
+
+while Dx > initial_Dx / 32.0 and nx < 1600:
+    rho, vx, vy, vz, Bx, By, Bz, P = initialize_variables(nx, ny, Dx, Dy)
+    P0cc = p.PrimitiveVariablesCC(nx, ny)
+    P0cc.init(rho, vx, vy, vz, Bx, By, Bz, P)
+
+    current_results_dir = os.path.join(results_dir, f'{stepDx}_')
     
-    # Compute nx for this stepDx
-    nx = nx_initial * (2 ** stepDx)
-    nx_values[stepDx] = nx
+    p.PhareMHD(P0cc, current_results_dir, order, nghost, 
+               reconstruction, slopelimiter, riemannsolver, constainedtransport, 
+               timeintegrator, Dx, Dy, final_time, Dt, dump_frequency)
     
-    # Create a new dictionary entry for this Dx if it doesn't exist
-    if stepDx not in quantities['rho']:
-        for key in quantities:
-            quantities[key][stepDx] = []
-    
-    # Extract time from filename and format it properly
-    time_str = filename.split('_')[2].split('.')[0]  # Extract the part after "URK2_" (length of "URK2_" is 5)
-    time_str = time_str.replace('_', '.')  # Replace underscore with dot
-    time = float(time_str)
-    times.append(time)
-
-    df = pd.read_csv(os.path.join(results_dir, filename), delim_whitespace=True, header=None, names=['rho', 'rhovx', 'rhovy', 'rhovz', 'Bx', 'By', 'Bz', 'Etot'])
-    for quantity in quantities:
-        quantities[quantity][stepDx].append(df[quantity].values.reshape((ny, nx)))   # Store the entire data array for each quantity
-
-times = np.array(times)
-times = np.unique(times)
-
-Dx =np.asarray( [0.02 / (2 ** i) for i in range(len(nx_values))])
-
-# Function to calculate L2 norm of error
-def calculate_error(computed, expected, nx):
-    #return np.linalg.norm(computed -expected)
-    return np.sum(abs(computed - expected))/nx
-
-for stepDx in quantities[studied_quantity]:
-    factor = 2 ** stepDx
-
-    # Get nx for this stepDx
-    nx = nx_values[stepDx]
-    
-    x = Dx[stepDx] * np.arange(nx)
-
-    #expected0 = 1e-6 * np.cos(2 * np.pi * (x - times[0] * (Dt)))
-    #computed0 = quantities[studied_quantity][stepDx][0][fixed_index, :]
-    #error0 = calculate_error(computed0, expected0, nx)
-    
-    expected_value = 1e-6 * np.cos(2 * np.pi * (x - times[time_index] * (Dt)))
-    
-    # Extract computed value for this time_index
-    computed_value = quantities[studied_quantity][stepDx][time_index][fixed_index, :]
-    
-    # Calculate error for this Dx
-    error = calculate_error(computed_value, expected_value , nx) #/ error0
-    
-    errors[stepDx] = error
-
-# Assuming Dx and errors are your data arrays
-# Log-transform the data
-log_Dx = np.log(Dx)
-log_errors = np.log(errors)
-
-# Perform a linear fit to the log-log data
-coefficients = np.polyfit(log_Dx, log_errors, 1)
-
-# Extract the slope (order of accuracy) and intercept
-slope, intercept = coefficients
-
-# Generate the fitted line for plotting
-fitted_log_errors = np.polyval(coefficients, log_Dx)
-fitted_errors = np.exp(fitted_log_errors)
-
-# Plot the original data and the fitted line
-plt.figure(figsize=(12, 8))
-plt.loglog(Dx, errors, marker='o', label='Numerical Error')
-#plt.loglog(Dx,np.exp(log_Dx*slope + intercept), label="manual")
-plt.loglog(Dx, fitted_errors, linestyle='--', label=f'Fitted Line (slope={slope:.2f})')
-plt.xlabel('Dx')
-plt.ylabel('L2 Norm of Error')
-plt.title('L2 Norm of Error vs. Dx')
-plt.grid(True)
-plt.legend()
-plt.show()
-
-for stepDx in quantities[studied_quantity]:
-    computed_value = quantities[studied_quantity][stepDx][time_index][fixed_index, :]
-    plt.plot(Dx[stepDx]*np.arange(nx_values[stepDx]), computed_value, label=f"dx = {Dx[stepDx]}")
-plt.legend()    
+    stepDx += 1
+    Dx /= 2.0
+    nx *= 2

@@ -28,7 +28,7 @@ public:
     Interface();
 
     // (i,j) interface index.
-    Interface(const PrimitiveVariablesCC& P_cc /* Assuming ghost cells are added */, int i /* (0 to nx) + nghost */, int j /* (0 to ny) + nghost */, Reconstruction rec, Slope sl, int nghost, Dir dir);
+    Interface(const PrimitiveVariablesCC& P_cc, int i, int j, Reconstruction rec, Slope sl, int nghost, Dir dir);
     ~Interface();
 };
 

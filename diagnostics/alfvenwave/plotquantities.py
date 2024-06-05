@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import os
 
-nx = 100
+nx = 50
 ny = 3
-Dt=0.8e-6
+Dt = 5e-4
 
 quantity_name = 'By'
 fixed_index = 0
@@ -19,7 +19,7 @@ def read_file(filename):
     df = pd.read_csv(filename, delim_whitespace=True, header=None, names=column_names)
     return df
 
-results_dir = './results'
+results_dir = './space_results'
 
 quantities = {
     'rho': [],
@@ -55,17 +55,17 @@ times=times*Dt
 
 
 Dx=lx/nx
-x=Dx*np.arange(nx)
+x=Dx*np.arange(nx) + 0.5*Dx
 
 
 def update(frame):    
     t=times[frame]
-    expected=1e-6*np.cos(2*np.pi*(x-t))
+    expected=-0.1*np.cos(2*np.pi*(x-t))
 
     plt.clf()
-    #plt.plot(x,quantities[quantity_name][frame, fixed_index, :], color='blue') # t,y,x
-    #plt.plot(x,expected)
-    plt.loglog(x,abs(quantities[quantity_name][frame, fixed_index, :] - expected))
+    plt.plot(x,quantities[quantity_name][frame, fixed_index, :], color='blue') # t,y,x
+    plt.plot(x,expected)
+    #plt.loglog(x,abs(quantities[quantity_name][frame, fixed_index, :] - expected))
     plt.title(f'{quantity_name} at y={fixed_index}, t={frame}')  # Format time to one decimal place
     plt.xlabel('x')
     plt.ylabel(quantity_name)

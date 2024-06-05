@@ -21,7 +21,7 @@ reconstruction = p.Reconstruction.Linear
 slopelimiter = p.Slope.VanLeer
 riemannsolver = p.RiemannSolver.HLL
 constainedtransport = p.CTMethod.UCT_HLL
-timeintegrator = p.Integrator.EulerIntegrator
+timeintegrator = p.Integrator.TVDRK2Integrator
 
 ##############################################################################################################################################################################
 lx=nx*Dx
@@ -37,19 +37,19 @@ def rho_(x, y):
     return 1.0
 
 def vx_(x, y):
-    return (0.1 * np.sin(kx * x * cosalpha + ky * y * sinalpha)) / (2. * sinalpha)
+    return (-1e-4 * np.sin(kx * x * cosalpha + ky * y * sinalpha)) / (2. * sinalpha)
 
 def vy_(x, y):
-    return (-0.1 * np.sin(kx * x * cosalpha + ky * y * sinalpha)) / (2. * cosalpha)
+    return (1e-4 * np.sin(kx * x * cosalpha + ky * y * sinalpha)) / (2. * cosalpha)
 
 def vz_(x, y):
     return 0.0
 
 def Bx_(x, y):
-    return (1 - 0.1 * np.sin(kx * x * cosalpha + ky * y * sinalpha)) / (2. * sinalpha)
+    return (1 - 1e-4 * np.sin(kx * x * cosalpha + ky * y * sinalpha)) / (2. * sinalpha)
 
 def By_(x, y):
-    return (1 + 0.1 * np.sin(kx * x * cosalpha + ky * y * sinalpha)) / (2. * cosalpha)
+    return (1 + 1e-4 * np.sin(kx * x * cosalpha + ky * y * sinalpha)) / (2. * cosalpha)
 
 def Bz_(x, y):
     return 0.0
