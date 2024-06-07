@@ -9,3 +9,4 @@ bin/
 mkn.yaml
 tpp/
 __pycache__
+*.gif
