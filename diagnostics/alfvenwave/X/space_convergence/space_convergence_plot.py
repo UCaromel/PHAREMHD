@@ -78,7 +78,7 @@ for stepDx in quantities[studied_quantity]:
     #computed0 = quantities[studied_quantity][stepDx][0][fixed_index, :]
     #error0 = calculate_error(computed0, expected0, nx)
     
-    expected_value = 0.1 * np.cos(2 * np.pi * (x - times[time_index] * (Dt)))
+    expected_value = 1e-6 * np.cos(2 * np.pi * (x - times[time_index] * (Dt)))
     
     # Extract computed value for this time_index
     computed_value = quantities[studied_quantity][stepDx][time_index][fixed_index, :]

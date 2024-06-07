@@ -14,8 +14,8 @@ Dt = 5e-4
 ny = 3
 Dy = 0.01
 order = 1
-nghost = 1
-reconstruction = p.Reconstruction.Constant
+nghost = 2
+reconstruction = p.Reconstruction.Linear
 slopelimiter = p.Slope.VanLeer
 riemannsolver = p.RiemannSolver.Rusanov
 constainedtransport = p.CTMethod.Average
@@ -33,7 +33,7 @@ def vx_(x, y):
     return 0.0
 
 def vy_(x, y):
-    return 0.1 * np.cos(kx * x)
+    return 1e-6 * np.cos(kx * x)
 
 def vz_(x, y):
     return 0.0
@@ -42,7 +42,7 @@ def Bx_(x, y):
     return 1.0
 
 def By_(x, y):
-    return -0.1 * np.cos(kx * x)
+    return -1e-6 * np.cos(kx * x)
 
 def Bz_(x, y):
     return 0.0

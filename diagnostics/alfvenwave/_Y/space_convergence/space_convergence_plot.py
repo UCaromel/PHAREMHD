@@ -73,7 +73,7 @@ for stepDy in quantities[studied_quantity]:
     
     y = Dy[stepDy] * np.arange(ny) + 0.5 * Dy[stepDy]
 
-    expected_value = -0.1 * np.cos(2 * np.pi * (y - times[time_index] * Dt))
+    expected_value = -1e-6 * np.cos(2 * np.pi * (y - times[time_index] * Dt))
     
     # Extract computed value for this time_index
     computed_value = quantities[studied_quantity][stepDy][time_index][:, fixed_index]
