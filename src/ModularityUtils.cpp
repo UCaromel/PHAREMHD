@@ -4,6 +4,7 @@ SLFunction getSlopeLimiter(Slope sl){
     switch (sl)
     {
         case VanLeer: return &VanLeerSlope;
+        case MinMod: return &MinModSlope;
         default: throw std::invalid_argument("Unknown slope limiter");
     }
 }

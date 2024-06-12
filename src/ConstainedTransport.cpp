@@ -95,17 +95,17 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> UC
             Interface y1 = InterfacesY[j][i + 1];
 
             // Compute solver's coeficients
-            double alphaxR = std::max(0.0, x.uR.vx + x.cfastxR);
-            double alphaxL = - std::min(0.0, x.uL.vx - x.cfastxL);
+            double alphaxR = std::max(0.0, x.uR.vx / x.uR.rho + x.cfastxR);
+            double alphaxL = - std::min(0.0, x.uL.vx / x.uL.rho - x.cfastxL);
 
-            double alphax1R = std::max(0.0, x1.uR.vx + x1.cfastxR);
-            double alphax1L = - std::min(0.0, x1.uL.vx - x1.cfastxL);
+            double alphax1R = std::max(0.0, x1.uR.vx / x1.uR.rho + x1.cfastxR);
+            double alphax1L = - std::min(0.0, x1.uL.vx / x1.uL.rho - x1.cfastxL);
 
-            double alphayR = std::max(0.0, y.uR.vy + y.cfastyR);
-            double alphayL = - std::min(0.0, y.uL.vy - y.cfastyL);
+            double alphayR = std::max(0.0, y.uR.vy / y.uR.rho + y.cfastyR);
+            double alphayL = - std::min(0.0, y.uL.vy / y.uL.rho - y.cfastyL);
 
-            double alphay1R = std::max(0.0, y1.uR.vy + y1.cfastyR);
-            double alphay1L = - std::min(0.0, y1.uL.vy - y1.cfastyL);
+            double alphay1R = std::max(0.0, y1.uR.vy / y1.uR.rho + y1.cfastyR);
+            double alphay1L = - std::min(0.0, y1.uL.vy / y1.uL.rho - y1.cfastyL);
 
 
             double axR = alphaxL / (alphaxR + alphaxL);
@@ -144,10 +144,10 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> UC
             double dS = 0.5 * (dyL + dy1L);
             double dN = 0.5 * (dyR + dy1R);
 
-            double vxW = 0.5 * (y.uL.vx + y.uR.vx);
-            double vxE = 0.5 * (y1.uL.vx + y1.uR.vx);
-            double vyS = 0.5 * (x.uL.vy + x.uR.vy);
-            double vyN = 0.5 * (x1.uL.vy + x1.uR.vy);
+            double vxW = 0.5 * (y.uL.vx / y.uL.rho + y.uR.vx / y.uR.rho);
+            double vxE = 0.5 * (y1.uL.vx / y1.uL.rho + y1.uR.vx / y1.uR.rho);
+            double vyS = 0.5 * (x.uL.vy / x.uL.rho + x.uR.vy / x.uR.rho);
+            double vyN = 0.5 * (x1.uL.vy / x1.uL.rho + x1.uR.vy / x1.uR.rho);
 
             double ByW = 0.5 * (y.uL.By + y.uR.By);
             double ByE = 0.5 * (y1.uL.By + y1.uR.By);

@@ -22,7 +22,7 @@ typedef std::pair<std::vector<std::vector<double>>, std::vector<std::vector<doub
 CTFunction getCT(CTMethod ct);
 
 // Function pointer typedef for the integrators
-typedef ConservativeVariablesCC (*IntegratorFunction)(ConservativeVariablesCC&, double, double, double, int, Reconstruction, Slope, Riemann, CTMethod);
+typedef ConservativeVariablesCC (*IntegratorFunction)(ConservativeVariablesCC&, double, double, double, int, BoundaryConditions, Reconstruction, Slope, Riemann, CTMethod);
 IntegratorFunction getIntegrator(Integrator intg);
 
 #endif

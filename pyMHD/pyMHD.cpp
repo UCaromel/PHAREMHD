@@ -1,6 +1,7 @@
 #include "ConservativeVariablesCC.hpp"
 #include "PrimitiveVariablesCC.hpp"
 #include "PhareMHD.hpp"
+#include "Enums.hpp"
 #include "ModularityUtils.hpp"
 
 #include <pybind11/operators.h>
@@ -83,12 +84,17 @@ PYBIND11_MODULE(pyMHD, m)
             self = other;
         });
 
+    py::enum_<BoundaryConditions>(m, "BoundaryConditions")
+        .value("Periodic", Periodic)
+        .value("ZeroGradient", ZeroGradient);
+
     py::enum_<Reconstruction>(m, "Reconstruction")
         .value("Constant", Constant)
         .value("Linear", Linear);
     
     py::enum_<Slope>(m, "Slope")
-        .value("VanLeer", VanLeer);
+        .value("VanLeer", VanLeer)
+        .value("MinMod", MinMod);
 
     py::enum_<Riemann>(m, "RiemannSolver")
         .value("Rusanov", Rusanov)
@@ -103,10 +109,15 @@ PYBIND11_MODULE(pyMHD, m)
         .value("TVDRK2Integrator", TVDRK2Integrator)
         .value("TVDRK3Integrator", TVDRK3Integrator);
     
+    py::enum_<dumpVariables>(m, "dumpVariables")
+        .value("Primitive", Primitive)
+        .value("Conservative", Conservative)
+        .value("Both", Both);
+    
     m.def("PhareMHD", &PhareMHD, 
           py::arg("primvar0"), py::arg("resultdir"), py::arg("order"), py::arg("nghost"), 
-          py::arg("reconstruction"), py::arg("slopelimiter"), py::arg("riemannsolver"), py::arg("constainedtransport"), py::arg("timeintegrator"), 
-          py::arg("Dx"), py::arg("Dy"), py::arg("FinalTime"), py::arg("Dt") = 0.0, py::arg("dumpfrequency") = 1);
+          py::arg("boundaryconditions"), py::arg("reconstruction"), py::arg("slopelimiter"), py::arg("riemannsolver"), py::arg("constainedtransport"), py::arg("timeintegrator"), 
+          py::arg("Dx"), py::arg("Dy"), py::arg("FinalTime"), py::arg("Dt") = 0.0, py::arg("dumpvariables") = Conservative, py::arg("dumpfrequency") = 1);
 
 /*
     py::class_<ConservativeVariablesCC>(m, "ConservativeVariablesCC")

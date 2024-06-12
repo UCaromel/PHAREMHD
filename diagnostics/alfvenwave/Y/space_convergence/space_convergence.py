@@ -15,11 +15,15 @@ nx = 3
 Dx = 0.01
 order = 1
 nghost = 2
+
+boundaryconditions = p.BoundaryConditions.Periodic
+
 reconstruction = p.Reconstruction.Linear
 slopelimiter = p.Slope.VanLeer
 riemannsolver = p.RiemannSolver.Rusanov
 constainedtransport = p.CTMethod.Average
 timeintegrator = p.Integrator.TVDRK2Integrator
+
 dump_frequency = 10
 
 ###########################################################################################################################################################################
@@ -84,8 +88,8 @@ while Dy > initial_Dy / 32.0 and ny < 1600:
     current_results_dir = os.path.join(results_dir, f'{stepDy}_')
     
     p.PhareMHD(P0cc, current_results_dir, order, nghost, 
-               reconstruction, slopelimiter, riemannsolver, constainedtransport, 
-               timeintegrator, Dx, Dy, final_time, Dt, dump_frequency)
+               boundaryconditions, reconstruction, slopelimiter, riemannsolver, constainedtransport, 
+               timeintegrator, Dx, Dy, final_time, Dt, dumpfrequency=dump_frequency)
     
     stepDy += 1
     Dy /= 2.0

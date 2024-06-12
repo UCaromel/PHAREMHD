@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 from matplotlib.animation import FuncAnimation, PillowWriter
-from matplotlib.colors import Normalize
 
 # Function to read data from file
 def read_data(file_path):
@@ -23,39 +22,31 @@ def read_times(file_paths):
         times.append(time)
     return times
 
-results_dir = "orszagtangUCTHLL/"
-file_paths = [results_dir + file for file in os.listdir(results_dir) if file.startswith("PRK2_") and file.endswith(".txt")]
+results_dir = "MHDrotorres/"
+file_paths = [results_dir + file for file in os.listdir(results_dir) if file.startswith("URK2_") and file.endswith(".txt")]
 
-nx = 128
-ny = 128
+nx = 100
+ny = 100
 
 data = [read_data(file_path) for file_path in file_paths]
 times = read_times(file_paths)
 
 reshaped_data = [reshape_data(d, nx, ny) for d in data]
 
-
-studied_index = 7
-
-data_min = np.min(reshaped_data[-1][:, :, studied_index])
-data_max = np.max(reshaped_data[-1][:, :, studied_index])
-
-Norm = Normalize(vmin=data_min, vmax=data_max)
-
 fig, ax = plt.subplots()
-im = ax.pcolormesh(reshaped_data[0][:, :, studied_index].T, cmap='coolwarm', norm=Norm) 
+im = ax.pcolormesh(reshaped_data[0][:, :, 0].T, cmap='coolwarm')
 ax.set_aspect('equal')
 fig.colorbar(im, ax=ax)
 
 def update(frame):
-    im.set_array(reshaped_data[frame][:, :, studied_index].T)
+    im.set_array(reshaped_data[frame][:, :, 0].T)
     plt.title(f'qty at t={times[frame]}')
     return im,
 
 ani = FuncAnimation(fig, update, frames=len(times), interval=100)
 
 #gif_writer = PillowWriter(fps=10)  # Adjust fps as needed
-#ani.save('orszagtangP.gif', writer=gif_writer)
+#ani.save('orszagtangE.gif', writer=gif_writer)
 
 plt.xlabel('X')
 plt.ylabel('Y')

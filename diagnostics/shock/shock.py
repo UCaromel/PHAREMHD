@@ -8,51 +8,51 @@ import shutil
 
 #############################################################################################################################################################################
 
-nx = 128
-ny = 128
-Dx = 1/nx
-Dy = 1/ny
-Dt = 0.001
-FinalTime = 0.5
+nx = 800
+ny = 1
+Dx = 1
+Dy = 1
+Dt = 0.2
+FinalTime = 80
 order = 1
 nghost = 2
 
-boundaryconditions = p.BoundaryConditions.Periodic
+boundaryconditions = p.BoundaryConditions.ZeroGradient
 
-reconstruction = p.Reconstruction.Linear
-slopelimiter = p.Slope.VanLeer
+reconstruction = p.Reconstruction.Constant
+slopelimiter = p.Slope.MinMod
 riemannsolver = p.RiemannSolver.HLL
-constainedtransport = p.CTMethod.UCT_HLL
+constainedtransport = p.CTMethod.Average
 timeintegrator = p.Integrator.TVDRK2Integrator
 
+dumpfrequency = 10
 dumpvariables = p.dumpVariables.Primitive
 
 ##############################################################################################################################################################################
-B0 = 1./(np.sqrt(4.*np.pi))
 
 def rho_(x, y):
-    return 25./(36.*np.pi)
+    return np.where(x<(nx*Dx/2), 1, 0.125)
 
 def vx_(x, y):
-    return -np.sin(2.*np.pi*y)
+    return 0.0
 
 def vy_(x, y):
-    return np.sin(2.*np.pi*x)
+    return 0.0
 
 def vz_(x, y):
     return 0.0
 
 def Bx_(x, y):
-    return -B0*np.sin(2.*np.pi*y)
+    return 0.75
 
 def By_(x, y):
-    return B0*np.sin(4.*np.pi*x)
+    return np.where(x<(nx*Dx/2), 1, -1)
 
 def Bz_(x, y):
     return 0.0
 
 def P_(x, y):
-    return 5./(12.*np.pi)
+    return np.where(x<(nx*Dx/2), 1, 0.1)
 
 x = np.arange(nx) * Dx + 0.5 * Dx
 y = np.arange(ny) * Dy + 0.5 * Dy
@@ -70,7 +70,7 @@ P = np.full((nx, ny), P_(xx, yy)).T
 
 #############################################################################################################################################################################
 
-result_dir = 'orszagtangUCTHLL/'
+result_dir = 'shockres/'
 if os.path.exists(result_dir):
     shutil.rmtree(result_dir)
 

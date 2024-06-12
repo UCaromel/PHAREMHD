@@ -7,7 +7,6 @@ results_dir = './space_results'
 
 ny_initial = 50
 nx = 3
-Dt = 5e-4
 
 fixed_index = 0
 time_index = -1
@@ -47,7 +46,7 @@ for filename in filenames:
             quantities[key][stepDy] = []
     
     # Extract time from filename and format it properly
-    time_str = filename.split('_')[2].split('.')[0]
+    time_str = filename.split('_')[2]+'.'+filename.split('_')[3].split('.')[0]
     time_str = time_str.replace('_', '.')  # Replace underscore with dot
     time = float(time_str)
     times.append(time)
@@ -73,7 +72,7 @@ for stepDy in quantities[studied_quantity]:
     
     y = Dy[stepDy] * np.arange(ny) + 0.5 * Dy[stepDy]
 
-    expected_value = 1e-6 * np.cos(2 * np.pi * (y - times[time_index] * Dt))
+    expected_value = 1e-6 * np.cos(2 * np.pi * (y - times[time_index]))
     
     # Extract computed value for this time_index
     computed_value = quantities[studied_quantity][stepDy][time_index][:, fixed_index]

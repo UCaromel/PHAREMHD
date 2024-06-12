@@ -7,7 +7,6 @@ results_dir = './space_results'
 
 nx_initial = 50
 ny = 3
-Dt = 5e-4
 
 fixed_index = 0
 time_index = -1
@@ -47,7 +46,7 @@ for filename in filenames:
             quantities[key][stepDx] = []
     
     # Extract time from filename and format it properly
-    time_str = filename.split('_')[2].split('.')[0]  # Extract the part after "URK2_" (length of "URK2_" is 5)
+    time_str = filename.split('_')[2]+'.'+filename.split('_')[3].split('.')[0] # Extract the part after "URK2_" (length of "URK2_" is 5)
     time_str = time_str.replace('_', '.')  # Replace underscore with dot
     time = float(time_str)
     times.append(time)
@@ -78,7 +77,7 @@ for stepDx in quantities[studied_quantity]:
     #computed0 = quantities[studied_quantity][stepDx][0][fixed_index, :]
     #error0 = calculate_error(computed0, expected0, nx)
     
-    expected_value = -1e-6 * np.cos(2 * np.pi * (x - times[time_index] * (Dt)))
+    expected_value = -1e-6 * np.cos(2 * np.pi * (x - times[time_index]))
     
     # Extract computed value for this time_index
     computed_value = quantities[studied_quantity][stepDx][time_index][fixed_index, :]

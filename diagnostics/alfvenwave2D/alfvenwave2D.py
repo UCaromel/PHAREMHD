@@ -17,6 +17,8 @@ FinalTime = 1
 order = 1
 nghost = 2
 
+boundaryconditions = p.BoundaryConditions.Periodic
+
 reconstruction = p.Reconstruction.Linear
 slopelimiter = p.Slope.VanLeer
 riemannsolver = p.RiemannSolver.HLL
@@ -83,5 +85,5 @@ P0cc = p.PrimitiveVariablesCC(nx, ny)
 P0cc.init(rho, vx, vy, vz, Bx, By, Bz, P)
 
 p.PhareMHD(P0cc, result_dir, order, nghost, 
-           reconstruction, slopelimiter, riemannsolver, constainedtransport, timeintegrator,
+           boundaryconditions, reconstruction, slopelimiter, riemannsolver, constainedtransport, timeintegrator,
            Dx, Dy, FinalTime)

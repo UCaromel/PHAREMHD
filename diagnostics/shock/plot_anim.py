@@ -4,37 +4,36 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import os
 
-nx = 50
-ny = 3
-Dt = 5e-4
+nx = 800
+ny = 1
 
-quantity_name = 'By'
+quantity_name = 'P'
 fixed_index = 0
 
 lx=1
 
-column_names = ['rho', 'rhovx', 'rhovy', 'rhovz', 'Bx', 'By', 'Bz', 'Etot']
+column_names = ['rho', 'vx', 'vy', 'vz', 'Bx', 'By', 'Bz', 'P']
 
 def read_file(filename):
     df = pd.read_csv(filename, delim_whitespace=True, header=None, names=column_names)
     return df
 
-results_dir = './space_results'
+results_dir = 'shockres'
 
 quantities = {
     'rho': [],
-    'rhovx': [],
-    'rhovy': [],
-    'rhovz': [],
+    'vx': [],
+    'vy': [],
+    'vz': [],
     'Bx': [],
     'By': [],
     'Bz': [],
-    'Etot': []
+    'P': []
 }
 times = []
 
 for filename in os.listdir(results_dir):
-    if filename.startswith("0_URK2_") and filename.endswith(".txt"):
+    if filename.startswith("PRK2_") and filename.endswith(".txt"):
         # Extract time from filename and format it properly
         time_str = filename.split('_')[2].split('.')[0]
         time_str = time_str.replace('_', '.')  # Replace underscore with dot
@@ -49,20 +48,16 @@ for filename in os.listdir(results_dir):
 for quantity in quantities.keys():
     quantities[quantity] = np.array(quantities[quantity])
 
-
 times = np.array(times)
-times=times*Dt
-
 
 Dx=lx/nx
 x=Dx*np.arange(nx) + 0.5*Dx
 
 
 def update(frame):    
-    t=times[frame]
 
     plt.clf()
-    plt.plot(x,quantities[quantity_name][frame, fixed_index, :], color='blue') # t,y,x
+    plt.plot(x, quantities[quantity_name][frame, fixed_index, :], 'o', color='blue', markersize=3) # t,y,x
     plt.title(f'{quantity_name} at y={fixed_index}, t={frame}')  # Format time to one decimal place
     plt.xlabel('x')
     plt.ylabel(quantity_name)
@@ -70,8 +65,9 @@ def update(frame):
     #plt.yscale("log")
     plt.tight_layout()
     
-    min_val = np.min(quantities[quantity_name][:, fixed_index, :])
-    max_val = np.max(quantities[quantity_name][:, fixed_index, :])
+    eps = 0.1
+    min_val = np.min(quantities[quantity_name][:, fixed_index, :]) - eps
+    max_val = np.max(quantities[quantity_name][:, fixed_index, :]) + eps
     
     plt.ylim(min_val, max_val)
 
