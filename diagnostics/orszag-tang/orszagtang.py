@@ -12,17 +12,17 @@ nx = 128
 ny = 128
 Dx = 1/nx
 Dy = 1/ny
-Dt = 0.001
+Dt = 0.0
 FinalTime = 0.5
 order = 1
-nghost = 2
+nghost = 1
 
 boundaryconditions = p.BoundaryConditions.Periodic
 
-reconstruction = p.Reconstruction.Linear
+reconstruction = p.Reconstruction.Constant
 slopelimiter = p.Slope.VanLeer
-riemannsolver = p.RiemannSolver.HLL
-constainedtransport = p.CTMethod.UCT_HLL
+riemannsolver = p.RiemannSolver.Rusanov
+constainedtransport = p.CTMethod.Contact
 timeintegrator = p.Integrator.TVDRK2Integrator
 
 dumpvariables = p.dumpVariables.Primitive
@@ -70,7 +70,7 @@ P = np.full((nx, ny), P_(xx, yy)).T
 
 #############################################################################################################################################################################
 
-result_dir = 'orszagtangUCTHLL/'
+result_dir = 'orszagtangCTContact/'
 if os.path.exists(result_dir):
     shutil.rmtree(result_dir)
 

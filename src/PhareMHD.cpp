@@ -7,6 +7,9 @@ void PhareMHD(const PrimitiveVariablesCC& P0cc, std::string resultDir, int order
     ConservativeVariablesCC U0(P0);
     UpdateGhostCells(U0, nghost, bc);
 
+    DivB = CheckDivB(U0, Dx, Dy, nghost);
+    std::cout<<"DivB = "<<DivB<<std::endl;
+
     ConservativeVariablesCC Un1 = U0;
 
     if((dv == dumpVariables::Conservative) || (dv == dumpVariables::Both)){

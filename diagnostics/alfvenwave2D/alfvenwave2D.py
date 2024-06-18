@@ -13,7 +13,7 @@ ny = 100
 Dx = 0.01
 Dy = 0.01
 Dt = 0.0
-FinalTime = 1
+FinalTime = 0.5
 order = 1
 nghost = 2
 
@@ -21,8 +21,8 @@ boundaryconditions = p.BoundaryConditions.Periodic
 
 reconstruction = p.Reconstruction.Linear
 slopelimiter = p.Slope.VanLeer
-riemannsolver = p.RiemannSolver.HLL
-constainedtransport = p.CTMethod.UCT_HLL
+riemannsolver = p.RiemannSolver.Rusanov
+constainedtransport = p.CTMethod.Contact
 timeintegrator = p.Integrator.TVDRK2Integrator
 
 ##############################################################################################################################################################################

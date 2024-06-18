@@ -15,11 +15,11 @@ Dy = 1/100
 Dt = 0.0
 FinalTime = 0.15
 order = 1
-nghost = 1
+nghost = 2
 
 boundaryconditions = p.BoundaryConditions.Periodic
 
-reconstruction = p.Reconstruction.Constant
+reconstruction = p.Reconstruction.Linear
 slopelimiter = p.Slope.VanLeer
 riemannsolver = p.RiemannSolver.Rusanov
 constainedtransport = p.CTMethod.Average

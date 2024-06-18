@@ -1,6 +1,6 @@
 #include "ConstainedTransport.hpp"
 
-std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> ConstrainedTransportAverage(const ConservativeVariablesCC &Cn /* Assuming ghost cells are added */, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl)
+std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> ConstrainedTransportAverage(const ConservativeVariablesCC &Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs)
 {
     // Edge-centered
     std::vector<std::vector<double>> vx(Cn.ny + 1 - 2 * nghost, std::vector<double>(Cn.nx + 1 - 2 * nghost));
@@ -58,7 +58,119 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> Co
     return {BX, BY};
 }
 
-std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> UCTHLL(const ConservativeVariablesCC &Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl){
+std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> ConstrainedTransportContact(const ConservativeVariablesCC &Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs){
+/*    PrimitiveVariablesCC Pn(Cn);
+    std::vector<std::vector<Interface>> InterfacesX(Pn.ny + 2 - 2 * nghost, std::vector<Interface>(Pn.nx + 1 - 2 * nghost));
+    std::vector<std::vector<Interface>> InterfacesY(Pn.ny + 1 - 2 * nghost, std::vector<Interface>(Pn.nx + 2 - 2 * nghost));
+
+    std::vector<std::vector<double>> bx(Cn.ny - 2 * nghost, std::vector<double>(Cn.nx + 1 - 2 * nghost));
+    std::vector<std::vector<double>> by(Cn.ny + 1 - 2 * nghost, std::vector<double>(Cn.nx - 2 * nghost));
+
+    std::vector<std::vector<double>> BX(Cn.ny - 2 * nghost, std::vector<double>(Cn.nx - 2 * nghost));
+    std::vector<std::vector<double>> BY(Cn.ny - 2 * nghost, std::vector<double>(Cn.nx - 2 * nghost));
+
+    std::vector<std::vector<double>> Ez(Pn.ny + 1 - 2 * nghost, std::vector<double>(Pn.nx + 1 - 2 * nghost));
+
+    RiemannSolverFunction ChosenRiemannSolver = getRiemannSolver(rs);
+
+    for (int j = nghost - 1; j < Cn.ny - nghost + 1; ++j)
+    {
+        for (int i = nghost; i <= Cn.nx - nghost; ++i)
+        {
+            InterfacesX[j - nghost + 1][i - nghost] = Interface(Pn, i, j, rec, sl, nghost, Dir::X);
+        }
+    }
+
+    for (int j = nghost; j <= Cn.ny - nghost; ++j)
+    {
+        for (int i = nghost - 1; i < Cn.nx - nghost + 1; ++i)
+        {
+            InterfacesY[j - nghost][i - nghost + 1] = Interface(Pn, i, j, rec, sl, nghost, Dir::Y);
+        }
+    }
+
+    for (int j = 0; j <= Cn.ny - 2*nghost; ++j)
+    {
+        for (int i = 0; i <= Cn.nx - 2*nghost; ++i)
+        {
+            Interface x = InterfacesX[j][i];
+            Interface x1 = InterfacesX[j + 1][i];
+            Interface y = InterfacesY[j][i];
+            Interface y1 = InterfacesY[j][i + 1];
+
+            // Used to compute sign of contact discontinuity
+            double Fvx = ChosenRiemannSolver(x).rho;
+            double Fvx1 = ChosenRiemannSolver(x1).rho;
+            double Fvy = ChosenRiemannSolver(y).rho;
+            double Fvy1 = ChosenRiemannSolver(y1).rho;
+
+            // Rusanov fluxes for Bx and By
+            double FBy_x = ChosenRiemannSolver(x).By;
+            double FBy_x1 = ChosenRiemannSolver(x1).By;
+            double FBx_y = ChosenRiemannSolver(y).Bx;
+            double FBx_y1 = ChosenRiemannSolver(y1).Bx;
+            
+            // Conditionnals required by CT contact
+            double sx = Fvx > 0 ? 1 : Fvx < 0 ? -1 : 0;
+            double sx1 = Fvx1 > 0 ? 1 : Fvx1 < 0 ? -1 : 0;
+            double sy = Fvy > 0 ? 1 : Fvy < 0 ? -1 : 0;
+            double sy1 = Fvy1 > 0 ? 1 : Fvy1 < 0 ? -1 : 0;
+
+            // Cell-centered F vector = cell-centered EMF
+            int offset = nghost - 1;
+            double FcBy_x = ComputeFluxVector(Pn(i + offset, j + offset), Dir::X).By;
+            double FcBy_x1 = ComputeFluxVector(Pn(i + offset, j + 1 + offset), Dir::X).By;
+            double FcBx_y = ComputeFluxVector(Pn(i + offset, j + offset), Dir::Y).Bx;
+            double FcBx_y1 = ComputeFluxVector(Pn(i + 1 + offset, j + offset), Dir::Y).Bx;
+
+            double FcBy_x1y1 = ComputeFluxVector(Pn(i + 1 + offset, j + 1 + offset), Dir::X).By;
+            double FcBx_y1x1 = ComputeFluxVector(Pn(i + 1 + offset, j + 1 + offset), Dir::Y).Bx;
+
+            // Compute Ez derivatives in each directions
+            double dyEzS = (1.0 + sx) * (FBx_y - FcBx_y) + (1.0 - sx) * (FBx_y1 - FcBx_y1);
+            double dyEzN = (1.0 + sx1) * (FBx_y - FcBx_y1) + (1.0 - sx1) * (FBx_y1 - FcBx_y1x1);
+            double dxEzW = (1.0 + sy) * (FBy_x - FcBy_x) + (1.0 - sy) * (FBy_x1 - FcBy_x1);
+            double dxEzE = (1.0 + sy1) * (FBy_x - FcBy_x1) + (1.0 - sy1) * (FBy_x1 - FcBy_x1y1);
+           
+            Ez[j][i] = 0.25*(- FBy_x - FBy_x1 + FBx_y + FBx_y1) ;//+ 0.125 * (dyEzS - dyEzN - dxEzW + dxEzE);
+            if ((i == Cn.nx - 2*nghost && j == Cn.ny - 2*nghost) && !std::isnan(FBy_x)){
+                std::cout<<FBy_x<<" "<<FBy_x1<<" "<<FBx_y<<" "<<FBx_y1<<" "<<Ez[j][i]<<std::endl;
+            }
+        }
+    }
+
+    for (int j = nghost; j < Cn.ny - nghost; ++j)
+    {
+        for (int i = nghost; i <= Cn.nx - nghost; ++i)
+        {
+            bx[j - nghost][i - nghost] = 0.5 * (Cn.Bx[j][i] + Cn.Bx[j][i - 1]);
+            bx[j - nghost][i - nghost] -= (Dt / Dy) * (Ez[j + 1 - nghost][i - nghost] - Ez[j - nghost][i - nghost]);
+        }
+    }
+
+    for (int j = nghost; j <= Cn.ny - nghost; ++j)
+    {
+        for (int i = nghost; i < Cn.nx - nghost; ++i)
+        {
+            by[j - nghost][i - nghost] = 0.5 * (Cn.By[j][i] + Cn.By[j - 1][i]);
+            by[j - nghost][i - nghost] += (Dt / Dx) * (Ez[j - nghost][i + 1 - nghost] - Ez[j - nghost][i - nghost]);
+        }
+    }
+
+    for (int j = 0; j < Cn.ny - 2 * nghost; ++j)
+    {
+        for (int i = 0; i < Cn.nx - 2 * nghost; ++i)
+        {
+            BX[j][i] = 0.5 * (bx[j][i + 1] + bx[j][i]);
+            BY[j][i] = 0.5 * (by[j + 1][i] + by[j][i]);
+        }
+    }
+
+    return {BX, BY};*/
+}
+
+
+std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> UCTHLL(const ConservativeVariablesCC &Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs){
     PrimitiveVariablesCC Pn(Cn);
     std::vector<std::vector<Interface>> InterfacesX(Pn.ny + 2 - 2 * nghost, std::vector<Interface>(Pn.nx + 1 - 2 * nghost));
     std::vector<std::vector<Interface>> InterfacesY(Pn.ny + 1 - 2 * nghost, std::vector<Interface>(Pn.nx + 2 - 2 * nghost));
@@ -189,10 +301,10 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> UC
 
 }
 
-void ApplyConstrainedTransport(ConservativeVariablesCC& Cn1, const ConservativeVariablesCC& Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, CTMethod ct)
+void ApplyConstrainedTransport(ConservativeVariablesCC& Cn1, const ConservativeVariablesCC& Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs, CTMethod ct)
 {
     CTFunction ChosenCT = getCT(ct);
-    auto [BX, BY] = ChosenCT(Cn, Dx, Dy, Dt, nghost, rec, sl);
+    auto [BX, BY] = ChosenCT(Cn, Dx, Dy, Dt, nghost, rec, sl, rs);
     
     for(int j = nghost; j < Cn1.ny - nghost; ++j)
     {

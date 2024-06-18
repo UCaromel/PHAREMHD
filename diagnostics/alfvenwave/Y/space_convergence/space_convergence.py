@@ -21,7 +21,7 @@ boundaryconditions = p.BoundaryConditions.Periodic
 reconstruction = p.Reconstruction.Linear
 slopelimiter = p.Slope.VanLeer
 riemannsolver = p.RiemannSolver.Rusanov
-constainedtransport = p.CTMethod.Average
+constainedtransport = p.CTMethod.Contact
 timeintegrator = p.Integrator.TVDRK2Integrator
 
 dump_frequency = 10

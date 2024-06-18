@@ -58,7 +58,7 @@ void UpdateGhostCells(Variables& V_cc, int nghost, BoundaryConditions bc) {
             for (int k2 = 1; k2 <= nghost; k2++) {
                 V_cc.set(V_cc(nghost - k1 + 1, nghost - k2 + 1), nghost - k1, nghost - k2); // Bottom-left
                 V_cc.set(V_cc(nghost - k1 + 1, k2 - 2 + V_cc.ny - nghost), nghost - k1, k2 - 1 + V_cc.ny - nghost); // Top-left
-                V_cc.set(V_cc(k1 - 2 + V_cc.nx - nghost, nghost - k2), k1 - 1 + V_cc.nx - nghost, nghost - k2 + 1); // Bottom-right
+                V_cc.set(V_cc(k1 - 2 + V_cc.nx - nghost, nghost - k2 + 1), k1 - 1 + V_cc.nx - nghost, nghost - k2); // Bottom-right
                 V_cc.set(V_cc(k1 - 2 + V_cc.nx - nghost, k2 - 2 + V_cc.ny - nghost), k1 - 1 + V_cc.nx - nghost, k2 - 1 + V_cc.ny - nghost); // Top-right
             }
         }

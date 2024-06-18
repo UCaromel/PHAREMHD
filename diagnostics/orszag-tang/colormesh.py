@@ -42,8 +42,10 @@ Norm = Normalize(vmin=data_min, vmax=data_max)
 
 qty = reshaped_data[-1][:,:,studied_index]
 
-plt.pcolormesh(qty.T, cmap='coolwarm', norm=Norm)  
+im = plt.pcolormesh(qty.T, cmap='coolwarm',vmin = 0.024, vmax = 0.5)#, norm=Norm)  
+plt.colorbar(im)
 plt.title('Contour Plot of qty')
 plt.xlabel('X')
 plt.ylabel('Y')
+plt.gca().set_aspect('equal')
 plt.show()

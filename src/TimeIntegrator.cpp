@@ -14,7 +14,7 @@ ConservativeVariablesCC Euler(ConservativeVariablesCC& Un, double Dx, double Dy,
 
     UpdateGhostCells(Un, nghost, bc);
     Un1 = EulerAdvance(Un, Dx, Dy, Dt, nghost, rec, sl, rs);
-    ApplyConstrainedTransport(Un1, Un, Dx, Dy, Dt, nghost, rec, sl, ct); // If Un1 not needed in CT scheme (else update ghost cells)
+    ApplyConstrainedTransport(Un1, Un, Dx, Dy, Dt, nghost, rec, sl, rs, ct); // If Un1 not needed in CT scheme (else update ghost cells)
 
     return Un1;
 }

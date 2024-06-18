@@ -23,7 +23,7 @@ def read_times(file_paths):
         times.append(time)
     return times
 
-results_dir = "orszagtangUCTHLL/"
+results_dir = "orszagtangCTContact/"
 file_paths = [results_dir + file for file in os.listdir(results_dir) if file.startswith("PRK2_") and file.endswith(".txt")]
 
 nx = 128
