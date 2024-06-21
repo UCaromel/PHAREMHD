@@ -1,7 +1,7 @@
 #ifndef COMPUTE_NEW_DT_HPP_
 #define COMPUTE_NEW_DT_HPP_
 
-#include "ConservativeVariablesCC.hpp"
+#include "ConservativeVariables.hpp"
 #include "EquationOfState.hpp"
 
 #include <cmath>
@@ -9,7 +9,7 @@
 
 const double sigmaCFL = 0.8;
 
-inline double ComPuteNewDt(const ConservativeVariablesCC& C_cc, double Dx, double Dy, int nghost){
+inline double ComPuteNewDt(const ConservativeVariables& C_cc, double Dx, double Dy, int nghost){
     std::vector<double> sum;
 
     for (int j = nghost; j < C_cc.ny - nghost; ++j) {

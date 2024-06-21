@@ -6,10 +6,10 @@
 #include <iomanip>
 #include <algorithm>
 
-#include "ConservativeVariablesCC.hpp"
-#include "PrimitiveVariablesCC.hpp"
+#include "ConservativeVariables.hpp"
+#include "PrimitiveVariables.hpp"
 
-inline void savePrimitiveVariables(const PrimitiveVariablesCC& P_cc, const std::string& filename, int nghost) {
+inline void savePrimitiveVariables(const PrimitiveVariables& P_cc, const std::string& filename, int nghost) {
     std::ofstream outFile(filename);
 
     if (outFile.is_open()) {
@@ -32,20 +32,22 @@ inline void savePrimitiveVariables(const PrimitiveVariablesCC& P_cc, const std::
     }
 }
 
-inline void saveConcervativeVariables(const ConservativeVariablesCC& P_cc, const std::string& filename, int nghost) {
+inline void saveConcervativeVariables(const ConservativeVariables& C_cc, const std::string& filename, int nghost) {
     std::ofstream outFile(filename);
 
     if (outFile.is_open()) {
-        for (int j = nghost; j < P_cc.ny - nghost; ++j) {
-            for (int i = nghost; i < P_cc.nx - nghost; ++i) {
-                outFile << std::setw(15) << P_cc.rho[j][i] << " "
-                        << std::setw(15) << P_cc.rhovx[j][i] << " "
-                        << std::setw(15) << P_cc.rhovy[j][i] << " "
-                        << std::setw(15) << P_cc.rhovz[j][i] << " "
-                        << std::setw(15) << P_cc.Bx[j][i] << " "
-                        << std::setw(15) << P_cc.By[j][i] << " "
-                        << std::setw(15) << P_cc.Bz[j][i] << " "
-                        << std::setw(15) << P_cc.Etot[j][i] << std::endl;
+        for (int j = nghost; j < C_cc.ny - nghost; ++j) {
+            for (int i = nghost; i < C_cc.nx - nghost; ++i) {
+                outFile << std::setw(15) << C_cc.rho[j][i] << " "
+                        << std::setw(15) << C_cc.rhovx[j][i] << " "
+                        << std::setw(15) << C_cc.rhovy[j][i] << " "
+                        << std::setw(15) << C_cc.rhovz[j][i] << " "
+                        << std::setw(15) << C_cc.Bx[j][i] << " "
+                        << std::setw(15) << C_cc.By[j][i] << " "
+                        << std::setw(15) << C_cc.Bz[j][i] << " "
+                        << std::setw(15) << C_cc.Etot[j][i] << " "
+                        << std::setw(15) << C_cc.Bxf[j][i] << " "
+                        << std::setw(15) << C_cc.Byf[j][i] << std::endl;
             }
         }
         outFile.close();

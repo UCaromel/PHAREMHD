@@ -1,0 +1,22 @@
+
+
+name: MHDProblem
+
+profile:
+- name: base
+
+- name: py
+  parent: base
+  install: .
+  mode: none
+  mod: python3.module  lang.python3
+  dep: lang.pybind11
+  out: pyMHD/pyMHD
+  src: pyMHD/pyMHD.cpp src
+  sub: cppdict&pyMHD/tpp/cppdict(https://github.com/LaboratoryOfPlasmaPhysics/cppdict)
+  inc: src pyMHD/tpp/cppdict/include
+  env: |
+    MKN_LIB_LINK_LIB=1
+    MKN_PYTHON_LIB_EMBED=1
+
+#KLOG=3 mkn clean build -p py -t

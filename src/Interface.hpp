@@ -5,7 +5,7 @@
 #include <stdexcept>
 
 #include "ReconstructedValues.hpp"
-#include "PrimitiveVariablesCC.hpp"
+#include "PrimitiveVariables.hpp"
 #include "SlopeLimiter.hpp"
 #include "EquationOfState.hpp"
 #include "Enums.hpp"
@@ -28,7 +28,7 @@ public:
     Interface();
 
     // (i,j) interface index.
-    Interface(const PrimitiveVariablesCC& P_cc, int i, int j, Reconstruction rec, Slope sl, int nghost, Dir dir);
+    Interface(const PrimitiveVariables& P_cc, int i, int j, Reconstruction rec, Slope sl, int nghost, Dir dir);
     ~Interface();
 };
 

@@ -1,5 +1,5 @@
-#include "ConservativeVariablesCC.hpp"
-#include "PrimitiveVariablesCC.hpp"
+#include "ConservativeVariables.hpp"
+#include "PrimitiveVariables.hpp"
 #include "PhareMHD.hpp"
 #include "Enums.hpp"
 #include "ModularityUtils.hpp"
@@ -45,42 +45,47 @@ std::vector<std::vector<double>> convert_from_numpy(py::array_t<double> numpy_ar
 
 PYBIND11_MODULE(pyMHD, m)
 {
-    py::class_<PrimitiveVariablesCC>(m, "PrimitiveVariablesCC")
+    py::class_<PrimitiveVariables>(m, "PrimitiveVariables")
 
-        .def_readwrite("nx", &PrimitiveVariablesCC::nx)
-        .def_readwrite("ny", &PrimitiveVariablesCC::ny)
+        .def_readwrite("nx", &PrimitiveVariables::nx)
+        .def_readwrite("ny", &PrimitiveVariables::ny)
         .def_property("rho",
-            [](PrimitiveVariablesCC& self) { return convert_to_numpy(self.rho); },
-            [](PrimitiveVariablesCC& self, py::array_t<double> array) { self.rho = convert_from_numpy(array); })
+            [](PrimitiveVariables& self) { return convert_to_numpy(self.rho); },
+            [](PrimitiveVariables& self, py::array_t<double> array) { self.rho = convert_from_numpy(array); })
         .def_property("vx",
-            [](PrimitiveVariablesCC& self) { return convert_to_numpy(self.vx); },
-            [](PrimitiveVariablesCC& self, py::array_t<double> array) { self.vx = convert_from_numpy(array); })
+            [](PrimitiveVariables& self) { return convert_to_numpy(self.vx); },
+            [](PrimitiveVariables& self, py::array_t<double> array) { self.vx = convert_from_numpy(array); })
         .def_property("vy",
-            [](PrimitiveVariablesCC& self) { return convert_to_numpy(self.vy); },
-            [](PrimitiveVariablesCC& self, py::array_t<double> array) { self.vy = convert_from_numpy(array); })
+            [](PrimitiveVariables& self) { return convert_to_numpy(self.vy); },
+            [](PrimitiveVariables& self, py::array_t<double> array) { self.vy = convert_from_numpy(array); })
         .def_property("vz",
-            [](PrimitiveVariablesCC& self) { return convert_to_numpy(self.vz); },
-            [](PrimitiveVariablesCC& self, py::array_t<double> array) { self.vz = convert_from_numpy(array); })
+            [](PrimitiveVariables& self) { return convert_to_numpy(self.vz); },
+            [](PrimitiveVariables& self, py::array_t<double> array) { self.vz = convert_from_numpy(array); })
         .def_property("Bx",
-            [](PrimitiveVariablesCC& self) { return convert_to_numpy(self.Bx); },
-            [](PrimitiveVariablesCC& self, py::array_t<double> array) { self.Bx = convert_from_numpy(array); })
+            [](PrimitiveVariables& self) { return convert_to_numpy(self.Bx); },
+            [](PrimitiveVariables& self, py::array_t<double> array) { self.Bx = convert_from_numpy(array); })
         .def_property("By",
-            [](PrimitiveVariablesCC& self) { return convert_to_numpy(self.By); },
-            [](PrimitiveVariablesCC& self, py::array_t<double> array) { self.By = convert_from_numpy(array); })
+            [](PrimitiveVariables& self) { return convert_to_numpy(self.By); },
+            [](PrimitiveVariables& self, py::array_t<double> array) { self.By = convert_from_numpy(array); })
         .def_property("Bz",
-            [](PrimitiveVariablesCC& self) { return convert_to_numpy(self.Bz); },
-            [](PrimitiveVariablesCC& self, py::array_t<double> array) { self.Bz = convert_from_numpy(array); })
+            [](PrimitiveVariables& self) { return convert_to_numpy(self.Bz); },
+            [](PrimitiveVariables& self, py::array_t<double> array) { self.Bz = convert_from_numpy(array); })
         .def_property("P",
-            [](PrimitiveVariablesCC& self) { return convert_to_numpy(self.P); },
-            [](PrimitiveVariablesCC& self, py::array_t<double> array) { self.P = convert_from_numpy(array); })
-
+            [](PrimitiveVariables& self) { return convert_to_numpy(self.P); },
+            [](PrimitiveVariables& self, py::array_t<double> array) { self.P = convert_from_numpy(array); })
+        .def_property("Bxf",
+            [](PrimitiveVariables& self) { return convert_to_numpy(self.Bxf); },
+            [](PrimitiveVariables& self, py::array_t<double> array) { self.Bxf = convert_from_numpy(array); })
+        .def_property("Byf",
+            [](PrimitiveVariables& self) { return convert_to_numpy(self.Byf); },
+            [](PrimitiveVariables& self, py::array_t<double> array) { self.Byf = convert_from_numpy(array); })
 
         .def(py::init<double,double>())
-        .def(py::init<const ConservativeVariablesCC&>())
-        .def("set", &PrimitiveVariablesCC::set)
-        .def("init", &PrimitiveVariablesCC::init)
-        .def("__call__", &PrimitiveVariablesCC::operator())
-        .def("assign", [](PrimitiveVariablesCC& self, const PrimitiveVariablesCC& other) {
+        .def(py::init<const ConservativeVariables&>())
+        .def("set", &PrimitiveVariables::set)
+        .def("init", &PrimitiveVariables::init)
+        .def("__call__", &PrimitiveVariables::operator())
+        .def("assign", [](PrimitiveVariables& self, const PrimitiveVariables& other) {
             self = other;
         });
 
@@ -121,44 +126,44 @@ PYBIND11_MODULE(pyMHD, m)
           py::arg("Dx"), py::arg("Dy"), py::arg("FinalTime"), py::arg("Dt") = 0.0, py::arg("dumpvariables") = Conservative, py::arg("dumpfrequency") = 1);
 
 /*
-    py::class_<ConservativeVariablesCC>(m, "ConservativeVariablesCC")
+    py::class_<ConservativeVariables>(m, "ConservativeVariables")
 
-        .def_readwrite("nx", &ConservativeVariablesCC::nx)
-        .def_readwrite("ny", &ConservativeVariablesCC::ny)
+        .def_readwrite("nx", &ConservativeVariables::nx)
+        .def_readwrite("ny", &ConservativeVariables::ny)
         .def_property("rho",
-            [](ConservativeVariablesCC& self) { return convert_to_numpy(self.rho); },
-            [](ConservativeVariablesCC& self, py::array_t<double> array) { self.rho = convert_from_numpy(array); })
+            [](ConservativeVariables& self) { return convert_to_numpy(self.rho); },
+            [](ConservativeVariables& self, py::array_t<double> array) { self.rho = convert_from_numpy(array); })
         .def_property("rhovx",
-            [](ConservativeVariablesCC& self) { return convert_to_numpy(self.rhovx); },
-            [](ConservativeVariablesCC& self, py::array_t<double> array) { self.rhovx = convert_from_numpy(array); })
+            [](ConservativeVariables& self) { return convert_to_numpy(self.rhovx); },
+            [](ConservativeVariables& self, py::array_t<double> array) { self.rhovx = convert_from_numpy(array); })
         .def_property("rhovy",
-            [](ConservativeVariablesCC& self) { return convert_to_numpy(self.rhovy); },
-            [](ConservativeVariablesCC& self, py::array_t<double> array) { self.rhovy = convert_from_numpy(array); })
+            [](ConservativeVariables& self) { return convert_to_numpy(self.rhovy); },
+            [](ConservativeVariables& self, py::array_t<double> array) { self.rhovy = convert_from_numpy(array); })
         .def_property("rhovz",
-            [](ConservativeVariablesCC& self) { return convert_to_numpy(self.rhovz); },
-            [](ConservativeVariablesCC& self, py::array_t<double> array) { self.rhovz = convert_from_numpy(array); })
+            [](ConservativeVariables& self) { return convert_to_numpy(self.rhovz); },
+            [](ConservativeVariables& self, py::array_t<double> array) { self.rhovz = convert_from_numpy(array); })
         .def_property("Bx",
-            [](ConservativeVariablesCC& self) { return convert_to_numpy(self.Bx); },
-            [](ConservativeVariablesCC& self, py::array_t<double> array) { self.Bx = convert_from_numpy(array); })
+            [](ConservativeVariables& self) { return convert_to_numpy(self.Bx); },
+            [](ConservativeVariables& self, py::array_t<double> array) { self.Bx = convert_from_numpy(array); })
         .def_property("By",
-            [](ConservativeVariablesCC& self) { return convert_to_numpy(self.By); },
-            [](ConservativeVariablesCC& self, py::array_t<double> array) { self.By = convert_from_numpy(array); })
+            [](ConservativeVariables& self) { return convert_to_numpy(self.By); },
+            [](ConservativeVariables& self, py::array_t<double> array) { self.By = convert_from_numpy(array); })
         .def_property("Bz",
-            [](ConservativeVariablesCC& self) { return convert_to_numpy(self.Bz); },
-            [](ConservativeVariablesCC& self, py::array_t<double> array) { self.Bz = convert_from_numpy(array); })
+            [](ConservativeVariables& self) { return convert_to_numpy(self.Bz); },
+            [](ConservativeVariables& self, py::array_t<double> array) { self.Bz = convert_from_numpy(array); })
         .def_property("Etot",
-            [](ConservativeVariablesCC& self) { return convert_to_numpy(self.Etot); },
-            [](ConservativeVariablesCC& self, py::array_t<double> array) { self.Etot = convert_from_numpy(array); })
+            [](ConservativeVariables& self) { return convert_to_numpy(self.Etot); },
+            [](ConservativeVariables& self, py::array_t<double> array) { self.Etot = convert_from_numpy(array); })
 
 
         .def(py::init<double,double>())
-        .def(py::init<const PrimitiveVariablesCC&>())
-        .def("set", &ConservativeVariablesCC::set)
-        .def("__call__", &ConservativeVariablesCC::operator())
+        .def(py::init<const PrimitiveVariables&>())
+        .def("set", &ConservativeVariables::set)
+        .def("__call__", &ConservativeVariables::operator())
         .def(py::self * double())
         .def(py::self - py::self)
         .def(py::self + py::self)
-        .def("assign", [](ConservativeVariablesCC& self, const ConservativeVariablesCC& other) {
+        .def("assign", [](ConservativeVariables& self, const ConservativeVariables& other) {
             self = other;
         });
  
@@ -182,9 +187,9 @@ PYBIND11_MODULE(pyMHD, m)
         });
 
     
-    m.def("InitialiseGhostCells", &InitialiseGhostCells<PrimitiveVariablesCC>);
-    m.def("UpdateGhostCells", &UpdateGhostCells<PrimitiveVariablesCC>);
-    m.def("UpdateGhostCells", &UpdateGhostCells<ConservativeVariablesCC>);
+    m.def("InitialiseGhostCells", &InitialiseGhostCells<PrimitiveVariables>);
+    m.def("UpdateGhostCells", &UpdateGhostCells<PrimitiveVariables>);
+    m.def("UpdateGhostCells", &UpdateGhostCells<ConservativeVariables>);
 
     m.attr("gam") = &gam;
     m.def("EosEtot", &EosEtot);
@@ -206,7 +211,7 @@ PYBIND11_MODULE(pyMHD, m)
         .def_readwrite("SR", &Interface::SR)
         .def_readwrite("Splus", &Interface::Splus)
 
-        .def(py::init<const PrimitiveVariablesCC&, int, int, int, int, Dir>());
+        .def(py::init<const PrimitiveVariables&, int, int, int, int, Dir>());
     
 
     m.def("RusanovRiemannSolver", &RusanovRiemannSolver);
@@ -228,7 +233,7 @@ PYBIND11_MODULE(pyMHD, m)
         .def_readwrite("BX", &ConstrainedTransport::BX)
         .def_readwrite("BY", &ConstrainedTransport::BY)
 
-        .def(py::init<const ConservativeVariablesCC&, double, double, double, int>());
+        .def(py::init<const ConservativeVariables&, double, double, double, int>());
     
     m.def("ApplyConstrainedTransport", &ApplyConstrainedTransport);
 

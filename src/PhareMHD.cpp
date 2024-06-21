@@ -1,23 +1,23 @@
 #include "PhareMHD.hpp"
 
-void PhareMHD(const PrimitiveVariablesCC& P0cc, std::string resultDir, int order, int nghost, BoundaryConditions bc, Reconstruction rec, Slope sl, Riemann rs, CTMethod ct, Integrator intg, double Dx, double Dy, double FinalTime, double Dt, dumpVariables dv, int dumpfrequency) {
+void PhareMHD(const PrimitiveVariables& P0cc, std::string resultDir, int order, int nghost, BoundaryConditions bc, Reconstruction rec, Slope sl, Riemann rs, CTMethod ct, Integrator intg, double Dx, double Dy, double FinalTime, double Dt, dumpVariables dv, int dumpfrequency) {
     double DivB;
 
-    PrimitiveVariablesCC P0 = InitialiseGhostCells(P0cc, nghost, bc);
-    ConservativeVariablesCC U0(P0);
+    PrimitiveVariables P0 = InitialiseGhostCells(P0cc, nghost, bc);
+    ConservativeVariables U0(P0);
     UpdateGhostCells(U0, nghost, bc);
 
     DivB = CheckDivB(U0, Dx, Dy, nghost);
     std::cout<<"DivB = "<<DivB<<std::endl;
 
-    ConservativeVariablesCC Un1 = U0;
+    ConservativeVariables Un1 = U0;
 
     if((dv == dumpVariables::Conservative) || (dv == dumpVariables::Both)){
         std::ostringstream filename0;
         filename0 << resultDir << "URK2_0_0.txt";
         saveConcervativeVariables(Un1, filename0.str(), nghost);
     } else if((dv == dumpVariables::Primitive) || (dv == dumpVariables::Both)){
-        PrimitiveVariablesCC Pdump0(Un1);
+        PrimitiveVariables Pdump0(Un1);
         std::ostringstream filename0;
         filename0 << resultDir << "PRK2_0_0.txt";
         savePrimitiveVariables(Pdump0, filename0.str(), nghost);
@@ -51,7 +51,7 @@ void PhareMHD(const PrimitiveVariablesCC& P0cc, std::string resultDir, int order
                 }
             } else if((dv == dumpVariables::Primitive) || (dv == dumpVariables::Both)){
                 if(step%dumpfrequency==0 || time >= FinalTime){
-                    PrimitiveVariablesCC Pdump(Un1);
+                    PrimitiveVariables Pdump(Un1);
                     std::ostringstream filename;
                     filename << resultDir << "PRK2_" << formatTime(time) << ".txt";
                     savePrimitiveVariables(Pdump, filename.str(), nghost);
@@ -80,7 +80,7 @@ void PhareMHD(const PrimitiveVariablesCC& P0cc, std::string resultDir, int order
                 }
             } else if((dv == dumpVariables::Primitive) || (dv == dumpVariables::Both)){
                 if(step%dumpfrequency==0 || time >= FinalTime){
-                    PrimitiveVariablesCC Pdump(Un1);
+                    PrimitiveVariables Pdump(Un1);
                     std::ostringstream filename;
                     filename << resultDir << "PRK2_" << formatTime(time) << ".txt";
                     savePrimitiveVariables(Pdump, filename.str(), nghost);

@@ -1,5 +1,5 @@
 import sys
-sys.path.append('/home/caromel/Documents/MHD_PHARE/pyMHD')
+sys.path.append('/home/caromel/Documents/PHAREMHD/pyMHD')
 
 import numpy as np
 import pyMHD as p
@@ -15,14 +15,14 @@ Dy = 1/ny
 Dt = 0.0
 FinalTime = 0.5
 order = 1
-nghost = 1
+nghost = 2
 
 boundaryconditions = p.BoundaryConditions.Periodic
 
-reconstruction = p.Reconstruction.Constant
+reconstruction = p.Reconstruction.Linear
 slopelimiter = p.Slope.VanLeer
 riemannsolver = p.RiemannSolver.Rusanov
-constainedtransport = p.CTMethod.Contact
+constainedtransport = p.CTMethod.Average
 timeintegrator = p.Integrator.TVDRK2Integrator
 
 dumpvariables = p.dumpVariables.Primitive
@@ -56,28 +56,32 @@ def P_(x, y):
 
 x = np.arange(nx) * Dx + 0.5 * Dx
 y = np.arange(ny) * Dy + 0.5 * Dy
+xf = np.arange(nx+1) * Dx
+yf = np.arange(ny+1) * Dy
 
 xx, yy = np.meshgrid(x, y, indexing = 'ij')
+xfx, yfx = np.meshgrid(xf, y, indexing = 'ij')
+xfy, yfy = np.meshgrid(x, yf, indexing = 'ij')
 
 rho = np.full((nx, ny), rho_(xx, yy)).T
 vx = np.full((nx, ny), vx_(xx, yy)).T
 vy = np.full((nx, ny), vy_(xx, yy)).T
 vz = np.full((nx, ny), vz_(xx, yy)).T
-Bx = np.full((nx, ny), Bx_(xx, yy)).T
-By = np.full((nx, ny), By_(xx, yy)).T
+Bxf = np.full((nx + 1, ny), Bx_(xfx, yfx)).T
+Byf = np.full((nx, ny + 1), By_(xfy, yfy)).T
 Bz = np.full((nx, ny), Bz_(xx, yy)).T
 P = np.full((nx, ny), P_(xx, yy)).T
 
 #############################################################################################################################################################################
 
-result_dir = 'orszagtangCTContact/'
+result_dir = 'orszagtangCTAverage/'
 if os.path.exists(result_dir):
     shutil.rmtree(result_dir)
 
 os.makedirs(result_dir, exist_ok=True)
 
-P0cc = p.PrimitiveVariablesCC(nx, ny)
-P0cc.init(rho, vx, vy, vz, Bx, By, Bz, P)
+P0cc = p.PrimitiveVariables(nx, ny)
+P0cc.init(rho, vx, vy, vz, Bxf, Byf, Bz, P)
 
 p.PhareMHD(P0cc, result_dir, order, nghost, 
            boundaryconditions, reconstruction, slopelimiter, riemannsolver, constainedtransport, timeintegrator,

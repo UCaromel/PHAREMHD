@@ -1,19 +1,21 @@
-#ifndef PRIMITIVE_VARIABLES_CC_HPP_
-#define PRIMITIVE_VARIABLES_CC_HPP_
+#ifndef PRIMITIVE_VARIABLES_HPP_
+#define PRIMITIVE_VARIABLES_HPP_
 
 #include <vector>
 #include <string>
 #include <cmath>
 
 #include "ReconstructedValues.hpp"
-#include "ConservativeVariablesCC.hpp"
+#include "ConservativeVariables.hpp"
 
-class ConservativeVariablesCC;
+class ConservativeVariables;
 
-class PrimitiveVariablesCC {
+class PrimitiveVariables {
 public:
     int nx;
     int ny;
+
+    // Cell-centered
     std::vector<std::vector<double>> rho;
     std::vector<std::vector<double>> vx;
     std::vector<std::vector<double>> vy;
@@ -23,14 +25,19 @@ public:
     std::vector<std::vector<double>> Bz;
     std::vector<std::vector<double>> P;
 
-    PrimitiveVariablesCC(int nx_, int ny_);
-    PrimitiveVariablesCC(const ConservativeVariablesCC& C_cc);
-    ~PrimitiveVariablesCC();
+    // Face-centered
+    std::vector<std::vector<double>> Bxf;
+    std::vector<std::vector<double>> Byf;
 
+    PrimitiveVariables(int nx_, int ny_);
+    PrimitiveVariables(const ConservativeVariables& C_cc);
+    ~PrimitiveVariables();
+
+    void ReconstructCenteredB(int nghost);
     void set(const ReconstructedValues& rv, int i, int j);
     void init(const std::vector<std::vector<double>>& rho_, const std::vector<std::vector<double>>& vx_, const std::vector<std::vector<double>>& vy_, const std::vector<std::vector<double>>& vz_, const std::vector<std::vector<double>>& Bx_, const std::vector<std::vector<double>>& By_, const std::vector<std::vector<double>>& Bz_, const std::vector<std::vector<double>>& P_);
     ReconstructedValues operator()(int i, int j) const;
-    PrimitiveVariablesCC& operator=(const PrimitiveVariablesCC& other);
+    PrimitiveVariables& operator=(const PrimitiveVariables& other);
 };
 
-#endif // PRIMITIVE_VARIABLES_CC_HPP_
+#endif // PRIMITIVE_VARIABLES_HPP_

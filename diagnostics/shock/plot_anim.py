@@ -7,7 +7,7 @@ import os
 nx = 800
 ny = 1
 
-quantity_name = 'By'
+quantity_name = 'vx'
 fixed_index = 0
 
 lx=1

@@ -18,11 +18,11 @@ typedef ReconstructedValues (*RiemannSolverFunction)(const Interface&);
 RiemannSolverFunction getRiemannSolver(Riemann rs);
 
 // Function pointer typedef for the CT
-typedef std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> (*CTFunction)(const ConservativeVariablesCC&, double, double, double, int, Reconstruction, Slope, Riemann);
+typedef std::vector<std::vector<double>> (*CTFunction)(const ConservativeVariables&, double, double, double, int, Reconstruction, Slope, Riemann);
 CTFunction getCT(CTMethod ct);
 
 // Function pointer typedef for the integrators
-typedef ConservativeVariablesCC (*IntegratorFunction)(ConservativeVariablesCC&, double, double, double, int, BoundaryConditions, Reconstruction, Slope, Riemann, CTMethod);
+typedef ConservativeVariables (*IntegratorFunction)(ConservativeVariables&, double, double, double, int, BoundaryConditions, Reconstruction, Slope, Riemann, CTMethod);
 IntegratorFunction getIntegrator(Integrator intg);
 
 #endif

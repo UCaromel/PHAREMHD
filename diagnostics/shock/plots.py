@@ -6,9 +6,13 @@ import os
 nx = 800
 ny = 1
 
+lx = 1
+
+
 quantities_to_plot = ['rho', 'vx', 'vy', 'By', 'P']
 fixed_index = 0
-lx = 1
+time_index = -1
+
 
 column_names = ['rho', 'vx', 'vy', 'vz', 'Bx', 'By', 'Bz', 'P']
 
@@ -51,8 +55,8 @@ gs = plt.GridSpec(3, 2)
 
 # Plot 'rho' on the centered subplot spanning both columns
 ax_rho = plt.subplot(gs[0, :])
-ax_rho.plot(x, quantities['rho'][-1, fixed_index, :], 'o', color='blue', markersize=3)
-ax_rho.set_title(f'rho at y={fixed_index}, t={times[-1]:.2f}')
+ax_rho.plot(x, quantities['rho'][time_index, fixed_index, :], 'o', color='blue', markersize=3)
+ax_rho.set_title(f'rho at y={fixed_index}, t={times[time_index]:.2f}')
 ax_rho.set_xlabel('x')
 ax_rho.set_ylabel('rho')
 ax_rho.grid(True)
@@ -70,8 +74,8 @@ for i, quantity in enumerate(quantities_to_plot[1:]):
     row = (i // 2) + 1
     col = i % 2
     ax = plt.subplot(gs[row, col])
-    ax.plot(x, quantities[quantity][-1, fixed_index, :], 'o', color='blue', markersize=3)
-    ax.set_title(f'{quantity} at y={fixed_index}, t={times[-1]:.2f}')
+    ax.plot(x, quantities[quantity][time_index, fixed_index, :], 'o', color='blue', markersize=3)
+    ax.set_title(f'{quantity} at y={fixed_index}, t={times[time_index]:.2f}')
     ax.set_xlabel('x')
     ax.set_ylabel(quantity)
     ax.grid(True)

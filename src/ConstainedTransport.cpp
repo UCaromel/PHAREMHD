@@ -1,6 +1,6 @@
 #include "ConstainedTransport.hpp"
 
-std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> ConstrainedTransportAverage(const ConservativeVariablesCC &Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs)
+std::vector<std::vector<double>> ConstrainedTransportAverage(const ConservativeVariables &Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs)
 {
     // Edge-centered
     std::vector<std::vector<double>> vx(Cn.ny + 1 - 2 * nghost, std::vector<double>(Cn.nx + 1 - 2 * nghost));
@@ -9,57 +9,23 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> Co
     std::vector<std::vector<double>> By(Cn.ny + 1 - 2 * nghost, std::vector<double>(Cn.nx + 1 - 2 * nghost));
     std::vector<std::vector<double>> Ez(Cn.ny + 1 - 2 * nghost, std::vector<double>(Cn.nx + 1 - 2 * nghost));
 
-    // Face-centered
-    std::vector<std::vector<double>> bx(Cn.ny - 2 * nghost, std::vector<double>(Cn.nx + 1 - 2 * nghost));
-    std::vector<std::vector<double>> by(Cn.ny + 1 - 2 * nghost, std::vector<double>(Cn.nx - 2 * nghost));
-
-    std::vector<std::vector<double>> BX(Cn.ny - 2 * nghost, std::vector<double>(Cn.nx - 2 * nghost));
-    std::vector<std::vector<double>> BY(Cn.ny - 2 * nghost, std::vector<double>(Cn.nx - 2 * nghost));
-
     for (int j = nghost; j <= Cn.ny - nghost; ++j)
     {
         for (int i = nghost; i <= Cn.nx - nghost; ++i)
         {
             vx[j - nghost][i - nghost] = 0.25 * ((Cn.rhovx[j][i] / Cn.rho[j][i]) + (Cn.rhovx[j][i - 1] / Cn.rho[j][i - 1]) + (Cn.rhovx[j - 1][i] / Cn.rho[j - 1][i]) + (Cn.rhovx[j - 1][i - 1] / Cn.rho[j - 1][i - 1]));
             vy[j - nghost][i - nghost] = 0.25 * ((Cn.rhovy[j][i] / Cn.rho[j][i]) + (Cn.rhovy[j][i - 1] / Cn.rho[j][i - 1]) + (Cn.rhovy[j - 1][i] / Cn.rho[j - 1][i]) + (Cn.rhovy[j - 1][i - 1] / Cn.rho[j - 1][i - 1]));
-            Bx[j - nghost][i - nghost] = 0.25 * (Cn.Bx[j][i] + Cn.Bx[j][i - 1] + Cn.Bx[j - 1][i] + Cn.Bx[j - 1][i - 1]);
-            By[j - nghost][i - nghost] = 0.25 * (Cn.By[j][i] + Cn.By[j][i - 1] + Cn.By[j - 1][i] + Cn.By[j - 1][i - 1]);
+            Bx[j - nghost][i - nghost] = 0.5 * (Cn.Bxf[j - 1][i] + Cn.Bxf[j][i]);
+            By[j - nghost][i - nghost] = 0.5 * (Cn.Byf[j][i - 1] + Cn.Byf[j][i]);
             Ez[j - nghost][i - nghost] = vy[j - nghost][i - nghost] * Bx[j - nghost][i - nghost] - vx[j - nghost][i - nghost] * By[j - nghost][i - nghost];
         }
     }
 
-    for (int j = nghost; j < Cn.ny - nghost; ++j)
-    {
-        for (int i = nghost; i <= Cn.nx - nghost; ++i)
-        {
-            bx[j - nghost][i - nghost] = 0.5 * (Cn.Bx[j][i] + Cn.Bx[j][i - 1]);
-            bx[j - nghost][i - nghost] -= (Dt / Dy) * (Ez[j + 1 - nghost][i - nghost] - Ez[j - nghost][i - nghost]);
-        }
-    }
-
-    for (int j = nghost; j <= Cn.ny - nghost; ++j)
-    {
-        for (int i = nghost; i < Cn.nx - nghost; ++i)
-        {
-            by[j - nghost][i - nghost] = 0.5 * (Cn.By[j][i] + Cn.By[j - 1][i]);
-            by[j - nghost][i - nghost] += (Dt / Dx) * (Ez[j - nghost][i + 1 - nghost] - Ez[j - nghost][i - nghost]);
-        }
-    }
-
-    for (int j = 0; j < Cn.ny - 2 * nghost; ++j)
-    {
-        for (int i = 0; i < Cn.nx - 2 * nghost; ++i)
-        {
-            BX[j][i] = 0.5 * (bx[j][i + 1] + bx[j][i]);
-            BY[j][i] = 0.5 * (by[j + 1][i] + by[j][i]);
-        }
-    }
-
-    return {BX, BY};
+    return Ez;
 }
 
-std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> ConstrainedTransportContact(const ConservativeVariablesCC &Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs){
-/*    PrimitiveVariablesCC Pn(Cn);
+std::vector<std::vector<double>> ConstrainedTransportContact(const ConservativeVariables &Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs){
+/*    PrimitiveVariables Pn(Cn);
     std::vector<std::vector<Interface>> InterfacesX(Pn.ny + 2 - 2 * nghost, std::vector<Interface>(Pn.nx + 1 - 2 * nghost));
     std::vector<std::vector<Interface>> InterfacesY(Pn.ny + 1 - 2 * nghost, std::vector<Interface>(Pn.nx + 2 - 2 * nghost));
 
@@ -170,16 +136,10 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> Co
 }
 
 
-std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> UCTHLL(const ConservativeVariablesCC &Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs){
-    PrimitiveVariablesCC Pn(Cn);
+std::vector<std::vector<double>> UCTHLL(const ConservativeVariables &Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs){
+    PrimitiveVariables Pn(Cn);
     std::vector<std::vector<Interface>> InterfacesX(Pn.ny + 2 - 2 * nghost, std::vector<Interface>(Pn.nx + 1 - 2 * nghost));
     std::vector<std::vector<Interface>> InterfacesY(Pn.ny + 1 - 2 * nghost, std::vector<Interface>(Pn.nx + 2 - 2 * nghost));
-
-    std::vector<std::vector<double>> bx(Cn.ny - 2 * nghost, std::vector<double>(Cn.nx + 1 - 2 * nghost));
-    std::vector<std::vector<double>> by(Cn.ny + 1 - 2 * nghost, std::vector<double>(Cn.nx - 2 * nghost));
-
-    std::vector<std::vector<double>> BX(Cn.ny - 2 * nghost, std::vector<double>(Cn.nx - 2 * nghost));
-    std::vector<std::vector<double>> BY(Cn.ny - 2 * nghost, std::vector<double>(Cn.nx - 2 * nghost));
 
     std::vector<std::vector<double>> Ez(Pn.ny + 1 - 2 * nghost, std::vector<double>(Pn.nx + 1 - 2 * nghost));
 
@@ -261,57 +221,39 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> UC
             double vyS = 0.5 * (x.uL.vy / x.uL.rho + x.uR.vy / x.uR.rho);
             double vyN = 0.5 * (x1.uL.vy / x1.uL.rho + x1.uR.vy / x1.uR.rho);
 
-            double ByW = 0.5 * (y.uL.By + y.uR.By);
-            double ByE = 0.5 * (y1.uL.By + y1.uR.By);
-            double BxS = 0.5 * (x.uL.Bx + x.uR.Bx);
-            double BxN = 0.5 * (x1.uL.Bx + x1.uR.Bx);
+            double ByW = Cn.Byf[j + nghost][i + nghost - 1];
+            double ByE = Cn.Byf[j + nghost][i + nghost];
+            double BxS = Cn.Bxf[j + nghost - 1][i + nghost];
+            double BxN = Cn.Bxf[j + nghost][i + nghost];
 
             Ez[j][i] = - (aW*vxW*ByW + aE*vxE*ByE) + (aS*vyS*BxS + aN*vyN*BxN) + (dE*ByE - dW*ByW) - (dN*BxN - dS*BxS);
         }
     }
 
-    for (int j = nghost; j < Cn.ny - nghost; ++j)
-    {
-        for (int i = nghost; i <= Cn.nx - nghost; ++i)
-        {
-            bx[j - nghost][i - nghost] = 0.5 * (Cn.Bx[j][i] + Cn.Bx[j][i - 1]);
-            bx[j - nghost][i - nghost] -= (Dt / Dy) * (Ez[j + 1 - nghost][i - nghost] - Ez[j - nghost][i - nghost]);
-        }
-    }
-
-    for (int j = nghost; j <= Cn.ny - nghost; ++j)
-    {
-        for (int i = nghost; i < Cn.nx - nghost; ++i)
-        {
-            by[j - nghost][i - nghost] = 0.5 * (Cn.By[j][i] + Cn.By[j - 1][i]);
-            by[j - nghost][i - nghost] += (Dt / Dx) * (Ez[j - nghost][i + 1 - nghost] - Ez[j - nghost][i - nghost]);
-        }
-    }
-
-    for (int j = 0; j < Cn.ny - 2 * nghost; ++j)
-    {
-        for (int i = 0; i < Cn.nx - 2 * nghost; ++i)
-        {
-            BX[j][i] = 0.5 * (bx[j][i + 1] + bx[j][i]);
-            BY[j][i] = 0.5 * (by[j + 1][i] + by[j][i]);
-        }
-    }
-
-    return {BX, BY};
+    return Ez;
 
 }
 
-void ApplyConstrainedTransport(ConservativeVariablesCC& Cn1, const ConservativeVariablesCC& Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs, CTMethod ct)
+#include "WrittingUtils.hpp"
+
+void ApplyConstrainedTransport(ConservativeVariables& Cn1, const ConservativeVariables& Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs, CTMethod ct)
 {
     CTFunction ChosenCT = getCT(ct);
-    auto [BX, BY] = ChosenCT(Cn, Dx, Dy, Dt, nghost, rec, sl, rs);
+    std::vector<std::vector<double>> Ez = ChosenCT(Cn, Dx, Dy, Dt, nghost, rec, sl, rs);
     
     for(int j = nghost; j < Cn1.ny - nghost; ++j)
     {
+        for(int i = nghost; i <= Cn1.nx - nghost; ++i)
+        {
+            Cn1.Bxf[j][i] = Cn.Bxf[j][i] - (Dt / Dy) * (Ez[j + 1 - nghost][i - nghost] - Ez[j - nghost][i - nghost]);
+        }
+    }
+
+    for(int j = nghost; j <= Cn1.ny - nghost; ++j)
+    {
         for(int i = nghost; i < Cn1.nx - nghost; ++i)
         {
-            Cn1.Bx[j][i] = BX[j - nghost][i - nghost];
-            Cn1.By[j][i] = BY[j - nghost][i - nghost];
+            Cn1.Byf[j][i] = Cn.Byf[j][i] + (Dt / Dx) * (Ez[j - nghost][i + 1 - nghost] - Ez[j - nghost][i - nghost]);
         }
     }
 }

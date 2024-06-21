@@ -1,8 +1,8 @@
-#include "PrimitiveVariablesCC.hpp"
-#include "ConservativeVariablesCC.hpp"
+#include "PrimitiveVariables.hpp"
+#include "ConservativeVariables.hpp"
 #include "EquationOfState.hpp"
 
-ConservativeVariablesCC::ConservativeVariablesCC(int nx, int ny) : nx(nx), ny(ny)
+ConservativeVariables::ConservativeVariables(int nx, int ny) : nx(nx), ny(ny)
 {
     rho.resize(ny, std::vector<double>(nx));
     rhovx.resize(ny, std::vector<double>(nx));
@@ -12,9 +12,12 @@ ConservativeVariablesCC::ConservativeVariablesCC(int nx, int ny) : nx(nx), ny(ny
     By.resize(ny, std::vector<double>(nx));
     Bz.resize(ny, std::vector<double>(nx));
     Etot.resize(ny, std::vector<double>(nx));
+
+    Bxf.resize(ny, std::vector<double>(nx + 1));
+    Byf.resize(ny + 1, std::vector<double>(nx));
 }
 
-ConservativeVariablesCC::ConservativeVariablesCC(const PrimitiveVariablesCC& P_cc) : nx(P_cc.nx), ny(P_cc.ny)
+ConservativeVariables::ConservativeVariables(const PrimitiveVariables& P_cc) : nx(P_cc.nx), ny(P_cc.ny)
 {
     rho.resize(ny, std::vector<double>(nx));
     rhovx.resize(ny, std::vector<double>(nx));
@@ -24,6 +27,9 @@ ConservativeVariablesCC::ConservativeVariablesCC(const PrimitiveVariablesCC& P_c
     By.resize(ny, std::vector<double>(nx));
     Bz.resize(ny, std::vector<double>(nx));
     Etot.resize(ny, std::vector<double>(nx));
+
+    Bxf.resize(ny, std::vector<double>(nx + 1));
+    Byf.resize(ny + 1, std::vector<double>(nx));
 
     for (int j = 0; j < ny; j++) {
         for (int i = 0; i < nx; i++) {
@@ -35,13 +41,34 @@ ConservativeVariablesCC::ConservativeVariablesCC(const PrimitiveVariablesCC& P_c
             By[j][i] = P_cc.By[j][i];
             Bz[j][i] = P_cc.Bz[j][i];
             Etot[j][i] = EosEtot(P_cc(i,j));
+
+            Bxf[j][i] = P_cc.Bxf[j][i];
+            Byf[j][i] = P_cc.Byf[j][i];
         }
+        Bxf[j][nx] = P_cc.Bxf[j][nx];
+    }
+    for (int i = 0; i < nx; i++) {
+        Byf[ny][i] = P_cc.Byf[ny][i];
     }
 }
 
-ConservativeVariablesCC::~ConservativeVariablesCC() = default;
+ConservativeVariables::~ConservativeVariables() = default;
 
-void ConservativeVariablesCC::set(const ReconstructedValues& rv, int i, int j){
+void ConservativeVariables::ReconstructCenteredB(int nghost) {
+    for (int i = 0; i < nx - 2*nghost; i++) {
+        for (int j = 0; j < ny - 2*nghost; j++) {
+            if (nghost == 0) {
+                Bx[j][i] = 0.5*(Bxf[j][i] + Bxf[j][i + 1]);
+                By[j][i] = 0.5*(Byf[j][i] + Byf[j + 1][i]);
+            } else {
+                Bx[j + nghost][i + nghost] = 0.5*(Bxf[j + nghost][i + nghost] + Bxf[j + nghost][i + nghost + 1]);
+                By[j + nghost][i + nghost] = 0.5*(Byf[j + nghost][i + nghost] + Byf[j + nghost + 1][i + nghost]);
+            }
+        }    
+    }
+}
+
+void ConservativeVariables::set(const ReconstructedValues& rv, int i, int j){
     rho[j][i] = rv.rho;
     rhovx[j][i] = rv.vx;
     rhovy[j][i] = rv.vy;
@@ -52,15 +79,24 @@ void ConservativeVariablesCC::set(const ReconstructedValues& rv, int i, int j){
     Etot[j][i] = rv.P;
 }
 
-ReconstructedValues ConservativeVariablesCC::operator()(int i, int j) const {
+void ConservativeVariables::setflux(const ReconstructedValues& rv, int i, int j){
+    rho[j][i] = rv.rho;
+    rhovx[j][i] = rv.vx;
+    rhovy[j][i] = rv.vy;
+    rhovz[j][i] = rv.vz;
+    Etot[j][i] = rv.P;
+}
+
+ReconstructedValues ConservativeVariables::operator()(int i, int j) const {
     if (i < 0 || i >= nx || j < 0 || j >= ny)
         throw("Index out of range");
 
     return ReconstructedValues{rho[j][i], rhovx[j][i], rhovy[j][i], rhovz[j][i], Bx[j][i], By[j][i], Bz[j][i], Etot[j][i]};
 }
 
-ConservativeVariablesCC ConservativeVariablesCC::operator*(double scalar) const {
-    ConservativeVariablesCC result(this->nx, this->ny);
+
+ConservativeVariables ConservativeVariables::operator*(double scalar) const {
+    ConservativeVariables result(this->nx, this->ny);
 
     for (int j = 0; j < this->ny; j++) {
         for (int i = 0; i < this->nx; i++) {
@@ -72,13 +108,20 @@ ConservativeVariablesCC ConservativeVariablesCC::operator*(double scalar) const 
             result.By[j][i] = this->By[j][i] * scalar;
             result.Bz[j][i] = this->Bz[j][i] * scalar;
             result.Etot[j][i] = this->Etot[j][i] * scalar;
+
+            result.Bxf[j][i] = this->Bxf[j][i] * scalar;
+            result.Byf[j][i] = this->Byf[j][i] * scalar;
         }
+        result.Bxf[j][nx] = this->Bxf[j][nx] * scalar;
+    }
+    for (int i = 0; i < nx; i++) {
+        result.Byf[ny][i] = this->Byf[ny][i] * scalar;
     }
     return result;
 }
 
-ConservativeVariablesCC ConservativeVariablesCC::operator-(const ConservativeVariablesCC& other) const {
-    ConservativeVariablesCC result(this->nx, this->ny);
+ConservativeVariables ConservativeVariables::operator-(const ConservativeVariables& other) const {
+    ConservativeVariables result(this->nx, this->ny);
 
     if (this->nx != other.nx || this->ny != other.ny) {
         throw("Dimension mismatch");
@@ -94,13 +137,20 @@ ConservativeVariablesCC ConservativeVariablesCC::operator-(const ConservativeVar
             result.By[j][i] = this->By[j][i] - other.By[j][i];
             result.Bz[j][i] = this->Bz[j][i] - other.Bz[j][i];
             result.Etot[j][i] = this->Etot[j][i] - other.Etot[j][i];
+
+            result.Bxf[j][i] = this->Bxf[j][i] - other.Bxf[j][i];
+            result.Byf[j][i] = this->Byf[j][i] - other.Byf[j][i];
         }
+        result.Bxf[j][nx] = this->Bxf[j][nx] - other.Bxf[j][nx];
+    }
+    for (int i = 0; i < nx; i++) {
+        result.Byf[ny][i] = this->Byf[ny][i] - other.Byf[ny][i];
     }
     return result;
 }
 
-ConservativeVariablesCC ConservativeVariablesCC::operator+(const ConservativeVariablesCC& other) const {
-    ConservativeVariablesCC result(this->nx, this->ny);
+ConservativeVariables ConservativeVariables::operator+(const ConservativeVariables& other) const {
+    ConservativeVariables result(this->nx, this->ny);
 
     if (this->nx != other.nx || this->ny != other.ny) {
         throw("Dimension mismatch");
@@ -116,12 +166,19 @@ ConservativeVariablesCC ConservativeVariablesCC::operator+(const ConservativeVar
             result.By[j][i] = this->By[j][i] + other.By[j][i];
             result.Bz[j][i] = this->Bz[j][i] + other.Bz[j][i];
             result.Etot[j][i] = this->Etot[j][i] + other.Etot[j][i];
+
+            result.Bxf[j][i] = this->Bxf[j][i] + other.Bxf[j][i];
+            result.Byf[j][i] = this->Byf[j][i] + other.Byf[j][i];
         }
+        result.Bxf[j][nx] = this->Bxf[j][nx] + other.Bxf[j][nx];
+    }
+    for (int i = 0; i < nx; i++) {
+        result.Byf[ny][i] = this->Byf[ny][i] + other.Byf[ny][i];
     }
     return result;
 }
 
-ConservativeVariablesCC& ConservativeVariablesCC::operator=(const ConservativeVariablesCC& other) {
+ConservativeVariables& ConservativeVariables::operator=(const ConservativeVariables& other) {
     if (this->nx != other.nx || this->ny != other.ny) {
         throw("Dimension mismatch");
     }
@@ -136,7 +193,14 @@ ConservativeVariablesCC& ConservativeVariablesCC::operator=(const ConservativeVa
             this->By[j][i] = other.By[j][i];
             this->Bz[j][i] = other.Bz[j][i];
             this->Etot[j][i] = other.Etot[j][i];
+
+            this->Bxf[j][i] = other.Bxf[j][i];
+            this->Byf[j][i] = other.Byf[j][i];
         }
+        this->Bxf[j][nx] = other.Bxf[j][nx];
+    }
+    for (int i = 0; i < nx; i++) {
+        this->Byf[ny][i] = other.Byf[ny][i];
     }
     return *this;
 }

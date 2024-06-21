@@ -82,7 +82,7 @@ stepDy = 0
 
 while Dy > initial_Dy / 32.0 and ny < 1600:
     rho, vx, vy, vz, Bx, By, Bz, P = initialize_variables(nx, ny, Dx, Dy)
-    P0cc = p.PrimitiveVariablesCC(nx, ny)
+    P0cc = p.PrimitiveVariables(nx, ny)
     P0cc.init(rho, vx, vy, vz, Bx, By, Bz, P)
 
     current_results_dir = os.path.join(results_dir, f'{stepDy}_')

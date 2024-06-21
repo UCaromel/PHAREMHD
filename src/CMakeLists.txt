@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 project(MHDProblem)
 
 set(SOURCES
-    ConservativeVariablesCC.cpp
-    PrimitiveVariablesCC.cpp
+    ConservativeVariables.cpp
+    PrimitiveVariables.cpp
     ConstainedTransport.hpp
     GodunovFlux.hpp
     ../diagnostics/alfvenwave/Initialisation.hpp
