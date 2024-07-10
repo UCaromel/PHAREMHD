@@ -12,23 +12,21 @@ nx = 100
 ny = 100
 Dx = 1/100
 Dy = 1/100
-Dt = 0.0001
+Dt = 0.002
 FinalTime = 0.15
-order = 1
-nghost = 2
+nghost = 1
 
-boundaryconditions = p.BoundaryConditions.Periodic
+boundaryconditions = p.BoundaryConditions.ZeroGradient
 
-reconstruction = p.Reconstruction.Linear
+reconstruction = p.Reconstruction.Constant
 slopelimiter = p.Slope.VanLeer
 riemannsolver = p.RiemannSolver.Rusanov
 constainedtransport = p.CTMethod.Average
 timeintegrator = p.Integrator.TVDRK2Integrator
 
 ##############################################################################################################################################################################
-#omega = 20.0
-B0 = 2.5/(np.sqrt(4*np.pi))#5./(np.sqrt(4*np.pi))
-v0 = 1
+B0 = 5/(np.sqrt(4*np.pi))
+v0 = 0.04
 
 r0 = 0.1
 r1 = 0.115
@@ -51,14 +49,14 @@ def vx_(x, y):
     r_ = r(x, y)
     f_ = f(r_)
     
-    vx_values = np.where(r_ <= r0, -v0*(y - 0.5)/r0, np.where(r_ < r1, -f_ * v0 * (y - 0.5)/ r_, 0.0))#np.where(r_ <= r0, -omega * y, np.where(r_ < r1, -f_ * omega * y * r0 / r_, 0.0))
+    vx_values = np.where(r_ <= r0, -f_ * v0 * (y - 0.5) / r0, np.where(r_ < r1, -f_ * v0 * (y - 0.5) / r_, 0.0))
     return vx_values
 
 def vy_(x, y):
     r_ = r(x, y)
     f_ = f(r_)
     
-    vy_values = np.where(r_ <= r0, v0*(x - 0.5)/r0, np.where(r_ < r1, f_ * v0 * (x - 0.5)/ r_, 0.0))#np.where(r_ <= r0, omega * x, np.where(r_ < r1, f_ * omega * x * r0 / r_, 0.0))
+    vy_values = np.where(r_ <= r0, f_ * v0 * (x - 0.5) / r0, np.where(r_ < r1, f_ * v0 * (x - 0.5) / r_, 0.0))
     return vy_values
 
 def vz_(x, y):
@@ -107,6 +105,6 @@ os.makedirs(result_dir, exist_ok=True)
 P0cc = p.PrimitiveVariables(nx, ny)
 P0cc.init(rho, vx, vy, vz, Bxf, Byf, Bz, P)
 
-p.PhareMHD(P0cc, result_dir, order, nghost, 
+p.PhareMHD(P0cc, result_dir, nghost, 
            boundaryconditions, reconstruction, slopelimiter, riemannsolver, constainedtransport, timeintegrator,
            Dx, Dy, FinalTime, Dt)

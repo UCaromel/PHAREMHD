@@ -8,13 +8,12 @@ import shutil
 
 #############################################################################################################################################################################
 
-nx = 128
-ny = 128
+nx = 1024
+ny = 1024
 Dx = 1/nx
 Dy = 1/ny
 Dt = 0.0
-FinalTime = 0.5
-order = 1
+FinalTime = 1
 nghost = 2
 
 boundaryconditions = p.BoundaryConditions.Periodic
@@ -26,6 +25,7 @@ constainedtransport = p.CTMethod.Average
 timeintegrator = p.Integrator.TVDRK2Integrator
 
 dumpvariables = p.dumpVariables.Primitive
+dumpfrequency = 80
 
 ##############################################################################################################################################################################
 B0 = 1./(np.sqrt(4.*np.pi))
@@ -83,6 +83,6 @@ os.makedirs(result_dir, exist_ok=True)
 P0cc = p.PrimitiveVariables(nx, ny)
 P0cc.init(rho, vx, vy, vz, Bxf, Byf, Bz, P)
 
-p.PhareMHD(P0cc, result_dir, order, nghost, 
+p.PhareMHD(P0cc, result_dir, nghost, 
            boundaryconditions, reconstruction, slopelimiter, riemannsolver, constainedtransport, timeintegrator,
-           Dx, Dy, FinalTime, Dt, dumpvariables = dumpvariables)
+           Dx, Dy, FinalTime, Dt, dumpvariables = dumpvariables, dumpfrequency = dumpfrequency)

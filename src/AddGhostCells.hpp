@@ -9,81 +9,81 @@
 #include "ConservativeVariables.hpp"
 
 template<typename Variables>
-void UpdateGhostCells(Variables& V_cc, int nghost, BoundaryConditions bc) {
+void UpdateGhostCells(Variables& Vn, int nghost, BoundaryConditions bc) {
     if(bc == BoundaryConditions::Periodic){
         // Update ghost cells for lines (excluding corners)
-        for (int i = nghost; i < V_cc.nx - nghost; i++) {
+        for (int i = nghost; i < Vn.nx - nghost; i++) {
             for (int k = 1; k <= nghost; k++) {
-                V_cc.set(V_cc(i, V_cc.ny - k - nghost), i, nghost - k); // Bottom side
-                V_cc.set(V_cc(i, k - 1 + nghost), i, V_cc.ny - 1 + k - nghost); // Top side
+                Vn.set(Vn(i, Vn.ny - k - nghost), i, nghost - k); // Bottom side
+                Vn.set(Vn(i, k - 1 + nghost), i, Vn.ny - 1 + k - nghost); // Top side
             }
         }
 
         // Update ghost cells for columns (excluding corners)
-        for (int j = nghost; j < V_cc.ny - nghost; j++) {
+        for (int j = nghost; j < Vn.ny - nghost; j++) {
             for (int k = 1; k <= nghost; k++) {
-                V_cc.set(V_cc(V_cc.nx - k - nghost, j), nghost - k, j); // Left side
-                V_cc.set(V_cc(k - 1 + nghost, j), V_cc.nx - 1 + k - nghost, j); // Right side
+                Vn.set(Vn(Vn.nx - k - nghost, j), nghost - k, j); // Left side
+                Vn.set(Vn(k - 1 + nghost, j), Vn.nx - 1 + k - nghost, j); // Right side
             }
         }
 
         // Corners
         for (int k1 = 1; k1 <= nghost; k1++) {
             for (int k2 = 1; k2 <= nghost; k2++) {
-                V_cc.set(V_cc(V_cc.nx - k1 - nghost, V_cc.ny - k2 - nghost), nghost - k1, nghost - k2); // Bottom-left
-                V_cc.set(V_cc(V_cc.nx - k1 - nghost,  k2 - 1 + nghost), nghost - k1, k2 - 1 + V_cc.ny - nghost); // Top-left
-                V_cc.set(V_cc(k1 - 1 + nghost, V_cc.ny - k2 - nghost), k1 - 1 + V_cc.nx - nghost, nghost - k2); // Bottom-right
-                V_cc.set(V_cc(k1 - 1 + nghost, k2 - 1 + nghost), k1 - 1 + V_cc.nx - nghost, k2 - 1 + V_cc.ny - nghost); // Top-right
+                Vn.set(Vn(Vn.nx - k1 - nghost, Vn.ny - k2 - nghost), nghost - k1, nghost - k2); // Bottom-left
+                Vn.set(Vn(Vn.nx - k1 - nghost,  k2 - 1 + nghost), nghost - k1, k2 - 1 + Vn.ny - nghost); // Top-left
+                Vn.set(Vn(k1 - 1 + nghost, Vn.ny - k2 - nghost), k1 - 1 + Vn.nx - nghost, nghost - k2); // Bottom-right
+                Vn.set(Vn(k1 - 1 + nghost, k2 - 1 + nghost), k1 - 1 + Vn.nx - nghost, k2 - 1 + Vn.ny - nghost); // Top-right
             }
         }
 
         // Face centered (only one ghost cell)
-        for (int i = nghost; i < V_cc.nx + 1 - nghost; i++) {
-            V_cc.Bxf[nghost - 1][i] = V_cc.Bxf[V_cc.ny - nghost - 1][i]; // Bottom side
-            V_cc.Bxf[V_cc.ny - nghost][i] = V_cc.Bxf[nghost][i]; // Top side
+        for (int i = nghost; i < Vn.nx + 1 - nghost; i++) {
+            Vn.Bxf[nghost - 1][i] = Vn.Bxf[Vn.ny - nghost - 1][i]; // Bottom side
+            Vn.Bxf[Vn.ny - nghost][i] = Vn.Bxf[nghost][i]; // Top side
         }
 
-        for (int j = nghost; j < V_cc.ny + 1 - nghost; j++) {
-            V_cc.Byf[j][nghost - 1] = V_cc.Byf[j][V_cc.nx - nghost - 1]; // Left side
-            V_cc.Byf[j][V_cc.nx - nghost] = V_cc.Byf[j][nghost]; // Right side
+        for (int j = nghost; j < Vn.ny + 1 - nghost; j++) {
+            Vn.Byf[j][nghost - 1] = Vn.Byf[j][Vn.nx - nghost - 1]; // Left side
+            Vn.Byf[j][Vn.nx - nghost] = Vn.Byf[j][nghost]; // Right side
         }
 
     } else if(bc == BoundaryConditions::ZeroGradient){
         // Update ghost cells for lines (excluding corners)
-        for (int i = nghost; i < V_cc.nx - nghost; i++) {
+        for (int i = nghost; i < Vn.nx - nghost; i++) {
             for (int k = 1; k <= nghost; k++) {
-                V_cc.set(V_cc(i, nghost - k + 1), i, nghost - k); // Bottom side
-                V_cc.set(V_cc(i, V_cc.ny - 2 + k - nghost), i, V_cc.ny - 1 + k - nghost); // Top side
+                Vn.set(Vn(i, nghost - k + 1), i, nghost - k); // Bottom side
+                Vn.set(Vn(i, Vn.ny - 2 + k - nghost), i, Vn.ny - 1 + k - nghost); // Top side
             }
         }
 
         // Update ghost cells for columns (excluding corners)
-        for (int j = nghost; j < V_cc.ny - nghost; j++) {
+        for (int j = nghost; j < Vn.ny - nghost; j++) {
             for (int k = 1; k <= nghost; k++) {
-                V_cc.set(V_cc(nghost - k + 1, j), nghost - k, j); // Left side
-                V_cc.set(V_cc(V_cc.nx - 2 + k - nghost, j), V_cc.nx - 1 + k - nghost, j); // Right side
+                Vn.set(Vn(nghost - k + 1, j), nghost - k, j); // Left side
+                Vn.set(Vn(Vn.nx - 2 + k - nghost, j), Vn.nx - 1 + k - nghost, j); // Right side
             }
         }
 
         // Corners
         for (int k1 = 1; k1 <= nghost; k1++) {
             for (int k2 = 1; k2 <= nghost; k2++) {
-                V_cc.set(V_cc(nghost - k1 + 1, nghost - k2 + 1), nghost - k1, nghost - k2); // Bottom-left
-                V_cc.set(V_cc(nghost - k1 + 1, k2 - 2 + V_cc.ny - nghost), nghost - k1, k2 - 1 + V_cc.ny - nghost); // Top-left
-                V_cc.set(V_cc(k1 - 2 + V_cc.nx - nghost, nghost - k2 + 1), k1 - 1 + V_cc.nx - nghost, nghost - k2); // Bottom-right
-                V_cc.set(V_cc(k1 - 2 + V_cc.nx - nghost, k2 - 2 + V_cc.ny - nghost), k1 - 1 + V_cc.nx - nghost, k2 - 1 + V_cc.ny - nghost); // Top-right
+                Vn.set(Vn(nghost - k1 + 1, nghost - k2 + 1), nghost - k1, nghost - k2); // Bottom-left
+                Vn.set(Vn(nghost - k1 + 1, k2 - 2 + Vn.ny - nghost), nghost - k1, k2 - 1 + Vn.ny - nghost); // Top-left
+                Vn.set(Vn(k1 - 2 + Vn.nx - nghost, nghost - k2 + 1), k1 - 1 + Vn.nx - nghost, nghost - k2); // Bottom-right
+                Vn.set(Vn(k1 - 2 + Vn.nx - nghost, k2 - 2 + Vn.ny - nghost), k1 - 1 + Vn.nx - nghost, k2 - 1 + Vn.ny - nghost); // Top-right
             }
         }
 
         // Face centered (only one ghost cell)
-        for (int i = nghost; i < V_cc.nx + 1 - nghost; i++) {
-            V_cc.Bxf[nghost - 1][i] = V_cc.Bxf[nghost][i]; // Bottom side
-            V_cc.Bxf[V_cc.ny - nghost][i] = V_cc.Bxf[V_cc.ny - nghost - 1][i]; // Top side
+        for (int i = nghost; i < Vn.nx + 1 - nghost; i++) {
+            Vn.Bxf[nghost - 1][i] = Vn.Bxf[nghost][i]; // Bottom side
+            Vn.Bxf[Vn.ny - nghost][i] = Vn.Bxf[Vn.ny - nghost - 1][i]; // Top side
         }
 
-        for (int j = nghost; j < V_cc.ny + 1 - nghost; j++) {
-            V_cc.Byf[j][nghost - 1] = V_cc.Byf[j][nghost]; // Left side
-            V_cc.Byf[j][V_cc.nx - nghost] = V_cc.Byf[j][V_cc.nx - nghost - 1]; // Right side
+        for (int j = nghost; j < Vn.ny + 1 - nghost; j++) {
+            Vn.Byf[j][nghost - 1] = Vn.Byf[j][nghost]; // Left side
+            Vn.Byf[j][Vn.nx - nghost] = Vn.Byf[j][Vn.nx - nghost - 1]; // Right side
         }
 
     } else {
@@ -92,13 +92,13 @@ void UpdateGhostCells(Variables& V_cc, int nghost, BoundaryConditions bc) {
 }
 
 template<typename Variables>
-Variables InitialiseGhostCells(const Variables& P_cc, int nghost, BoundaryConditions bc){
-    Variables withGhost(P_cc.nx + 2 * nghost, P_cc.ny + 2 * nghost);
+Variables InitialiseGhostCells(const Variables& Vn, int nghost, BoundaryConditions bc){
+    Variables withGhost(Vn.nx + 2 * nghost, Vn.ny + 2 * nghost);
 
     // Copy interior values
-    for (int i = 0; i < P_cc.nx; ++i) {
-        for (int j = 0; j < P_cc.ny; ++j) {
-            withGhost.set(P_cc(i, j), i + nghost, j + nghost);
+    for (int i = 0; i < Vn.nx; ++i) {
+        for (int j = 0; j < Vn.ny; ++j) {
+            withGhost.set(Vn(i, j), i + nghost, j + nghost);
         }
     }
 
@@ -107,14 +107,14 @@ Variables InitialiseGhostCells(const Variables& P_cc, int nghost, BoundaryCondit
     }
 
     // Face centered (only one ghost cell)
-    for (int j = 0; j < P_cc.ny; ++j) {
-        for (int i = 0; i <= P_cc.nx; ++i) {
-            withGhost.Bxf[j + nghost][i + nghost] = P_cc.Bxf[j][i];
+    for (int j = 0; j < Vn.ny; ++j) {
+        for (int i = 0; i <= Vn.nx; ++i) {
+            withGhost.Bxf[j + nghost][i + nghost] = Vn.Bxf[j][i];
         }
     }
-    for (int j = 0; j <= P_cc.ny; ++j) {
-        for (int i = 0; i < P_cc.nx; ++i) {
-            withGhost.Byf[j + nghost][i + nghost] = P_cc.Byf[j][i];
+    for (int j = 0; j <= Vn.ny; ++j) {
+        for (int i = 0; i < Vn.nx; ++i) {
+            withGhost.Byf[j + nghost][i + nghost] = Vn.Byf[j][i];
         }
     }
 

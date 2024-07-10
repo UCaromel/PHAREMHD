@@ -5,6 +5,8 @@ bin/
 tpp/
 __pycache__
 *.gif
+*.mp4
+*.png
 
 space_results/
 time_results/
@@ -13,5 +15,11 @@ orszagtangres/
 orszagtangCTAverage/
 orszagtangUCTHLL/
 orszagtangCTContact/
+orszagtang1024
+orszagtang1024r2
 MHDrotorres/
 shockres/
+harrisres/
+currentres/
+
+frames/

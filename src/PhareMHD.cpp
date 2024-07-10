@@ -1,6 +1,6 @@
 #include "PhareMHD.hpp"
 
-void PhareMHD(const PrimitiveVariables& P0cc, std::string resultDir, int order, int nghost, BoundaryConditions bc, Reconstruction rec, Slope sl, Riemann rs, CTMethod ct, Integrator intg, double Dx, double Dy, double FinalTime, double Dt, dumpVariables dv, int dumpfrequency) {
+void PhareMHD(const PrimitiveVariables& P0cc, std::string resultDir, int nghost, BoundaryConditions bc, Reconstruction rec, Slope sl, Riemann rs, CTMethod ct, Integrator intg, double Dx, double Dy, double FinalTime, double Dt, OptionalPhysics OptP, dumpVariables dv, int dumpfrequency) {
     double DivB;
 
     PrimitiveVariables P0 = InitialiseGhostCells(P0cc, nghost, bc);
@@ -29,14 +29,14 @@ void PhareMHD(const PrimitiveVariables& P0cc, std::string resultDir, int order, 
     IntegratorFunction ChosenIntegrator = getIntegrator(intg);
 
     if(Dt == 0.0){
-        double Dt = ComPuteNewDt(U0, Dx, Dy, nghost);
+        double Dt = ComPuteNewDt(U0, Dx, Dy, nghost, OptP);
         int step = 1;
 
         while(time <= FinalTime){
-            Un1 = ChosenIntegrator(Un1, Dx, Dy, Dt, nghost, bc, rec, sl, rs, ct);
+            Un1 = ChosenIntegrator(Un1, Dx, Dy, Dt, nghost, bc, rec, sl, rs, ct, OptP);
 
             time = time + Dt;
-            Dt = ComPuteNewDt(Un1, Dx, Dy, nghost);
+            Dt = ComPuteNewDt(Un1, Dx, Dy, nghost, OptP);
             std::cout<<time<<" "<<Dt<<std::endl;
 
             UpdateGhostCells(Un1, nghost, bc);
@@ -63,7 +63,7 @@ void PhareMHD(const PrimitiveVariables& P0cc, std::string resultDir, int order, 
         }
     }else{
         for(int step = 1; step * Dt <= FinalTime; step++){
-            Un1 = ChosenIntegrator(Un1, Dx, Dy, Dt, nghost, bc, rec, sl, rs, ct);
+            Un1 = ChosenIntegrator(Un1, Dx, Dy, Dt, nghost, bc, rec, sl, rs, ct, OptP);
 
             time = time + Dt;
             std::cout<<time<<std::endl;

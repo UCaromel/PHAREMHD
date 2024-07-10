@@ -3,13 +3,14 @@
 
 #include "ConservativeVariables.hpp"
 #include "EquationOfState.hpp"
+#include "Enums.hpp"
 
 #include <cmath>
 #include <algorithm>
 
 const double sigmaCFL = 0.8;
 
-inline double ComPuteNewDt(const ConservativeVariables& C_cc, double Dx, double Dy, int nghost){
+inline double ComPuteNewDt(const ConservativeVariables& C_cc, double Dx, double Dy, int nghost, OptionalPhysics OptP){
     std::vector<double> sum;
 
     for (int j = nghost; j < C_cc.ny - nghost; ++j) {

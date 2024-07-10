@@ -1,6 +1,6 @@
 #include "ConstainedTransport.hpp"
 
-std::vector<std::vector<double>> ConstrainedTransportAverage(const ConservativeVariables &Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs)
+std::vector<std::vector<double>> ConstrainedTransportAverage(const ConservativeVariables &Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs, OptionalPhysics OptP)
 {
     // Edge-centered
     std::vector<std::vector<double>> vx(Cn.ny + 1 - 2 * nghost, std::vector<double>(Cn.nx + 1 - 2 * nghost));
@@ -24,7 +24,7 @@ std::vector<std::vector<double>> ConstrainedTransportAverage(const ConservativeV
     return Ez;
 }
 
-std::vector<std::vector<double>> ConstrainedTransportContact(const ConservativeVariables &Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs){
+std::vector<std::vector<double>> ConstrainedTransportContact(const ConservativeVariables &Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs, OptionalPhysics OptP){
 /*    PrimitiveVariables Pn(Cn);
     std::vector<std::vector<Interface>> InterfacesX(Pn.ny + 2 - 2 * nghost, std::vector<Interface>(Pn.nx + 1 - 2 * nghost));
     std::vector<std::vector<Interface>> InterfacesY(Pn.ny + 1 - 2 * nghost, std::vector<Interface>(Pn.nx + 2 - 2 * nghost));
@@ -136,7 +136,7 @@ std::vector<std::vector<double>> ConstrainedTransportContact(const ConservativeV
 }
 
 
-std::vector<std::vector<double>> UCTHLL(const ConservativeVariables &Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs){
+std::vector<std::vector<double>> UCTHLL(const ConservativeVariables &Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs, OptionalPhysics OptP){
     PrimitiveVariables Pn(Cn);
     std::vector<std::vector<Interface>> InterfacesX(Pn.ny + 2 - 2 * nghost, std::vector<Interface>(Pn.nx + 1 - 2 * nghost));
     std::vector<std::vector<Interface>> InterfacesY(Pn.ny + 1 - 2 * nghost, std::vector<Interface>(Pn.nx + 2 - 2 * nghost));
@@ -147,7 +147,7 @@ std::vector<std::vector<double>> UCTHLL(const ConservativeVariables &Cn, double 
     {
         for (int i = nghost; i <= Cn.nx - nghost; ++i)
         {
-            InterfacesX[j - nghost + 1][i - nghost] = Interface(Pn, i, j, rec, sl, nghost, Dir::X);
+            InterfacesX[j - nghost + 1][i - nghost] = Interface(Pn, i, j, rec, sl, OptP, nghost, Dir::X);
         }
     }
 
@@ -155,7 +155,7 @@ std::vector<std::vector<double>> UCTHLL(const ConservativeVariables &Cn, double 
     {
         for (int i = nghost - 1; i < Cn.nx - nghost + 1; ++i)
         {
-            InterfacesY[j - nghost][i - nghost + 1] = Interface(Pn, i, j, rec, sl, nghost, Dir::Y);
+            InterfacesY[j - nghost][i - nghost + 1] = Interface(Pn, i, j, rec, sl, OptP, nghost, Dir::Y);
         }
     }
 
@@ -236,10 +236,10 @@ std::vector<std::vector<double>> UCTHLL(const ConservativeVariables &Cn, double 
 
 #include "WrittingUtils.hpp"
 
-void ApplyConstrainedTransport(ConservativeVariables& Cn1, const ConservativeVariables& Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs, CTMethod ct)
+void ApplyConstrainedTransport(ConservativeVariables& Cn1, const ConservativeVariables& Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs, CTMethod ct, OptionalPhysics OptP)
 {
     CTFunction ChosenCT = getCT(ct);
-    std::vector<std::vector<double>> Ez = ChosenCT(Cn, Dx, Dy, Dt, nghost, rec, sl, rs);
+    std::vector<std::vector<double>> Ez = ChosenCT(Cn, Dx, Dy, Dt, nghost, rec, sl, rs, OptP);
     
     for(int j = nghost; j < Cn1.ny - nghost; ++j)
     {

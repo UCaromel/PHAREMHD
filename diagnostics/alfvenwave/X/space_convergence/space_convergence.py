@@ -1,5 +1,5 @@
 import sys
-sys.path.append('/home/caromel/Documents/MHD_PHARE/pyMHD')
+sys.path.append('/home/caromel/Documents/PHAREMHD/pyMHD')
 
 import numpy as np
 import pyMHD as p
@@ -13,7 +13,6 @@ final_time = 1
 Dt = 5e-4
 ny = 3
 Dy = 0.01
-order = 1
 nghost = 2
 
 boundaryconditions = p.BoundaryConditions.Periodic
@@ -58,16 +57,22 @@ def P_(x, y):
 def initialize_variables(nx, ny, Dx, Dy):
     x = np.arange(nx) * Dx + 0.5 * Dx
     y = np.arange(ny) * Dy + 0.5 * Dy
-    xx, yy = np.meshgrid(x, y, indexing='ij')
+    xf = np.arange(nx+1) * Dx
+    yf = np.arange(ny+1) * Dy
+
+    xx, yy = np.meshgrid(x, y, indexing = 'ij')
+    xfx, yfx = np.meshgrid(xf, y, indexing = 'ij')
+    xfy, yfy = np.meshgrid(x, yf, indexing = 'ij')
+
     rho = np.full((nx, ny), rho_(xx, yy)).T
     vx = np.full((nx, ny), vx_(xx, yy)).T
     vy = np.full((nx, ny), vy_(xx, yy)).T
     vz = np.full((nx, ny), vz_(xx, yy)).T
-    Bx = np.full((nx, ny), Bx_(xx, yy)).T
-    By = np.full((nx, ny), By_(xx, yy)).T
+    Bxf = np.full((nx + 1, ny), Bx_(xfx, yfx)).T
+    Byf = np.full((nx, ny + 1), By_(xfy, yfy)).T
     Bz = np.full((nx, ny), Bz_(xx, yy)).T
     P = np.full((nx, ny), P_(xx, yy)).T
-    return rho, vx, vy, vz, Bx, By, Bz, P
+    return rho, vx, vy, vz, Bxf, Byf, Bz, P
 
 ############################################################################################################################################################################
 results_dir = 'space_results/'
@@ -81,13 +86,13 @@ nx = initial_nx
 stepDx = 0
 
 while Dx > initial_Dx / 32.0 and nx < 1600:
-    rho, vx, vy, vz, Bx, By, Bz, P = initialize_variables(nx, ny, Dx, Dy)
+    rho, vx, vy, vz, Bxf, Byf, Bz, P = initialize_variables(nx, ny, Dx, Dy)
     P0cc = p.PrimitiveVariables(nx, ny)
-    P0cc.init(rho, vx, vy, vz, Bx, By, Bz, P)
+    P0cc.init(rho, vx, vy, vz, Bxf, Byf, Bz, P)
 
     current_results_dir = os.path.join(results_dir, f'{stepDx}_')
     
-    p.PhareMHD(P0cc, current_results_dir, order, nghost, 
+    p.PhareMHD(P0cc, current_results_dir, nghost, 
                boundaryconditions, reconstruction, slopelimiter, riemannsolver, constainedtransport, 
                timeintegrator, Dx, Dy, final_time, Dt, dumpfrequency=dump_frequency)
     

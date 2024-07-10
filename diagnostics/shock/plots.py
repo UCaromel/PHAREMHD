@@ -88,4 +88,5 @@ for i, quantity in enumerate(quantities_to_plot[1:]):
     ax.set_aspect((x_range[1]-x_range[0])/(max_val-min_val))
 
 plt.tight_layout()
+plt.savefig('shock.png')
 plt.show()

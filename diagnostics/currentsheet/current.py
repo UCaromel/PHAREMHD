@@ -8,32 +8,34 @@ import shutil
 
 #############################################################################################################################################################################
 
-nx = 800
-ny = 1
-Dx = 1
-Dy = 1
-Dt = 0.2
-FinalTime = 80
-nghost = 1
+nx = 200
+ny = 200
+Dx = 0.01
+Dy = 0.01
+Dt = 0.0
+FinalTime = 5
+nghost = 2
 
-boundaryconditions = p.BoundaryConditions.ZeroGradient
+boundaryconditions = p.BoundaryConditions.Periodic
 
 reconstruction = p.Reconstruction.Constant
-slopelimiter = p.Slope.MinMod
-riemannsolver = p.RiemannSolver.HLL
+slopelimiter = p.Slope.VanLeer
+riemannsolver = p.RiemannSolver.Rusanov
 constainedtransport = p.CTMethod.Average
 timeintegrator = p.Integrator.TVDRK2Integrator
 
-dumpfrequency = 10
 dumpvariables = p.dumpVariables.Primitive
+dumpfrequency = 5
 
 ##############################################################################################################################################################################
+u0 = 0.001
+B0 = 1
 
 def rho_(x, y):
-    return np.where(x<(nx*Dx/2), 1, 0.125)
+    return 1.0
 
 def vx_(x, y):
-    return 0.0
+    return u0 * np.sin(2 * np.pi * y)
 
 def vy_(x, y):
     return 0.0
@@ -42,16 +44,16 @@ def vz_(x, y):
     return 0.0
 
 def Bx_(x, y):
-    return 0.75
+    return 0.0
 
 def By_(x, y):
-    return np.where(x<(nx*Dx/2), 1, -1)
+    return np.where(x < 0.5, B0, np.where(x < 1.5, -B0, B0))
 
 def Bz_(x, y):
     return 0.0
 
 def P_(x, y):
-    return np.where(x<(nx*Dx/2), 1, 0.1)
+    return 0.1
 
 x = np.arange(nx) * Dx + 0.5 * Dx
 y = np.arange(ny) * Dy + 0.5 * Dy
@@ -73,15 +75,15 @@ P = np.full((nx, ny), P_(xx, yy)).T
 
 #############################################################################################################################################################################
 
-result_dir = 'shockres/'
+result_dir = 'currentres/'
 if os.path.exists(result_dir):
     shutil.rmtree(result_dir)
 
 os.makedirs(result_dir, exist_ok=True)
 
-P0 = p.PrimitiveVariables(nx, ny)
-P0.init(rho, vx, vy, vz, Bxf, Byf, Bz, P)
+P0cc = p.PrimitiveVariables(nx, ny)
+P0cc.init(rho, vx, vy, vz, Bxf, Byf, Bz, P)
 
-p.PhareMHD(P0, result_dir, nghost, 
+p.PhareMHD(P0cc, result_dir, nghost, 
            boundaryconditions, reconstruction, slopelimiter, riemannsolver, constainedtransport, timeintegrator,
-           Dx, Dy, FinalTime, Dt, dumpvariables = dumpvariables)
+           Dx, Dy, FinalTime, Dt, dumpvariables = dumpvariables, dumpfrequency = dumpfrequency)

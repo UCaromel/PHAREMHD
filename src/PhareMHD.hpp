@@ -15,9 +15,9 @@
 #include "WrittingUtils.hpp"
 
 
-void PhareMHD(const PrimitiveVariables& P0cc, std::string resultDir, int order, int nghost,
+void PhareMHD(const PrimitiveVariables& P0cc, std::string resultDir, int nghost,
               BoundaryConditions bc, Reconstruction rec, Slope sl, Riemann rs, CTMethod ct, Integrator intg,
-              double Dx, double Dy, double FinalTime, double Dt = 0.0, 
+              double Dx, double Dy, double FinalTime, double Dt = 0.0, OptionalPhysics OptP = Off,
               dumpVariables dv = Conservative, int dumpfrequency = 1);
 
 #endif // PHARE_MHD_HPP_

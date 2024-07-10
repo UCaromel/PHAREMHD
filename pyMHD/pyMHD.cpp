@@ -114,6 +114,16 @@ PYBIND11_MODULE(pyMHD, m)
         .value("EulerIntegrator", EulerIntegrator)
         .value("TVDRK2Integrator", TVDRK2Integrator)
         .value("TVDRK3Integrator", TVDRK3Integrator);
+
+    py::enum_<OptionalPhysics>(m, "OptionalPhysics")
+        .value("Hall", Hall)
+        .value("Res", Res)
+        .value("Hyper", Hyper)
+        .value("HallRes", HallRes)
+        .value("HallHyper", HallHyper)
+        .value("ResHyper", ResHyper)
+        .value("HallResHyper", HallResHyper)
+        .value("Off", Off);
     
     py::enum_<dumpVariables>(m, "dumpVariables")
         .value("Primitive", Primitive)
@@ -121,9 +131,9 @@ PYBIND11_MODULE(pyMHD, m)
         .value("Both", Both);
     
     m.def("PhareMHD", &PhareMHD, 
-          py::arg("primvar0"), py::arg("resultdir"), py::arg("order"), py::arg("nghost"), 
+          py::arg("primvar0"), py::arg("resultdir"), py::arg("nghost"), 
           py::arg("boundaryconditions"), py::arg("reconstruction"), py::arg("slopelimiter"), py::arg("riemannsolver"), py::arg("constainedtransport"), py::arg("timeintegrator"), 
-          py::arg("Dx"), py::arg("Dy"), py::arg("FinalTime"), py::arg("Dt") = 0.0, py::arg("dumpvariables") = Conservative, py::arg("dumpfrequency") = 1);
+          py::arg("Dx"), py::arg("Dy"), py::arg("FinalTime"), py::arg("Dt") = 0.0, py::arg("hall") = Off, py::arg("dumpvariables") = Conservative, py::arg("dumpfrequency") = 1);
 
 /*
     py::class_<ConservativeVariables>(m, "ConservativeVariables")

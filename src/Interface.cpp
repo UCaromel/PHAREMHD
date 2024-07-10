@@ -28,7 +28,7 @@ ReconstructedValues ComputeFluxVector(ReconstructedValues u, Dir dir) {
 
 Interface::Interface() = default;
 
-Interface::Interface(const PrimitiveVariables& P_cc /* Assuming ghost cells are added */, int i /* (0 to nx) + nghost */, int j /* (0 to ny) + nghost */, Reconstruction rec, Slope sl, int nghost, Dir dir) {
+Interface::Interface(const PrimitiveVariables& P_cc /* Assuming ghost cells are added */, int i /* (0 to nx) + nghost */, int j /* (0 to ny) + nghost */, Reconstruction rec, Slope sl, OptionalPhysics OptP, int nghost, Dir dir) {
     SLFunction ChosenSL = getSlopeLimiter(sl);
         
     if (rec == Reconstruction::Constant) {

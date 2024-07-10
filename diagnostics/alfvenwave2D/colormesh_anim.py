@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 from matplotlib.animation import FuncAnimation
+import shutil
 
 # Function to read data from file
 def read_data(file_path):
@@ -28,19 +29,27 @@ file_paths = [results_dir + file for file in os.listdir(results_dir) if file.sta
 nx = 200
 ny = 100
 
+studied_index = 5
+
 data = [read_data(file_path) for file_path in file_paths]
 times = read_times(file_paths)
 
 reshaped_data = [reshape_data(d, nx, ny) for d in data]
 
 fig, ax = plt.subplots()
-im = ax.pcolormesh(reshaped_data[0][:, :, 5].T, cmap='coolwarm')
+im = ax.pcolormesh(reshaped_data[0][:, :, studied_index].T, cmap='coolwarm')
 ax.set_aspect('equal')
 fig.colorbar(im, ax=ax)
 
+output_dir = 'frames'
+if os.path.exists(output_dir):
+    shutil.rmtree(output_dir)
+os.makedirs(output_dir, exist_ok=True)
+
 def update(frame):
-    im.set_array(reshaped_data[frame][:, :, 5].T)
-    plt.title(f'Contour Plot of qty at t={times[frame]}')
+    im.set_array(reshaped_data[frame][:, :, studied_index].T)
+    plt.title(f'By at t={times[frame]}')
+    plt.savefig(f'{output_dir}/frame_{frame:04d}.png')
     return im,
 
 ani = FuncAnimation(fig, update, frames=len(times), interval=100)

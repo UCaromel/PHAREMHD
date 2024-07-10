@@ -28,7 +28,7 @@ public:
     Interface();
 
     // (i,j) interface index.
-    Interface(const PrimitiveVariables& P_cc, int i, int j, Reconstruction rec, Slope sl, int nghost, Dir dir);
+    Interface(const PrimitiveVariables& P_cc, int i, int j, Reconstruction rec, Slope sl, OptionalPhysics OptP, int nghost, Dir dir);
     ~Interface();
 };
 

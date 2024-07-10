@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+from matplotlib.animation import FuncAnimation, PillowWriter
 from matplotlib.colors import Normalize
 import shutil
 
@@ -23,23 +24,24 @@ def read_times(file_paths):
         times.append(time)
     return times
 
-results_dir = "orszagtang1024/"
+results_dir = "harrisres/"
 file_paths = [results_dir + file for file in os.listdir(results_dir) if file.startswith("PRK2_") and file.endswith(".txt")]
 
-nx = 1024
-ny = 1024
+nx = 100
+ny = 100
 
 data = [read_data(file_path) for file_path in file_paths]
 times = read_times(file_paths)
 
 reshaped_data = [reshape_data(d, nx, ny) for d in data]
 
-studied_index = 7
+
+studied_index = 0
 
 data_min = np.min(reshaped_data[-1][:, :, studied_index])
 data_max = np.max(reshaped_data[-1][:, :, studied_index])
 
-Norm = Normalize(vmin=data_min, vmax=data_max)
+Norm = Normalize(vmin=0, vmax=2.5)
 
 fig, ax = plt.subplots()
 im = ax.pcolormesh(reshaped_data[0][:, :, studied_index].T, cmap='coolwarm', norm=Norm) 
@@ -53,13 +55,17 @@ os.makedirs(output_dir, exist_ok=True)
 
 def update(frame):
     im.set_array(reshaped_data[frame][:, :, studied_index].T)
-    plt.title(f'P at t={times[frame]}')
+    plt.title(f'rho at t={times[frame]}')
     plt.savefig(f'{output_dir}/frame_{frame:04d}.png')
     return im,
 
-for frame in range(len(times)):
-    update(frame)
+ani = FuncAnimation(fig, update, frames=len(times), interval=100)
+
+#gif_writer = PillowWriter(fps=10)  # Adjust fps as needed
+#ani.save('orszagtangP.gif', writer=gif_writer)
 
 plt.xlabel('X')
 plt.ylabel('Y')
 plt.show()
+
+#ffmpeg -r 10 -i frames/frame_%04d.png -vcodec mpeg4 -q:v 5 orszagtangP.mp4

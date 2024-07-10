@@ -45,9 +45,7 @@ inline void saveConcervativeVariables(const ConservativeVariables& C_cc, const s
                         << std::setw(15) << C_cc.Bx[j][i] << " "
                         << std::setw(15) << C_cc.By[j][i] << " "
                         << std::setw(15) << C_cc.Bz[j][i] << " "
-                        << std::setw(15) << C_cc.Etot[j][i] << " "
-                        << std::setw(15) << C_cc.Bxf[j][i] << " "
-                        << std::setw(15) << C_cc.Byf[j][i] << std::endl;
+                        << std::setw(15) << C_cc.Etot[j][i] << std::endl;
             }
         }
         outFile.close();

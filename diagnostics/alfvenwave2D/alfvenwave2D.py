@@ -14,7 +14,6 @@ Dx = 0.01
 Dy = 0.01
 Dt = 0.0
 FinalTime = 0.5
-order = 1
 nghost = 2
 
 boundaryconditions = p.BoundaryConditions.Periodic
@@ -90,6 +89,6 @@ os.makedirs(result_dir, exist_ok=True)
 P0cc = p.PrimitiveVariables(nx, ny)
 P0cc.init(rho, vx, vy, vz, Bxf, Byf, Bz, P)
 
-p.PhareMHD(P0cc, result_dir, order, nghost, 
+p.PhareMHD(P0cc, result_dir, nghost, 
            boundaryconditions, reconstruction, slopelimiter, riemannsolver, constainedtransport, timeintegrator,
            Dx, Dy, FinalTime, dumpvariables = dumpvariables)

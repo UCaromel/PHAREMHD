@@ -9,6 +9,8 @@ enum Riemann { Rusanov, HLL };
 enum CTMethod { Average, Contact, UCT_HLL };
 enum Integrator { EulerIntegrator, TVDRK2Integrator, TVDRK3Integrator };
 
+enum OptionalPhysics { Hall, Res, Hyper, HallRes, HallHyper, ResHyper, HallResHyper, Off };
+
 enum dumpVariables { Primitive, Conservative, Both };
 
 #endif
