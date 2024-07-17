@@ -8,77 +8,70 @@ import shutil
 
 #############################################################################################################################################################################
 
-nx = 100
-ny = 100
-Dx = 1/nx
-Dy = 1/ny
-Dt = 0.0
-FinalTime = 0.15
-nghost = 1
+nx = 32
+ny = 1
+Dx = 0.1
+Dy = 1
+Dt = 0.2
+FinalTime = 20
+nghost = 2
 
 boundaryconditions = p.BoundaryConditions.Periodic
 
 reconstruction = p.Reconstruction.Constant
-slopelimiter = p.Slope.MinMod
+slopelimiter = p.Slope.VanLeer
 riemannsolver = p.RiemannSolver.Rusanov
 constainedtransport = p.CTMethod.Average
 timeintegrator = p.Integrator.TVDRK2Integrator
 
-consts = p.Consts(sigmaCFL = 0.2, gam = 1.4)
+consts = p.Consts(sigmaCFL = 0.8, gam = 5/3, eta = 0.0, nu = 0.005)
+physics = p.OptionalPhysics.HallResHyper
+
+dumpvariables = p.dumpVariables.Conservative
+dumpfrequency = 10
 
 ##############################################################################################################################################################################
-B0 = 5/(np.sqrt(4*np.pi))
-v0 = 1
+lx=nx*Dx
+ly=ny*Dy
+k=2*np.pi/lx
 
-r0 = 0.1
-r1 = 0.115
+np.random.seed(0)
 
-# Domain [-0.5, 0.5]*[-0.5, 0.5]
-def r(x, y):
-    return np.sqrt((x-0.5)**2 + (y-0.5)**2)
-
-def f(r):
-    return (r1 - r)/(r1 - r0)
+modes = (1,2,4,8)
+phases = np.random.rand(len(modes))
 
 def rho_(x, y):
-    r_ = r(x, y)
-    f_ = f(r_)
-    
-    rho_values = np.where(r_ <= r0, 10.0, np.where(r_ < r1, 1.0 + 9.0 * f_, 1.0))
-    return rho_values
-
-def vx_(x, y):
-    r_ = r(x, y)
-    f_ = f(r_)
-    
-    vx_values = np.where(r_ <= r0, -f_ * v0 * (y - 0.5) / r0, np.where(r_ < r1, -f_ * v0 * (y - 0.5) / r_, 0.0))
-    return vx_values
-
-def vy_(x, y):
-    r_ = r(x, y)
-    f_ = f(r_)
-    
-    vy_values = np.where(r_ <= r0, f_ * v0 * (x - 0.5) / r0, np.where(r_ < r1, f_ * v0 * (x - 0.5) / r_, 0.0))
-    return vy_values
-
-def vz_(x, y):
-    return 0.0
-
-def Bx_(x, y):
-    return B0
-
-def By_(x, y):
-    return 0.0
-
-def Bz_(x, y):
-    return 0.0 
-
-def P_(x, y):
     return 1.0
 
+def vx_(x, y):
+    return 0.0
 
-x = np.arange(nx) * Dx + 0.5 * Dx
-y = np.arange(ny) * Dy + 0.5 * Dy
+def vy_(x, y):
+    return 0.1 * np.cos(k*x)
+
+def vz_(x, y):
+    return 0.1 * np.sin(k*x)
+
+def Bx_(x, y):
+    return 1.0
+
+def By_(x, y):
+    ret = np.zeros((x.shape[0], y.shape[1]))
+    for m,phi in zip(modes, phases):
+        ret[:,:] += np.cos(2*np.pi*x/lx*m + phi)*0.01
+    return ret
+
+def Bz_(x, y):
+    ret = np.zeros((x.shape[0], y.shape[1]))
+    for m,phi in zip(modes, phases):
+        ret[:,:] += np.sin(2*np.pi*x/lx*m + phi)*0.01
+    return ret
+
+def P_(x, y):
+    return 1e-4
+
+x = np.arange(nx) * Dx + 0.5 * Dx 
+y = np.arange(ny) * Dy + 0.5 * Dy 
 xf = np.arange(nx+1) * Dx
 yf = np.arange(ny+1) * Dy
 
@@ -95,10 +88,9 @@ Byf = np.full((nx, ny + 1), By_(xfy, yfy)).T
 Bz = np.full((nx, ny), Bz_(xx, yy)).T
 P = np.full((nx, ny), P_(xx, yy)).T
 
-
 #############################################################################################################################################################################
 
-result_dir = 'MHDrotorres/'
+result_dir = 'whislerwaveres/'
 if os.path.exists(result_dir):
     shutil.rmtree(result_dir)
 
@@ -109,4 +101,4 @@ P0cc.init(rho, vx, vy, vz, Bxf, Byf, Bz, P)
 
 p.PhareMHD(P0cc, result_dir, nghost, 
            boundaryconditions, reconstruction, slopelimiter, riemannsolver, constainedtransport, timeintegrator,
-           Dx, Dy, FinalTime, Dt, Consts = consts)
+           Dx, Dy, FinalTime, dumpvariables = dumpvariables, Consts = consts, OptionalPhysics = physics, dumpfrequency = dumpfrequency)

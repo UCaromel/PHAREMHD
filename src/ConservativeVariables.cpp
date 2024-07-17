@@ -15,6 +15,13 @@ ConservativeVariables::ConservativeVariables(int nx, int ny) : nx(nx), ny(ny)
 
     Bxf.resize(ny, std::vector<double>(nx + 1));
     Byf.resize(ny + 1, std::vector<double>(nx));
+
+    // J needs one extra ghost cell
+    int nxJ = nx + 2;
+    int nyJ = ny + 2;
+    Jx.resize(nyJ + 1, std::vector<double>(nxJ));
+    Jy.resize(nyJ, std::vector<double>(nxJ + 1));
+    Jz.resize(nyJ + 1, std::vector<double>(nxJ + 1));
 }
 
 ConservativeVariables::ConservativeVariables(const PrimitiveVariables& P_cc) : nx(P_cc.nx), ny(P_cc.ny)
@@ -50,6 +57,28 @@ ConservativeVariables::ConservativeVariables(const PrimitiveVariables& P_cc) : n
     for (int i = 0; i < nx; i++) {
         Byf[ny][i] = P_cc.Byf[ny][i];
     }
+
+    // J needs one extra ghost cell
+    int nxJ = nx + 2;
+    int nyJ = ny + 2;
+    Jx.resize(nyJ + 1, std::vector<double>(nxJ));
+    Jy.resize(nyJ, std::vector<double>(nxJ + 1));
+    Jz.resize(nyJ + 1, std::vector<double>(nxJ + 1));
+
+    for (int j = 0; j < nyJ; j++) {
+        for (int i = 0; i < nxJ; i++) {
+            Jx[j][i] = P_cc.Jx[j][i];
+            Jy[j][i] = P_cc.Jy[j][i];
+            Jz[j][i] = P_cc.Jz[j][i];
+        }
+        Jy[j][nxJ] = P_cc.Jx[j][nxJ];
+        Jz[j][nxJ] = P_cc.Jx[j][nxJ];
+    }
+    for (int i = 0; i < nxJ; i++) {
+        Jx[nyJ][i] = P_cc.Jx[nyJ][i];
+        Jz[nyJ][i] = P_cc.Jx[nyJ][i];
+    }
+    Jz[nyJ][nxJ] = P_cc.Jx[nyJ][nxJ];
 }
 
 ConservativeVariables::~ConservativeVariables() = default;
@@ -76,14 +105,6 @@ void ConservativeVariables::set(const ReconstructedValues& rv, int i, int j){
     Bx[j][i] = rv.Bx;
     By[j][i] = rv.By;
     Bz[j][i] = rv.Bz;
-    Etot[j][i] = rv.P;
-}
-
-void ConservativeVariables::setflux(const ReconstructedValues& rv, int i, int j){
-    rho[j][i] = rv.rho;
-    rhovx[j][i] = rv.vx;
-    rhovy[j][i] = rv.vy;
-    rhovz[j][i] = rv.vz;
     Etot[j][i] = rv.P;
 }
 
@@ -202,5 +223,25 @@ ConservativeVariables& ConservativeVariables::operator=(const ConservativeVariab
     for (int i = 0; i < nx; i++) {
         this->Byf[ny][i] = other.Byf[ny][i];
     }
+
+    // J needs one extra ghost cell
+    int nxJ = nx + 2;
+    int nyJ = ny + 2;
+
+    for (int j = 0; j < nyJ; j++) {
+        for (int i = 0; i < nxJ; i++) {
+            this->Jx[j][i] = other.Jx[j][i];
+            this->Jy[j][i] = other.Jy[j][i];
+            this->Jz[j][i] = other.Jz[j][i];
+        }
+        this->Jy[j][nxJ] = other.Jx[j][nxJ];
+        this->Jz[j][nxJ] = other.Jx[j][nxJ];
+    }
+    for (int i = 0; i < nxJ; i++) {
+        this->Jx[nyJ][i] = other.Jx[nyJ][i];
+        this->Jz[nyJ][i] = other.Jx[nyJ][i];
+    }
+    this->Jz[nyJ][nxJ] = other.Jx[nyJ][nxJ];
+
     return *this;
 }

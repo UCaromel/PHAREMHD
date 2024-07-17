@@ -9,6 +9,7 @@
 #include "ModularityUtils.hpp"
 #include "ConservativeVariables.hpp"
 #include "Interface.hpp"
+#include "Utils.hpp"
 
 std::vector<std::vector<double>> ConstrainedTransportAverage(const ConservativeVariables &Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs, OptionalPhysics OptP);
 

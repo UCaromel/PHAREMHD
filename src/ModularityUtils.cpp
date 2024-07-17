@@ -9,6 +9,15 @@ SLFunction getSlopeLimiter(Slope sl){
     }
 }
 
+SLFunctionDouble getSlopeLimiterDouble(Slope sl){
+    switch (sl)
+    {
+        case VanLeer: return &VanLeerSlope;
+        case MinMod: return &MinModSlope;
+        default: throw std::invalid_argument("Unknown slope limiter");
+    }
+}
+
 RiemannSolverFunction getRiemannSolver(Riemann rs){
     switch (rs)
     {

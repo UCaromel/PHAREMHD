@@ -11,6 +11,7 @@
 #include "GodunovFlux.hpp"
 #include "ConstainedTransport.hpp"
 #include "AddGhostCells.hpp"
+#include "ComputeJ.hpp"
 
 ConservativeVariables EulerAdvance(const ConservativeVariables& Un, double Dx, double Dy, double Dt, int nghost, BoundaryConditions bc, Reconstruction rec, Slope sl, Riemann rs, OptionalPhysics OptP);
 

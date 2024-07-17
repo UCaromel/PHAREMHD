@@ -29,6 +29,12 @@ public:
     std::vector<std::vector<double>> Bxf;
     std::vector<std::vector<double>> Byf;
 
+    std::vector<std::vector<double>> Jx;
+    std::vector<std::vector<double>> Jy;
+
+    // Edge-centered
+    std::vector<std::vector<double>> Jz;
+
     PrimitiveVariables(int nx_, int ny_);
     PrimitiveVariables(const ConservativeVariables& C_cc);
     ~PrimitiveVariables();

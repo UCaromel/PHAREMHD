@@ -19,6 +19,10 @@ inline ReconstructedValues VanLeerSlope(const ReconstructedValues& Du12, const R
     return Di;
 }
 
+inline double VanLeerSlope(double Du12, double Du_12){
+    return Du12 * Du_12 > 0.0 ? 2.0 * Du12 * Du_12 / (Du12 + Du_12) : 0.0;
+}
+
 inline ReconstructedValues MinModSlope(const ReconstructedValues& Du12, const ReconstructedValues& Du_12){
     ReconstructedValues Di;
 
@@ -31,6 +35,10 @@ inline ReconstructedValues MinModSlope(const ReconstructedValues& Du12, const Re
     Di.Bz = (Du12.Bz * Du_12.Bz < 0.0) ? 0.0 : (fabs(Du12.Bz) < fabs(Du_12.Bz)) ? Du12.Bz : Du_12.Bz;
     Di.P = (Du12.P * Du_12.P < 0.0) ? 0.0 : (fabs(Du12.P) < fabs(Du_12.P)) ? Du12.P : Du_12.P;
     return Di;
+}
+
+inline double MinModSlope(double Du12, double Du_12){
+    return (Du12 * Du_12 < 0.0) ? 0.0 : (fabs(Du12) < fabs(Du_12)) ? Du12 : Du_12;
 }
 
 #endif //SLOPE_LIMITER_HPP_

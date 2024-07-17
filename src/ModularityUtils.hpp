@@ -13,6 +13,9 @@ class Interface;
 typedef ReconstructedValues (*SLFunction)(const ReconstructedValues&, const ReconstructedValues&);
 SLFunction getSlopeLimiter(Slope sl);
 
+typedef double (*SLFunctionDouble)(double, double);
+SLFunctionDouble getSlopeLimiterDouble(Slope sl);
+
 // Function pointer typedef for the riemann solvers
 typedef ReconstructedValues (*RiemannSolverFunction)(const Interface&);
 RiemannSolverFunction getRiemannSolver(Riemann rs);

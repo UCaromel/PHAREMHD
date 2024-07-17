@@ -1,11 +1,17 @@
 #include "PhareMHD.hpp"
 
-void PhareMHD(const PrimitiveVariables& P0cc, std::string resultDir, int nghost, BoundaryConditions bc, Reconstruction rec, Slope sl, Riemann rs, CTMethod ct, Integrator intg, double Dx, double Dy, double FinalTime, double Dt, OptionalPhysics OptP, dumpVariables dv, int dumpfrequency) {
+void PhareMHD(const PrimitiveVariables& P0cc, std::string resultDir, int nghost, BoundaryConditions bc, Reconstruction rec, Slope sl, Riemann rs, CTMethod ct, Integrator intg, double Dx, double Dy, double FinalTime, double Dt, Consts cst, OptionalPhysics OptP, dumpVariables dv, int dumpfrequency) {
     double DivB;
 
+    PhysicalConstants::getInstance().init(cst);
+
     PrimitiveVariables P0 = InitialiseGhostCells(P0cc, nghost, bc);
+
+    if (OptP == OptionalPhysics::HallResHyper){
+        InitialiseGhostJ(P0, Dx, Dy, nghost, bc);
+    }
+    
     ConservativeVariables U0(P0);
-    UpdateGhostCells(U0, nghost, bc);
 
     DivB = CheckDivB(U0, Dx, Dy, nghost);
     std::cout<<"DivB = "<<DivB<<std::endl;

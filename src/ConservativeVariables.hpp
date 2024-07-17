@@ -27,13 +27,18 @@ public:
     std::vector<std::vector<double>> Bxf;
     std::vector<std::vector<double>> Byf;
 
+    std::vector<std::vector<double>> Jx;
+    std::vector<std::vector<double>> Jy;
+
+    // Edge-centered
+    std::vector<std::vector<double>> Jz;
+
     ConservativeVariables(int nx, int ny);
     ConservativeVariables(const PrimitiveVariables& P_cc);
     ~ConservativeVariables();
 
     void ReconstructCenteredB(int nghost);
     void set(const ReconstructedValues& rv, int i, int j);
-    void setflux(const ReconstructedValues& rv, int i, int j);
     ReconstructedValues operator()(int i, int j) const;
     ConservativeVariables operator*(double scalar) const;
     ConservativeVariables operator-(const ConservativeVariables& other) const;

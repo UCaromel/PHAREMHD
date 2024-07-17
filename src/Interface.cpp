@@ -1,6 +1,8 @@
 #include "Interface.hpp"
 
-ReconstructedValues ComputeFluxVector(ReconstructedValues u, Dir dir) {
+static const PhysicalConstants& pc = PhysicalConstants::getInstance(); 
+
+ReconstructedValues ComputeFluxVector(const ReconstructedValues& u, Dir dir) {
     ReconstructedValues flux;
     double GeneralisedPressure = u.P + 0.5*(u.Bx * u.Bx + u.By * u.By + u.Bz * u.Bz);
 
@@ -18,7 +20,7 @@ ReconstructedValues ComputeFluxVector(ReconstructedValues u, Dir dir) {
         flux.vx = u.rho * u.vy * u.vx - u.By * u.Bx;
         flux.vy = u.rho * u.vy * u.vy + GeneralisedPressure - u.By * u.By;
         flux.vz = u.rho * u.vy * u.vz - u.By * u.Bz;
-        flux.Bx = u.vx * u.By - u.vy * u.Bx;
+        flux.Bx = u.Bx * u.vy - u.By * u.vx;
         flux.By = 0.0;
         flux.Bz = u.Bz * u.vy - u.vz * u.By;
         flux.P = (EosEtot(u) + GeneralisedPressure)*u.vy - u.By*(u.vx*u.Bx + u.vy*u.By + u.vz*u.Bz);
@@ -26,10 +28,125 @@ ReconstructedValues ComputeFluxVector(ReconstructedValues u, Dir dir) {
     return flux;
 }
 
+void AddNonIdealFlux(ReconstructedValues& f, const ReconstructedValues& u, double Jx, double Jy, double Jz, double LaplJx, double LaplJy, double LaplJz, OptionalPhysics OptP, Dir dir){
+    if (OptP == OptionalPhysics::HallResHyper) {
+        if (dir == Dir::X) {
+            f.P += (1.0/u.rho) * ((u.Bx * Jx + u.By * Jy + u.Bz * Jz)*u.Bx - (u.Bx * u.Bx + u.By * u.By + u.Bz * u.Bz) * Jx);
+            f.P += pc.eta * (Jy * u.Bz - Jz * u.By);
+            f.P -= pc.nu * (LaplJy * u.Bz - LaplJz * u.By);
+        } else if (dir == Dir::Y) {
+            f.P += (1.0/u.rho) * ((u.Bx * Jx + u.By * Jy + u.Bz * Jz)*u.By - (u.Bx * u.Bx + u.By * u.By + u.Bz * u.Bz) * Jy);
+            f.P += pc.eta * (Jz * u.Bx - Jx * u.Bz);
+            f.P -= pc.nu * (LaplJz * u.Bx - LaplJx * u.Bz);
+        }
+    }
+}
+
+template<typename Func>
+std::pair<std::pair<double, double>, std::pair<double, double>> ComputeRiemannJ(const std::vector<std::vector<double>>& J, Func AVERAGING, int i, int j, double Dx, double Dy, Reconstruction rec, Slope sl, Dir Dir) {
+    double JL;
+    double JR;
+    double LaplJL;
+    double LaplJR;
+
+    // J has one more ghost cell
+    i++;
+    j++;
+
+    if (rec == Reconstruction::Constant) {
+        // for constant reconstruction, the reconstructed values are the left and right cell centered values next to the interface
+        // for x derivatives
+        double J_2x = AVERAGING(J, i-2, j);
+        double J_1x = AVERAGING(J, i-1, j);
+        double Jx = AVERAGING(J, i, j);
+        double J1x = AVERAGING(J, i+1, j);
+
+        // for y derivatives
+        double J_2y = AVERAGING(J, i, j-2);
+        double J_1y = AVERAGING(J, i, j-1);
+        double Jy = AVERAGING(J, i, j);
+        double J1y = AVERAGING(J, i, j+1);
+
+        LaplJL = (J_2x - 2.0 * J_1x + Jx) / (Dx * Dx) + (J_2y - 2.0 * J_1y + Jy) / (Dy * Dy);
+        LaplJR = (J_1x - 2.0 * Jx + J1x) / (Dx * Dx) + (J_1y - 2.0 * Jy + J1y) / (Dy * Dy);
+
+        if (Dir == Dir::X) {
+            JL = J_1x;
+            JR = Jx;
+        } else if (Dir == Dir::Y) {
+            JL = J_1y;
+            JR = Jy;
+        }
+
+    } else if (rec == Reconstruction::Linear) {
+        SLFunctionDouble ChosenSLDouble = getSlopeLimiterDouble(sl);
+
+        // for x derivatives
+        double J_3x = AVERAGING(J, i-3, j);
+        double J_2x = AVERAGING(J, i-2, j);
+        double J_1x = AVERAGING(J, i-1, j);
+        double Jx = AVERAGING(J, i, j);
+        double J1x = AVERAGING(J, i+1, j);
+        double J2x = AVERAGING(J, i+2, j);
+
+        // for y derivatives
+        double J_3y = AVERAGING(J, i, j-3);
+        double J_2y = AVERAGING(J, i, j-2);
+        double J_1y = AVERAGING(J, i, j-1);
+        double Jy = AVERAGING(J, i, j);
+        double J1y = AVERAGING(J, i, j+1);
+        double J2y = AVERAGING(J, i, j+2);
+
+        // Slopes
+        double Di_1x = ChosenSLDouble(J_1x - J_2x, J_2x - J_3x);
+        double Dix = ChosenSLDouble(Jx - J_1x, J_1x - J_2x);
+        double Di1x = ChosenSLDouble(J1x - Jx, Jx - J_1x);
+        double Di2x = ChosenSLDouble(J2x - J1x, J1x - Jx);
+
+        double Di_1y = ChosenSLDouble(J_1y - J_2y, J_2y - J_3y);
+        double Diy = ChosenSLDouble(Jy - J_1y, J_1y - J_2y);
+        double Di1y = ChosenSLDouble(J1y - Jy, Jy - J_1y);
+        double Di2y = ChosenSLDouble(J2y - J1y, J1y - Jy);
+
+        // for L interface Laplacian
+        double J_1xR = J_2x + 0.5 * Di_1x;
+        double JxR = J_1x + 0.5 * Dix;
+        double J1xR = Jx + 0.5 * Di1x;
+
+        double J_1yR = J_2y + 0.5 * Di_1y;
+        double JyR = J_1y + 0.5 * Diy;
+        double J1yR = Jy + 0.5 * Di1y;
+
+        // for R interface Laplacian
+        double JxL = J_1x - 0.5 * Dix;
+        double J1xL = Jx - 0.5 * Di1x;
+        double J2xL = J1x - 0.5 * Di2x;
+
+        double JyL = J_1y - 0.5 * Diy;
+        double J1yL = Jy - 0.5 * Di1y;
+        double J2yL = J1y - 0.5 * Di2y;
+
+        LaplJL = (J_1xR - 2.0 * JxR + J1xR) / (Dx * Dx) + (J_1yR - 2.0 * JyR + J1yR) / (Dy * Dy);
+        LaplJR = (JxL - 2.0 * J1xL + J2xL) / (Dx * Dx) + (JyL - 2.0 * J1yL + J2yL) / (Dy * Dy);
+
+        if (Dir == Dir::X) {
+            JL = JxR;
+            JR = J1xL;
+        } else if (Dir == Dir::Y) {
+            JL = JyR;
+            JR = J1yL;
+        }
+
+    } else {
+        throw std::invalid_argument("Invalid reconstruction type");
+    }
+
+    return std::make_pair(std::make_pair(JL, LaplJL), std::make_pair(JR, LaplJR));
+}
+
 Interface::Interface() = default;
 
-Interface::Interface(const PrimitiveVariables& P_cc /* Assuming ghost cells are added */, int i /* (0 to nx) + nghost */, int j /* (0 to ny) + nghost */, Reconstruction rec, Slope sl, OptionalPhysics OptP, int nghost, Dir dir) {
-    SLFunction ChosenSL = getSlopeLimiter(sl);
+Interface::Interface(const PrimitiveVariables& P_cc /* Assuming ghost cells are added */, int i /* (0 to nx) + nghost */, int j /* (0 to ny) + nghost */, double Dx, double Dy, int nghost, Reconstruction rec, Slope sl, OptionalPhysics OptP,  Dir dir) {
         
     if (rec == Reconstruction::Constant) {
         if (dir == Dir::X) {
@@ -45,6 +162,9 @@ Interface::Interface(const PrimitiveVariables& P_cc /* Assuming ghost cells are 
         if (nghost < 2) {
             throw std::invalid_argument("nghost must be at least 2 for linear reconstruction");
         }
+
+        SLFunction ChosenSL = getSlopeLimiter(sl);
+
         ReconstructedValues ui_1;
         ReconstructedValues ui;
         ReconstructedValues ui1;
@@ -80,10 +200,25 @@ Interface::Interface(const PrimitiveVariables& P_cc /* Assuming ghost cells are 
     fL = ComputeFluxVector(uL, dir);
     fR = ComputeFluxVector(uR, dir);
 
-    double gam = 5.0/3.0;
+    if (OptP == OptionalPhysics::HallResHyper) {
+        auto [Lx, Rx] = ComputeRiemannJ(P_cc.Jx, AVERAGEY, i, j, Dx, Dy, rec, sl, dir);
+        auto [JxL, LaplJxL] = Lx;
+        auto [JxR, LaplJxR] = Rx;
 
-    double c0L = std::sqrt((gam*uL.P)/uL.rho); // Sound speeds
-    double c0R = std::sqrt((gam*uR.P)/uR.rho); 
+        auto [Ly, Ry] = ComputeRiemannJ(P_cc.Jy, AVERAGEX, i, j, Dx, Dy, rec, sl, dir);
+        auto [JyL, LaplJyL] = Ly;
+        auto [JyR, LaplJyR] = Ry;
+
+        auto [Lz, Rz] = ComputeRiemannJ(P_cc.Jz, AVERAGEXY, i, j, Dx, Dy, rec, sl, dir);
+        auto [JzL, LaplJzL] = Lz;
+        auto [JzR, LaplJzR] = Rz;
+
+        AddNonIdealFlux(fL, uL, JxL, JyL, JzL, LaplJxL, LaplJyL, LaplJzL, OptP, dir);
+        AddNonIdealFlux(fR, uR, JxR, JyR, JzR, LaplJxR, LaplJyR, LaplJzR, OptP, dir);
+    }
+
+    double c0L = std::sqrt((pc.gam*uL.P)/uL.rho); // Sound speeds
+    double c0R = std::sqrt((pc.gam*uR.P)/uR.rho); 
 
     double caxL = std::sqrt((uL.Bx*uL.Bx)/(uL.rho)); // Alfven speeds in x
     double caxR = std::sqrt((uR.Bx*uR.Bx)/(uR.rho));
@@ -97,6 +232,18 @@ Interface::Interface(const PrimitiveVariables& P_cc /* Assuming ghost cells are 
     cfastxR = std::sqrt((c0R*c0R + caR*caR)*0.5 + (std::sqrt((c0R*c0R + caR*caR)*(c0R*c0R + caR*caR) - 4*c0R*c0R*caxR*caxR))*0.5);
     cfastyL = std::sqrt((c0L*c0L + caL*caL)*0.5 + (std::sqrt((c0L*c0L + caL*caL)*(c0L*c0L + caL*caL) - 4*c0L*c0L*cayL*cayL))*0.5); // Fast magnetosonic speeds in y
     cfastyR = std::sqrt((c0R*c0R + caR*caR)*0.5 + (std::sqrt((c0R*c0R + caR*caR)*(c0R*c0R + caR*caR) - 4*c0R*c0R*cayR*cayR))*0.5);
+
+    if (OptP == OptionalPhysics::HallResHyper) {
+        cwxL = std::abs(uL.Bx) * M_PI / (uL.rho * Dx);
+        cwyL = std::abs(uL.By) * M_PI / (uL.rho * Dy);
+        cwxR = std::abs(uL.Bx) * M_PI / (uR.rho * Dx);
+        cwyR = std::abs(uL.By) * M_PI / (uR.rho * Dy);
+
+        cfastxL += cwxL;
+        cfastxR += cwxR;
+        cfastyL += cwyL;
+        cfastyR += cwyR;
+    }
 
     // Wave speeds
     if(dir == Dir::X){

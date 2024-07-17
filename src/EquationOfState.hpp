@@ -2,8 +2,7 @@
 #define EQUATION_OF_STATE_HPP_
 
 #include "ReconstructedValues.hpp"
-
-extern const double gam;
+#include "PhysicalConstants.hpp"
 
 double EosEtot(const ReconstructedValues& rv);
 double EosP(const ReconstructedValues& rv);

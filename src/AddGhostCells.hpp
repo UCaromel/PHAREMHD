@@ -8,6 +8,8 @@
 #include "PrimitiveVariables.hpp"
 #include "ConservativeVariables.hpp"
 
+#include "ComputeJ.hpp"
+
 template<typename Variables>
 void UpdateGhostCells(Variables& Vn, int nghost, BoundaryConditions bc) {
     if(bc == BoundaryConditions::Periodic){
@@ -75,7 +77,7 @@ void UpdateGhostCells(Variables& Vn, int nghost, BoundaryConditions bc) {
             }
         }
 
-        // Face centered (only one ghost cell)
+        // Face centered (only one ghost cell for CT)
         for (int i = nghost; i < Vn.nx + 1 - nghost; i++) {
             Vn.Bxf[nghost - 1][i] = Vn.Bxf[nghost][i]; // Bottom side
             Vn.Bxf[Vn.ny - nghost][i] = Vn.Bxf[Vn.ny - nghost - 1][i]; // Top side
@@ -92,7 +94,7 @@ void UpdateGhostCells(Variables& Vn, int nghost, BoundaryConditions bc) {
 }
 
 template<typename Variables>
-Variables InitialiseGhostCells(const Variables& Vn, int nghost, BoundaryConditions bc){
+Variables InitialiseGhostCells(const Variables& Vn, int nghost, BoundaryConditions bc) {
     Variables withGhost(Vn.nx + 2 * nghost, Vn.ny + 2 * nghost);
 
     // Copy interior values
@@ -106,7 +108,7 @@ Variables InitialiseGhostCells(const Variables& Vn, int nghost, BoundaryConditio
         return withGhost;
     }
 
-    // Face centered (only one ghost cell)
+    // Face centered
     for (int j = 0; j < Vn.ny; ++j) {
         for (int i = 0; i <= Vn.nx; ++i) {
             withGhost.Bxf[j + nghost][i + nghost] = Vn.Bxf[j][i];
@@ -120,6 +122,128 @@ Variables InitialiseGhostCells(const Variables& Vn, int nghost, BoundaryConditio
 
     UpdateGhostCells(withGhost, nghost, bc);
     return withGhost;
+}
+
+// J specific ghost cells
+
+template<typename Variables>
+void UpdateGhostJ(Variables& Vn, int nghost, BoundaryConditions bc) {
+    if(bc == BoundaryConditions::Periodic){
+        int nx = Vn.nx + 2;
+        int ny = Vn.ny + 2;
+        int nghostJ = nghost + 1;
+
+        // Jx
+        for (int i = nghostJ; i < nx + 1 - nghostJ; i++) {
+            for (int k = 1; k <= nghostJ; k++) {
+                Vn.Jx[nghostJ - k][i] = Vn.Jx[ny - k - nghostJ][i]; // Bottom side
+                Vn.Jx[ny - 1 + k - nghostJ][i] = Vn.Jx[k - 1 + nghostJ][i]; // Top side
+            }
+        }
+
+        for (int j = nghostJ; j < ny - nghostJ; j++) {
+            for (int k = 1; k <= nghostJ; k++) {
+                Vn.Jx[j][nghostJ - k] = Vn.Jz[j][nx - k - nghostJ]; // Left side
+                Vn.Jx[j][nx - 1 + k - nghostJ] = Vn.Jx[j][k - 1 + nghostJ]; // Right side
+            }
+        }
+
+        // Jy
+        for (int i = nghostJ; i < nx - nghostJ; i++) {
+            for (int k = 1; k <= nghostJ; k++) {
+                Vn.Jy[nghostJ - k][i] = Vn.Jy[ny - k - nghostJ][i]; // Bottom side
+                Vn.Jy[ny - 1 + k - nghostJ][i] = Vn.Jy[k - 1 + nghostJ][i]; // Top side
+            }
+        }
+
+        for (int j = nghostJ; j < ny + 1 - nghostJ; j++) {
+            for (int k = 1; k <= nghostJ; k++) {
+                Vn.Jy[j][nghostJ - k] = Vn.Jy[j][nx - k - nghostJ]; // Left side
+                Vn.Jy[j][nx - 1 + k - nghostJ] = Vn.Jy[j][k - 1 + nghostJ]; // Right side
+            }
+        }
+
+        // Jz
+        for (int i = nghostJ; i < nx + 1 - nghostJ; i++) {
+            for (int k = 1; k <= nghostJ; k++) {
+                Vn.Jz[nghostJ - k][i] = Vn.Jz[ny - k - nghostJ][i]; // Bottom side
+                Vn.Jz[ny - 1 + k - nghostJ][i] = Vn.Jz[k - 1 + nghostJ][i]; // Top side
+            }
+        }
+
+        for (int j = nghostJ; j < ny + 1 - nghostJ; j++) {
+            for (int k = 1; k <= nghostJ; k++) {
+                Vn.Jz[j][nghostJ - k] = Vn.Jz[j][nx - k - nghostJ]; // Left side
+                Vn.Jz[j][nx - 1 + k - nghostJ] = Vn.Jz[j][k - 1 + nghostJ]; // Right side
+            }
+        }
+
+    } else if(bc == BoundaryConditions::ZeroGradient){
+
+        int nx = Vn.nx + 2;
+        int ny = Vn.ny + 2;
+        int nghostJ = nghost + 1;
+
+        // Jx
+        for (int i = nghostJ; i < nx + 1 - nghostJ; i++) {
+            for (int k = 1; k <= nghostJ; k++) {
+                Vn.Jx[nghostJ - k][i] = Vn.Jx[nghostJ - k + 1][i]; // Bottom side
+                Vn.Jx[ny - 1 + k - nghostJ][i] = Vn.Jx[ny - 2 + k - nghostJ][i]; // Top side
+            }
+        }
+
+        for (int j = nghostJ; j < ny - nghostJ; j++) {
+            for (int k = 1; k <= nghostJ; k++) {
+                Vn.Jx[j][nghostJ - k] = Vn.Jx[j][nghostJ - k + 1]; // Left side
+                Vn.Jx[j][nx - 1 + k - nghostJ] = Vn.Jx[j][nx - 2 + k - nghostJ]; // Right side
+            }
+        }
+
+        // Jy
+        for (int i = nghostJ; i < nx - nghostJ; i++) {
+            for (int k = 1; k <= nghostJ; k++) {
+                Vn.Jy[nghostJ - k][i] = Vn.Jy[nghostJ - k + 1][i]; // Bottom side
+                Vn.Jy[ny - 1 + k - nghostJ][i] = Vn.Jy[ny - 2 + k - nghostJ][i]; // Top side
+            }
+        }
+
+        for (int j = nghostJ; j < ny + 1 - nghostJ; j++) {
+            for (int k = 1; k <= nghostJ; k++) {
+                Vn.Jy[j][nghostJ - k] = Vn.Jy[j][nghostJ - k + 1]; // Left side
+                Vn.Jy[j][nx - 1 + k - nghostJ] = Vn.Jy[j][nx - 2 + k - nghostJ]; // Right side
+            }
+        }
+
+        // Jz
+        for (int i = nghostJ; i < nx + 1 - nghostJ; i++) {
+            for (int k = 1; k <= nghostJ; k++) {
+                Vn.Jz[nghostJ - k][i] = Vn.Jz[nghostJ - k + 1][i]; // Bottom side
+                Vn.Jz[ny - 1 + k - nghostJ][i] = Vn.Jz[ny - 2 + k - nghostJ][i]; // Top side
+            }
+        }
+
+        for (int j = nghostJ; j < ny + 1 - nghostJ; j++) {
+            for (int k = 1; k <= nghostJ; k++) {
+                Vn.Jz[j][nghostJ - k] = Vn.Jz[j][nghostJ - k + 1]; // Left side
+                Vn.Jz[j][nx - 1 + k - nghostJ] = Vn.Jz[j][nx - 2 + k - nghostJ]; // Right side
+            }
+        }
+
+    } else {
+        throw std::invalid_argument("Undefined boundary conditions");
+    }
+}
+
+template<typename Variables>
+void InitialiseGhostJ(Variables& Vn, double Dx, double Dy, int nghost, BoundaryConditions bc) {
+    // Assuming ghost cells are initialised
+    int nx = Vn.nx - 2 * nghost;
+    int ny = Vn.ny - 2 * nghost;
+    Vn.Jx.resize(ny + 2 * (nghost + 1), std::vector<double>(nx + 1 + 2 * (nghost + 1)));
+    Vn.Jy.resize(ny + 1 + 2 * (nghost + 1), std::vector<double>(nx + 2 * (nghost + 1)));
+    Vn.Jz.resize(ny + 1 + 2 * (nghost + 1), std::vector<double>(nx + 1 + 2 * (nghost + 1)));
+    ComputeJ(Vn, Dx, Dy, nghost);
+    UpdateGhostJ(Vn, nghost, bc);
 }
 
 #endif //ADD_GHOST_CELLS_HPP_

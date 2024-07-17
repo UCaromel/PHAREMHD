@@ -129,11 +129,18 @@ PYBIND11_MODULE(pyMHD, m)
         .value("Primitive", Primitive)
         .value("Conservative", Conservative)
         .value("Both", Both);
+
+    py::class_<Consts>(m, "Consts")
+        .def(py::init<double, double, double, double>(), 
+             py::arg("sigmaCFL") = 0.8, 
+             py::arg("gam") = 5.0 / 3.0, 
+             py::arg("eta") = 0.0, 
+             py::arg("nu") = 0.0);
     
     m.def("PhareMHD", &PhareMHD, 
           py::arg("primvar0"), py::arg("resultdir"), py::arg("nghost"), 
           py::arg("boundaryconditions"), py::arg("reconstruction"), py::arg("slopelimiter"), py::arg("riemannsolver"), py::arg("constainedtransport"), py::arg("timeintegrator"), 
-          py::arg("Dx"), py::arg("Dy"), py::arg("FinalTime"), py::arg("Dt") = 0.0, py::arg("hall") = Off, py::arg("dumpvariables") = Conservative, py::arg("dumpfrequency") = 1);
+          py::arg("Dx"), py::arg("Dy"), py::arg("FinalTime"), py::arg("Dt") = 0.0, py::arg("Consts") = Consts(), py::arg("OptionalPhysics") = Off, py::arg("dumpvariables") = Conservative, py::arg("dumpfrequency") = 1);
 
 /*
     py::class_<ConservativeVariables>(m, "ConservativeVariables")

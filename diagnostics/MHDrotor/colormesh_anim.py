@@ -25,8 +25,8 @@ def read_times(file_paths):
 results_dir = "MHDrotorres/"
 file_paths = [results_dir + file for file in os.listdir(results_dir) if file.startswith("URK2_") and file.endswith(".txt")]
 
-nx = 100
-ny = 100
+nx = 200
+ny = 200
 
 data = [read_data(file_path) for file_path in file_paths]
 times = read_times(file_paths)

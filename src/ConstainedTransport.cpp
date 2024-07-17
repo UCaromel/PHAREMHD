@@ -1,23 +1,62 @@
 #include "ConstainedTransport.hpp"
 
+static const PhysicalConstants& pc = PhysicalConstants::getInstance(); 
+
 std::vector<std::vector<double>> ConstrainedTransportAverage(const ConservativeVariables &Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs, OptionalPhysics OptP)
 {
-    // Edge-centered
+    // Edge-centered (reconstructions)
     std::vector<std::vector<double>> vx(Cn.ny + 1 - 2 * nghost, std::vector<double>(Cn.nx + 1 - 2 * nghost));
     std::vector<std::vector<double>> vy(Cn.ny + 1 - 2 * nghost, std::vector<double>(Cn.nx + 1 - 2 * nghost));
     std::vector<std::vector<double>> Bx(Cn.ny + 1 - 2 * nghost, std::vector<double>(Cn.nx + 1 - 2 * nghost));
     std::vector<std::vector<double>> By(Cn.ny + 1 - 2 * nghost, std::vector<double>(Cn.nx + 1 - 2 * nghost));
+
     std::vector<std::vector<double>> Ez(Cn.ny + 1 - 2 * nghost, std::vector<double>(Cn.nx + 1 - 2 * nghost));
+
+    // Cell-centered
+    std::vector<std::vector<double>> vxcc(Cn.ny, std::vector<double>(Cn.nx));
+    std::vector<std::vector<double>> vycc(Cn.ny, std::vector<double>(Cn.nx));
+
+    for (size_t i = 0; i < Cn.rho.size(); ++i) {
+        for (size_t j = 0; j < Cn.rho[i].size(); ++j) {
+            if (Cn.rho[i][j] == 0) {
+                throw std::runtime_error("rho is zero");
+            }
+            vxcc[i][j] = Cn.rhovx[i][j] / Cn.rho[i][j];
+            vycc[i][j] = Cn.rhovy[i][j] / Cn.rho[i][j];
+        }
+    }
 
     for (int j = nghost; j <= Cn.ny - nghost; ++j)
     {
         for (int i = nghost; i <= Cn.nx - nghost; ++i)
         {
-            vx[j - nghost][i - nghost] = 0.25 * ((Cn.rhovx[j][i] / Cn.rho[j][i]) + (Cn.rhovx[j][i - 1] / Cn.rho[j][i - 1]) + (Cn.rhovx[j - 1][i] / Cn.rho[j - 1][i]) + (Cn.rhovx[j - 1][i - 1] / Cn.rho[j - 1][i - 1]));
-            vy[j - nghost][i - nghost] = 0.25 * ((Cn.rhovy[j][i] / Cn.rho[j][i]) + (Cn.rhovy[j][i - 1] / Cn.rho[j][i - 1]) + (Cn.rhovy[j - 1][i] / Cn.rho[j - 1][i]) + (Cn.rhovy[j - 1][i - 1] / Cn.rho[j - 1][i - 1]));
-            Bx[j - nghost][i - nghost] = 0.5 * (Cn.Bxf[j - 1][i] + Cn.Bxf[j][i]);
-            By[j - nghost][i - nghost] = 0.5 * (Cn.Byf[j][i - 1] + Cn.Byf[j][i]);
+            vx[j - nghost][i - nghost] = AVERAGEXY(vxcc, i-1, j-1);
+            vy[j - nghost][i - nghost] = AVERAGEXY(vycc, i-1, j-1);
+            Bx[j - nghost][i - nghost] = AVERAGEY(Cn.Bxf, i, j-1);
+            By[j - nghost][i - nghost] = AVERAGEX(Cn.Byf, i-1, j);
+
             Ez[j - nghost][i - nghost] = vy[j - nghost][i - nghost] * Bx[j - nghost][i - nghost] - vx[j - nghost][i - nghost] * By[j - nghost][i - nghost];
+        }
+    }
+
+    if (OptP == OptionalPhysics::HallResHyper){
+        // Edge-centered (reconstructions)
+        std::vector<std::vector<double>> rho(Cn.ny + 1 - 2 * nghost, std::vector<double>(Cn.nx + 1 - 2 * nghost)); // used in hall effect. Since we only have une mass, m=1 -> n = rho
+        std::vector<std::vector<double>> jx(Cn.ny + 1 - 2 * nghost, std::vector<double>(Cn.nx + 1 - 2 * nghost));
+        std::vector<std::vector<double>> jy(Cn.ny + 1 - 2 * nghost, std::vector<double>(Cn.nx + 1 - 2 * nghost));
+
+        for (int j = nghost; j <= Cn.ny - nghost; ++j)
+        {
+            for (int i = nghost; i <= Cn.nx - nghost; ++i)
+            {
+                rho[j - nghost][i - nghost] = AVERAGEXY(Cn.rho, i-1, j-1);
+                jx[j - nghost][i - nghost] = AVERAGEX(Cn.Jx, i, j-1);
+                jy[j - nghost][i - nghost] = AVERAGEY(Cn.Jy, i-1, j);
+
+                Ez[j - nghost][i - nghost] += (1.0/rho[j - nghost][i - nghost]) * (jx[j - nghost][i - nghost] * By[j - nghost][i - nghost] + jy[j - nghost][i - nghost] * vy[j - nghost][i - nghost]); // Hall contribution
+                Ez[j - nghost][i - nghost] += pc.eta * (Cn.Jz[j][i]); // Resistivity
+                Ez[j - nghost][i - nghost] += pc.nu * LAPLACIAN(Cn.Jz, i, j, Dx, Dy); // Hyper resistivity
+            }
         }
     }
 
@@ -147,7 +186,7 @@ std::vector<std::vector<double>> UCTHLL(const ConservativeVariables &Cn, double 
     {
         for (int i = nghost; i <= Cn.nx - nghost; ++i)
         {
-            InterfacesX[j - nghost + 1][i - nghost] = Interface(Pn, i, j, rec, sl, OptP, nghost, Dir::X);
+            InterfacesX[j - nghost + 1][i - nghost] = Interface(Pn, i, j, Dx, Dy, nghost, rec, sl, OptP, Dir::X);
         }
     }
 
@@ -155,7 +194,7 @@ std::vector<std::vector<double>> UCTHLL(const ConservativeVariables &Cn, double 
     {
         for (int i = nghost - 1; i < Cn.nx - nghost + 1; ++i)
         {
-            InterfacesY[j - nghost][i - nghost + 1] = Interface(Pn, i, j, rec, sl, OptP, nghost, Dir::Y);
+            InterfacesY[j - nghost][i - nghost + 1] = Interface(Pn, i, j, Dx, Dy, nghost, rec, sl, OptP, Dir::Y);
         }
     }
 

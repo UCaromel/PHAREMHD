@@ -16,6 +16,13 @@ PrimitiveVariables::PrimitiveVariables(int nx_, int ny_) : nx(nx_), ny(ny_)
 
     Bxf.resize(ny, std::vector<double>(nx + 1));
     Byf.resize(ny + 1, std::vector<double>(nx));
+
+    // J needs one extra ghost cell
+    int nxJ = nx + 2;
+    int nyJ = ny + 2;
+    Jx.resize(nyJ + 1, std::vector<double>(nxJ));
+    Jy.resize(nyJ, std::vector<double>(nxJ + 1));
+    Jz.resize(nyJ + 1, std::vector<double>(nxJ + 1));
 }
 
 PrimitiveVariables::PrimitiveVariables(const ConservativeVariables& C_cc) : nx(C_cc.nx), ny(C_cc.ny)
@@ -51,6 +58,30 @@ PrimitiveVariables::PrimitiveVariables(const ConservativeVariables& C_cc) : nx(C
     for (int i = 0; i < nx; i++) {
         Byf[ny][i] = C_cc.Byf[ny][i];
     }
+
+
+    // J needs one extra ghost cell
+    int nxJ = nx + 2;
+    int nyJ = ny + 2;
+    Jx.resize(nyJ + 1, std::vector<double>(nxJ));
+    Jy.resize(nyJ, std::vector<double>(nxJ + 1));
+    Jz.resize(nyJ + 1, std::vector<double>(nxJ + 1));
+
+    for (int j = 0; j < nyJ; j++) {
+        for (int i = 0; i < nxJ; i++) {
+            Jx[j][i] = C_cc.Jx[j][i];
+            Jy[j][i] = C_cc.Jy[j][i];
+            Jz[j][i] = C_cc.Jz[j][i];
+        }
+        Jy[j][nxJ] = C_cc.Jx[j][nxJ];
+        Jz[j][nxJ] = C_cc.Jx[j][nxJ];
+    }
+    for (int i = 0; i < nxJ; i++) {
+        Jx[nyJ][i] = C_cc.Jx[nyJ][i];
+        Jz[nyJ][i] = C_cc.Jx[nyJ][i];
+    }
+    Jz[nyJ][nxJ] = C_cc.Jx[nyJ][nxJ];
+
 }
 
 PrimitiveVariables::~PrimitiveVariables() = default;
@@ -124,5 +155,25 @@ PrimitiveVariables& PrimitiveVariables::operator=(const PrimitiveVariables& othe
     for (int i = 0; i < nx; i++) {
         Byf[ny][i] = other.Byf[ny][i];
     }
+
+    // J needs one extra ghost cell
+    int nxJ = nx + 2;
+    int nyJ = ny + 2;
+
+    for (int j = 0; j < nyJ; j++) {
+        for (int i = 0; i < nxJ; i++) {
+            this->Jx[j][i] = other.Jx[j][i];
+            this->Jy[j][i] = other.Jy[j][i];
+            this->Jz[j][i] = other.Jz[j][i];
+        }
+        this->Jy[j][nxJ] = other.Jx[j][nxJ];
+        this->Jz[j][nxJ] = other.Jx[j][nxJ];
+    }
+    for (int i = 0; i < nxJ; i++) {
+        this->Jx[nyJ][i] = other.Jx[nyJ][i];
+        this->Jz[nyJ][i] = other.Jx[nyJ][i];
+    }
+    this->Jz[nyJ][nxJ] = other.Jx[nyJ][nxJ];
+
     return *this;
 }

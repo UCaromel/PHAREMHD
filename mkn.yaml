@@ -20,3 +20,6 @@ profile:
     MKN_PYTHON_LIB_EMBED=1
 
 #KLOG=3 mkn clean build -p py -t
+
+#KLOG=3 mkn clean build -p py -t -g
+#gdb --args python3 your_script.py

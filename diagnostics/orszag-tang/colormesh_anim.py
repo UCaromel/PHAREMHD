@@ -23,11 +23,11 @@ def read_times(file_paths):
         times.append(time)
     return times
 
-results_dir = "orszagtang1024/"
+results_dir = "orszagtangCTAverage/"
 file_paths = [results_dir + file for file in os.listdir(results_dir) if file.startswith("PRK2_") and file.endswith(".txt")]
 
-nx = 1024
-ny = 1024
+nx = 128
+ny = 128
 
 data = [read_data(file_path) for file_path in file_paths]
 times = read_times(file_paths)
@@ -46,10 +46,12 @@ im = ax.pcolormesh(reshaped_data[0][:, :, studied_index].T, cmap='coolwarm', nor
 ax.set_aspect('equal')
 fig.colorbar(im, ax=ax)
 
-output_dir = 'frames'
+
+output_dir = 'framestest'
 if os.path.exists(output_dir):
     shutil.rmtree(output_dir)
 os.makedirs(output_dir, exist_ok=True)
+
 
 def update(frame):
     im.set_array(reshaped_data[frame][:, :, studied_index].T)
