@@ -224,24 +224,5 @@ ConservativeVariables& ConservativeVariables::operator=(const ConservativeVariab
         this->Byf[ny][i] = other.Byf[ny][i];
     }
 
-    // J needs one extra ghost cell
-    int nxJ = nx + 2;
-    int nyJ = ny + 2;
-
-    for (int j = 0; j < nyJ; j++) {
-        for (int i = 0; i < nxJ; i++) {
-            this->Jx[j][i] = other.Jx[j][i];
-            this->Jy[j][i] = other.Jy[j][i];
-            this->Jz[j][i] = other.Jz[j][i];
-        }
-        this->Jy[j][nxJ] = other.Jx[j][nxJ];
-        this->Jz[j][nxJ] = other.Jx[j][nxJ];
-    }
-    for (int i = 0; i < nxJ; i++) {
-        this->Jx[nyJ][i] = other.Jx[nyJ][i];
-        this->Jz[nyJ][i] = other.Jx[nyJ][i];
-    }
-    this->Jz[nyJ][nxJ] = other.Jx[nyJ][nxJ];
-
     return *this;
 }

@@ -8,21 +8,21 @@ import shutil
 
 #############################################################################################################################################################################
 
-nx = 32
+nx = 128
 ny = 1
-Dx = 0.1
+Dx = 0.8
 Dy = 1
-Dt = 0.2
-FinalTime = 20
+Dt = 0.1
+FinalTime = 200
 nghost = 2
 
 boundaryconditions = p.BoundaryConditions.Periodic
 
-reconstruction = p.Reconstruction.Constant
+reconstruction = p.Reconstruction.Linear
 slopelimiter = p.Slope.VanLeer
 riemannsolver = p.RiemannSolver.Rusanov
 constainedtransport = p.CTMethod.Average
-timeintegrator = p.Integrator.TVDRK2Integrator
+timeintegrator = p.Integrator.EulerIntegrator
 
 consts = p.Consts(sigmaCFL = 0.8, gam = 5/3, eta = 0.0, nu = 0.005)
 physics = p.OptionalPhysics.HallResHyper
@@ -68,7 +68,7 @@ def Bz_(x, y):
     return ret
 
 def P_(x, y):
-    return 1e-4
+    return 1e-3
 
 x = np.arange(nx) * Dx + 0.5 * Dx 
 y = np.arange(ny) * Dy + 0.5 * Dy 
@@ -101,4 +101,4 @@ P0cc.init(rho, vx, vy, vz, Bxf, Byf, Bz, P)
 
 p.PhareMHD(P0cc, result_dir, nghost, 
            boundaryconditions, reconstruction, slopelimiter, riemannsolver, constainedtransport, timeintegrator,
-           Dx, Dy, FinalTime, dumpvariables = dumpvariables, Consts = consts, OptionalPhysics = physics, dumpfrequency = dumpfrequency)
+           Dx, Dy, FinalTime, Dt = Dt, dumpvariables = dumpvariables, Consts = consts, OptionalPhysics = physics, dumpfrequency = dumpfrequency)

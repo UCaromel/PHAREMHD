@@ -4,10 +4,10 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import os
 
-nx = 32
+nx = 128
 ny = 1
 
-quantity_name = 'vy'
+quantity_name = 'Bz'
 fixed_index = 0
 
 lx=1

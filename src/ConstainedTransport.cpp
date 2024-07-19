@@ -49,13 +49,16 @@ std::vector<std::vector<double>> ConstrainedTransportAverage(const ConservativeV
         {
             for (int i = nghost; i <= Cn.nx - nghost; ++i)
             {
+                int i1 = i + 1;
+                int j1 = j + 1;
+
                 rho[j - nghost][i - nghost] = AVERAGEXY(Cn.rho, i-1, j-1);
-                jx[j - nghost][i - nghost] = AVERAGEX(Cn.Jx, i, j-1);
-                jy[j - nghost][i - nghost] = AVERAGEY(Cn.Jy, i-1, j);
+                jx[j - nghost][i - nghost] = AVERAGEX(Cn.Jx, i1-1, j1);
+                jy[j - nghost][i - nghost] = AVERAGEY(Cn.Jy, i1, j1-1);
 
                 Ez[j - nghost][i - nghost] += (1.0/rho[j - nghost][i - nghost]) * (jx[j - nghost][i - nghost] * By[j - nghost][i - nghost] + jy[j - nghost][i - nghost] * vy[j - nghost][i - nghost]); // Hall contribution
-                Ez[j - nghost][i - nghost] += pc.eta * (Cn.Jz[j][i]); // Resistivity
-                Ez[j - nghost][i - nghost] += pc.nu * LAPLACIAN(Cn.Jz, i, j, Dx, Dy); // Hyper resistivity
+                Ez[j - nghost][i - nghost] += pc.eta * (Cn.Jz[j1][i1]); // Resistivity
+                Ez[j - nghost][i - nghost] -= pc.nu * LAPLACIAN(Cn.Jz, i1, j1, Dx, Dy); // Hyper resistivity
             }
         }
     }
