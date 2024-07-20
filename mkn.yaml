@@ -1,4 +1,4 @@
-
+#! mkn clean build -qdtOp py -a -fPIC
 
 name: MHDProblem
 
@@ -7,11 +7,11 @@ profile:
 
 - name: py
   parent: base
-  install: .
+  install: pyMHD
   mode: none
   mod: python3.module  lang.python3
   dep: lang.pybind11
-  out: pyMHD/pyMHD
+  out: pyMHD
   src: pyMHD/pyMHD.cpp src
   sub: cppdict&pyMHD/tpp/cppdict(https://github.com/LaboratoryOfPlasmaPhysics/cppdict)
   inc: src pyMHD/tpp/cppdict/include
