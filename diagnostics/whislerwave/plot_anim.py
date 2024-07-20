@@ -4,13 +4,15 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import os
 
-nx = 128
-ny = 1
+nx = 512
+Dx = 0.1
+
+Dt = 0.002
+
 
 quantity_name = 'Bz'
 fixed_index = 0
-
-lx=1
+ny = 1
 
 column_names = ['rho', 'vx', 'vy', 'vz', 'Bx', 'By', 'Bz', 'P']
 
@@ -50,15 +52,14 @@ for quantity in quantities.keys():
 
 times = np.array(times)
 
-Dx=lx/nx
 x=Dx*np.arange(nx) + 0.5*Dx
 
 
 def update(frame):    
 
     plt.clf()
-    plt.plot(x, quantities[quantity_name][frame, fixed_index, :], 'o', color='blue', markersize=3) # t,y,x
-    plt.title(f'{quantity_name} at y={fixed_index}, t={frame}')  # Format time to one decimal place
+    plt.plot(x, quantities[quantity_name][frame, fixed_index, :], color='blue', markersize=3) # t,y,x
+    plt.title(f'{quantity_name} at y={fixed_index}, t={frame * Dt}')  # Format time to one decimal place
     plt.xlabel('x')
     plt.ylabel(quantity_name)
     plt.grid(True)

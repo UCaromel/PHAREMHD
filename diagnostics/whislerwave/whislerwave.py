@@ -8,36 +8,35 @@ import shutil
 
 #############################################################################################################################################################################
 
-nx = 128
+nx = 512
 ny = 1
-Dx = 0.8
+Dx = 0.1
 Dy = 1
-Dt = 0.1
-FinalTime = 200
+Dt = 0.002
+FinalTime = 10
 nghost = 2
 
 boundaryconditions = p.BoundaryConditions.Periodic
 
 reconstruction = p.Reconstruction.Linear
 slopelimiter = p.Slope.VanLeer
-riemannsolver = p.RiemannSolver.Rusanov
+riemannsolver = p.RiemannSolver.HLL
 constainedtransport = p.CTMethod.Average
-timeintegrator = p.Integrator.EulerIntegrator
+timeintegrator = p.Integrator.TVDRK2Integrator
 
-consts = p.Consts(sigmaCFL = 0.8, gam = 5/3, eta = 0.0, nu = 0.005)
+consts = p.Consts(sigmaCFL = 0.8, gam = 5/3, eta = 0.0, nu = 0.000)
 physics = p.OptionalPhysics.HallResHyper
 
 dumpvariables = p.dumpVariables.Conservative
-dumpfrequency = 10
+dumpfrequency = 1
 
 ##############################################################################################################################################################################
 lx=nx*Dx
-ly=ny*Dy
 k=2*np.pi/lx
 
 np.random.seed(0)
 
-modes = (1,2,4,8)
+modes = (64,128)
 phases = np.random.rand(len(modes))
 
 def rho_(x, y):
@@ -47,10 +46,16 @@ def vx_(x, y):
     return 0.0
 
 def vy_(x, y):
-    return 0.1 * np.cos(k*x)
+    ret = np.zeros((x.shape[0], y.shape[1]))
+    for m,phi in zip(modes, phases):
+        ret[:,:] += np.cos(2*np.pi*x/lx*m + phi)*0.01
+    return ret
 
 def vz_(x, y):
-    return 0.1 * np.sin(k*x)
+    ret = np.zeros((x.shape[0], y.shape[1]))
+    for m,phi in zip(modes, phases):
+        ret[:,:] += np.sin(2*np.pi*x/lx*m + phi)*0.01
+    return ret
 
 def Bx_(x, y):
     return 1.0
