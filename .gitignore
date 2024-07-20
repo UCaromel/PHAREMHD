@@ -7,7 +7,6 @@ __pycache__
 *.gif
 *.mp4
 *.png
-
 space_results/
 time_results/
 2Dwave/
