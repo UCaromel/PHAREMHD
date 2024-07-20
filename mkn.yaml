@@ -1,4 +1,4 @@
-#! mkn clean build -qdtOp py -a -fPIC
+#! clean build -qdtOp py -a "-fPIC -std=c++17"
 
 name: MHDProblem
 

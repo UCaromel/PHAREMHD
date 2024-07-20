@@ -27,6 +27,5 @@ jobs:
       run: |
         curl -Lo mkn https://github.com/mkn/mkn/releases/download/latest/mkn_nix
         chmod +x mkn
-        export PYTHONPATH=$PWD PATH=$PWD:$PATH
-        KLOG=3 mkn
-        python3 py.py
+        KLOG=3 ./mkn
+        PYTHONPATH=$PWD python3 py.py
