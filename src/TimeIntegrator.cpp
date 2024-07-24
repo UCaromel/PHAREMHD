@@ -19,6 +19,17 @@ ConservativeVariables Euler(ConservativeVariables& Un, double Dx, double Dy, dou
     if (OptP == OptionalPhysics::HallResHyper) {
         ComputeJ(Un, Dx, Dy, nghost);
         UpdateGhostJ(Un, nghost, bc);
+/*        static int i = 0;
+        std::ostringstream filenamex;
+        filenamex << "whislerwaveres/" <<"Jx_"<<i<< ".txt";
+        saveVectorToFile(Un.Jx, filenamex.str());
+        std::ostringstream filenamey;
+        filenamey << "whislerwaveres/" <<"Jy_"<<i<< ".txt";
+        saveVectorToFile(Un.Jy, filenamey.str());
+        std::ostringstream filenamez;
+        filenamez << "whislerwaveres/" <<"Jz_"<<i<< ".txt";
+        saveVectorToFile(Un.Jz, filenamez.str());
+        i++;*/
     }
 
     Un1 = EulerAdvance(Un, Dx, Dy, Dt, nghost, rec, sl, rs, OptP);

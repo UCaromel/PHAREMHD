@@ -41,7 +41,7 @@ std::vector<std::vector<double>> ConstrainedTransportAverage(const ConservativeV
 
     if (OptP == OptionalPhysics::HallResHyper){
         // Edge-centered (reconstructions)
-        std::vector<std::vector<double>> rho(Cn.ny + 1 - 2 * nghost, std::vector<double>(Cn.nx + 1 - 2 * nghost)); // used in hall effect. Since we only have une mass, m=1 -> n = rho
+        std::vector<std::vector<double>> rho(Cn.ny + 1 - 2 * nghost, std::vector<double>(Cn.nx + 1 - 2 * nghost)); // used in hall effect. Since we only have one mass, m=1 -> n = rho
         std::vector<std::vector<double>> jx(Cn.ny + 1 - 2 * nghost, std::vector<double>(Cn.nx + 1 - 2 * nghost));
         std::vector<std::vector<double>> jy(Cn.ny + 1 - 2 * nghost, std::vector<double>(Cn.nx + 1 - 2 * nghost));
 
@@ -56,9 +56,9 @@ std::vector<std::vector<double>> ConstrainedTransportAverage(const ConservativeV
                 jx[j - nghost][i - nghost] = AVERAGEX(Cn.Jx, i1-1, j1);
                 jy[j - nghost][i - nghost] = AVERAGEY(Cn.Jy, i1, j1-1);
 
-                Ez[j - nghost][i - nghost] += (1.0/rho[j - nghost][i - nghost]) * (jx[j - nghost][i - nghost] * By[j - nghost][i - nghost] + jy[j - nghost][i - nghost] * vy[j - nghost][i - nghost]); // Hall contribution
-                Ez[j - nghost][i - nghost] += pc.eta * (Cn.Jz[j1][i1]); // Resistivity
-                Ez[j - nghost][i - nghost] -= pc.nu * LAPLACIAN(Cn.Jz, i1, j1, Dx, Dy); // Hyper resistivity
+                Ez[j - nghost][i - nghost] += (1.0/rho[j - nghost][i - nghost]) * (jx[j - nghost][i - nghost] * By[j - nghost][i - nghost] - jy[j - nghost][i - nghost] * Bx[j - nghost][i - nghost]); // Hall contribution
+                //Ez[j - nghost][i - nghost] += pc.eta * (Cn.Jz[j1][i1]); // Resistivity
+                //Ez[j - nghost][i - nghost] -= pc.nu * LAPLACIAN(Cn.Jz, i1, j1, Dx, Dy); // Hyper resistivity
             }
         }
     }

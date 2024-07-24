@@ -8,26 +8,27 @@ import shutil
 
 #############################################################################################################################################################################
 
-nx = 512
+nx = 128
 ny = 1
-Dx = 0.1
+Dx = 0.05
 Dy = 1
-Dt = 0.002
-FinalTime = 10
+Dt = 0.000625
+FinalTime = 0.5
 nghost = 2
 
 boundaryconditions = p.BoundaryConditions.Periodic
 
-reconstruction = p.Reconstruction.Linear
+reconstruction = p.Reconstruction.Constant
+
 slopelimiter = p.Slope.VanLeer
-riemannsolver = p.RiemannSolver.HLL
+riemannsolver = p.RiemannSolver.Rusanov
 constainedtransport = p.CTMethod.Average
 timeintegrator = p.Integrator.TVDRK2Integrator
 
 consts = p.Consts(sigmaCFL = 0.8, gam = 5/3, eta = 0.0, nu = 0.000)
 physics = p.OptionalPhysics.HallResHyper
 
-dumpvariables = p.dumpVariables.Conservative
+dumpvariables = p.dumpVariables.Primitive
 dumpfrequency = 1
 
 ##############################################################################################################################################################################
@@ -36,7 +37,7 @@ k=2*np.pi/lx
 
 np.random.seed(0)
 
-modes = (64,128)
+modes = [20]#[int(nx/4)]
 phases = np.random.rand(len(modes))
 
 def rho_(x, y):
@@ -48,13 +49,13 @@ def vx_(x, y):
 def vy_(x, y):
     ret = np.zeros((x.shape[0], y.shape[1]))
     for m,phi in zip(modes, phases):
-        ret[:,:] += np.cos(2*np.pi*x/lx*m + phi)*0.01
+        ret[:,:] += np.cos(k*x*m + phi)*0.01
     return ret
 
 def vz_(x, y):
     ret = np.zeros((x.shape[0], y.shape[1]))
     for m,phi in zip(modes, phases):
-        ret[:,:] += np.sin(2*np.pi*x/lx*m + phi)*0.01
+        ret[:,:] += np.sin(k*x*m + phi)*0.01
     return ret
 
 def Bx_(x, y):
@@ -63,13 +64,13 @@ def Bx_(x, y):
 def By_(x, y):
     ret = np.zeros((x.shape[0], y.shape[1]))
     for m,phi in zip(modes, phases):
-        ret[:,:] += np.cos(2*np.pi*x/lx*m + phi)*0.01
+        ret[:,:] += np.cos(k*x*m + phi)*0.01
     return ret
 
 def Bz_(x, y):
     ret = np.zeros((x.shape[0], y.shape[1]))
     for m,phi in zip(modes, phases):
-        ret[:,:] += np.sin(2*np.pi*x/lx*m + phi)*0.01
+        ret[:,:] += np.sin(k*x*m + phi)*0.01
     return ret
 
 def P_(x, y):

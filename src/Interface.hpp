@@ -26,8 +26,10 @@ class Interface {
 public:
     ReconstructedValues uL, uR, fL, fR;
     double SL, SR, Splus;
+    double SLb, SRb, Splusb;
     double cfastxL, cfastxR, cfastyL, cfastyR;
     double cwxL, cwxR, cwyL, cwyR;
+    OptionalPhysics OP;
 
     // For vector initialisation in UCT
     Interface();

@@ -31,13 +31,21 @@ ReconstructedValues ComputeFluxVector(const ReconstructedValues& u, Dir dir) {
 void AddNonIdealFlux(ReconstructedValues& f, const ReconstructedValues& u, double Jx, double Jy, double Jz, double LaplJx, double LaplJy, double LaplJz, OptionalPhysics OptP, Dir dir){
     if (OptP == OptionalPhysics::HallResHyper) {
         if (dir == Dir::X) {
+            f.Bz += (1.0/u.rho) * (Jz * u.Bx - Jx * u.Bz);
+            //f.Bz += pc.eta * Jy;
+            //f.Bz -= pc.nu * LaplJy;
+
             f.P += (1.0/u.rho) * ((u.Bx * Jx + u.By * Jy + u.Bz * Jz)*u.Bx - (u.Bx * u.Bx + u.By * u.By + u.Bz * u.Bz) * Jx);
-            f.P += pc.eta * (Jy * u.Bz - Jz * u.By);
-            f.P -= pc.nu * (LaplJy * u.Bz - LaplJz * u.By);
+            //f.P += pc.eta * (Jy * u.Bz - Jz * u.By);
+            //f.P -= pc.nu * (LaplJy * u.Bz - LaplJz * u.By);
         } else if (dir == Dir::Y) {
+            f.Bz += - (1.0/u.rho) * (Jy * u.Bz - Jz * u.By);
+            //f.Bz += - pc.eta * Jx;
+            //f.Bz -= - pc.nu * LaplJx;
+
             f.P += (1.0/u.rho) * ((u.Bx * Jx + u.By * Jy + u.Bz * Jz)*u.By - (u.Bx * u.Bx + u.By * u.By + u.Bz * u.Bz) * Jy);
-            f.P += pc.eta * (Jz * u.Bx - Jx * u.Bz);
-            f.P -= pc.nu * (LaplJz * u.Bx - LaplJx * u.Bz);
+            //f.P += pc.eta * (Jz * u.Bx - Jx * u.Bz);
+            //f.P -= pc.nu * (LaplJz * u.Bx - LaplJx * u.Bz);
         }
     }
 }
@@ -147,6 +155,8 @@ std::pair<std::pair<double, double>, std::pair<double, double>> ComputeRiemannJ(
 Interface::Interface() = default;
 
 Interface::Interface(const PrimitiveVariables& P_cc /* Assuming ghost cells are added */, int i /* (0 to nx) + nghost */, int j /* (0 to ny) + nghost */, double Dx, double Dy, int nghost, Reconstruction rec, Slope sl, OptionalPhysics OptP,  Dir dir) {
+    // For riemann solver
+    OP = OptP;
         
     if (rec == Reconstruction::Constant) {
         if (dir == Dir::X) {
@@ -234,15 +244,24 @@ Interface::Interface(const PrimitiveVariables& P_cc /* Assuming ghost cells are 
     cfastyR = std::sqrt((c0R*c0R + caR*caR)*0.5 + (std::sqrt((c0R*c0R + caR*caR)*(c0R*c0R + caR*caR) - 4*c0R*c0R*cayR*cayR))*0.5);
 
     if (OptP == OptionalPhysics::HallResHyper) {
-        cwxL = std::abs(uL.Bx) * M_PI / (uL.rho * Dx);
-        cwyL = std::abs(uL.By) * M_PI / (uL.rho * Dy);
-        cwxR = std::abs(uL.Bx) * M_PI / (uR.rho * Dx);
-        cwyR = std::abs(uL.By) * M_PI / (uR.rho * Dy);
+        double vwx = M_PI * (std::sqrt(1 + 0.25/(Dx*Dx)) + 0.5/Dx);
+        double vwy = M_PI * (std::sqrt(1 + 0.25/(Dy*Dy)) + 0.5/Dy);
+        cwxL = std::sqrt(uL.Bx*uL.Bx + uL.By*uL.By + uL.Bz*uL.Bz) / (uL.rho) * vwx;
+        cwyL = std::sqrt(uL.Bx*uL.Bx + uL.By*uL.By + uL.Bz*uL.Bz) / (uL.rho) * vwy;
+        cwxR = std::sqrt(uR.Bx*uR.Bx + uR.By*uR.By + uR.Bz*uR.Bz) / (uR.rho) * vwx;
+        cwyR = std::sqrt(uR.Bx*uR.Bx + uR.By*uR.By + uR.Bz*uR.Bz) / (uR.rho) * vwy;
 
-        cfastxL += cwxL;
-        cfastxR += cwxR;
-        cfastyL += cwyL;
-        cfastyR += cwyR;
+        if(dir == Dir::X){
+            SLb = std::min(uL.vx - cfastxL - cwxL, uR.vx - cfastxR - cwxR);
+            SRb = std::max(uL.vx + cfastxL + cwxL, uR.vx + cfastxR + cwxR);
+            // For rusanov :
+            Splusb = std::max(std::abs(uL.vx) + cfastxL + cwxL, std::abs(uR.vx) + cfastxR + cwxR);
+        }else if(dir == Dir::Y){
+            SLb = std::min(uL.vy - cfastyL - cwyL, uR.vy - cfastyR - cwyR);
+            SRb = std::max(uL.vy + cfastyL + cwyL, uR.vy + cfastyR + cwyR);
+            //  For rusanov :
+            Splusb = std::max(std::abs(uL.vy) + cfastyL + cwyL, std::abs(uR.vy) + cfastyR + cwyR);
+        }
     }
 
     // Wave speeds

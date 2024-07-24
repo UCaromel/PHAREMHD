@@ -4,13 +4,11 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import os
 
-nx = 512
-Dx = 0.1
-
-Dt = 0.002
+nx = 128
+Dx = 0.05
 
 
-quantity_name = 'Bz'
+quantity_name = 'vz'
 fixed_index = 0
 ny = 1
 
@@ -20,7 +18,8 @@ def read_file(filename):
     df = pd.read_csv(filename, delim_whitespace=True, header=None, names=column_names)
     return df
 
-results_dir = 'whislerwaveres'
+results_dir = 'whislerwaveres/'
+results_dir2 = 'whislerwaveHLL/'
 
 quantities = {
     'rho': [],
@@ -34,11 +33,21 @@ quantities = {
 }
 times = []
 
+quantitieshll = {
+    'rho': [],
+    'vx': [],
+    'vy': [],
+    'vz': [],
+    'Bx': [],
+    'By': [],
+    'Bz': [],
+    'P': []
+}
+timeshll = []
+
 for filename in os.listdir(results_dir):
-    if filename.startswith("URK2_") and filename.endswith(".txt"):
-        # Extract time from filename and format it properly
-        time_str = filename.split('_')[2].split('.')[0]
-        time_str = time_str.replace('_', '.')  # Replace underscore with dot
+    if filename.startswith("PRK2_") and filename.endswith(".txt"):
+        time_str = filename.split('_')[1]+'.'+filename.split('_')[2].split('.')[0]
         time = float(time_str)
         times.append(time)
         
@@ -50,28 +59,48 @@ for filename in os.listdir(results_dir):
 for quantity in quantities.keys():
     quantities[quantity] = np.array(quantities[quantity])
 
-times = np.array(times)
+for filename in os.listdir(results_dir2):
+    if filename.startswith("PRK2_") and filename.endswith(".txt"):
+        time_str = filename.split('_')[1]+'.'+filename.split('_')[2].split('.')[0]
+        time = float(time_str)
+        timeshll.append(time)
+        
+        df = read_file(os.path.join(results_dir, filename))
+
+        for quantity in quantitieshll.keys():
+            quantitieshll[quantity].append(df[quantity].values.reshape((ny, nx)))
+
+for quantity in quantitieshll.keys():
+    quantitieshll[quantity] = np.array(quantitieshll[quantity])
 
 x=Dx*np.arange(nx) + 0.5*Dx
 
+def update(frame):
+    lx = nx*Dx
+    m = 20#int(nx/4)
 
-def update(frame):    
+    k = 2 * np.pi / lx * m
+    
+    expected_value = 1e-2 * np.cos(k * x + k**2 * times[frame] + 0.5488135)
 
     plt.clf()
-    plt.plot(x, quantities[quantity_name][frame, fixed_index, :], color='blue', markersize=3) # t,y,x
-    plt.title(f'{quantity_name} at y={fixed_index}, t={frame * Dt}')  # Format time to one decimal place
+    plt.plot(x, quantities[quantity_name][frame, fixed_index, :], color='blue', marker = 'x', markersize=3) # t,y,x
+    plt.plot(x, quantitieshll[quantity_name][frame, fixed_index, :], color='green', marker = 'o', markersize=3) # t,y,x
+    plt.plot(x, expected_value)
+    plt.title(f'{quantity_name} at t={times[frame]}')  # Format time to one decimal place
     plt.xlabel('x')
     plt.ylabel(quantity_name)
     plt.grid(True)
     #plt.yscale("log")
     plt.tight_layout()
     
-    eps = 0.01
+    eps = 0.001
     min_val = np.min(quantities[quantity_name][:, fixed_index, :]) - eps
     max_val = np.max(quantities[quantity_name][:, fixed_index, :]) + eps
     
     plt.ylim(min_val, max_val)
-
+    plt.axvline(x[1]-Dx/2, ls='--', color='k')
+    plt.axvline(x[-1]-Dx/2, ls='--', color='k')
 
 fig = plt.figure(figsize=(8, 6))
 ani = FuncAnimation(fig, update, frames=len(times), interval=100)
@@ -86,3 +115,15 @@ def onclick(event):
 fig.canvas.mpl_connect('key_press_event', onclick)
 
 plt.show()
+
+"""
+lx = nx*Dx
+m = 4#int(nx/4)
+
+k = 2 * np.pi / lx * m
+plt.plot(x, quantities[quantity_name][0, fixed_index, :], color='blue', marker = 'x', markersize=3) # t,y,x
+plt.plot(x, 1e-3 * np.cos(k * x + k**2 * times[0] + 0.5488135))
+plt.axvline(x[1]-Dx/2, ls='--', color='k')
+plt.axvline(x[-1]-Dx/2, ls='--', color='k')
+plt.show()
+"""

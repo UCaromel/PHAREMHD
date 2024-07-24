@@ -6,11 +6,6 @@ void PhareMHD(const PrimitiveVariables& P0cc, std::string resultDir, int nghost,
     PhysicalConstants::getInstance().init(cst);
 
     PrimitiveVariables P0 = InitialiseGhostCells(P0cc, nghost, bc); // Because of the constructor, J is already the right size
-
-    if (OptP == OptionalPhysics::HallResHyper){
-        ComputeJ(P0, Dx, Dy, nghost);
-        UpdateGhostJ(P0, nghost, bc);
-    }
     
     ConservativeVariables U0(P0);
 
