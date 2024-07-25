@@ -9,13 +9,13 @@ ConservativeVariables EulerAdvance(const ConservativeVariables& Un, double Dx, d
     static int j = 0;
     std::ostringstream filenamex;
     filenamex << "whislerwaveres/" <<"Jx2_"<<j<< ".txt";
-    saveVectorToFile(Un.Jx, filenamex.str());
+    saveVectorToFile(P_cc.Jx, filenamex.str());
     std::ostringstream filenamey;
     filenamey << "whislerwaveres/" <<"Jy2_"<<j<< ".txt";
-    saveVectorToFile(Un.Jy, filenamey.str());
+    saveVectorToFile(P_cc.Jy, filenamey.str());
     std::ostringstream filenamez;
     filenamez << "whislerwaveres/" <<"Jz2_"<<j<< ".txt";
-    saveVectorToFile(Un.Jz, filenamez.str());
+    saveVectorToFile(P_cc.Jz, filenamez.str());
     j++;
 */
     ConservativeVariables FluxDifx = ComputeFluxDifferenceX(P_cc, Dx, Dy, nghost, rec, sl, rs, OptP);
