@@ -1,5 +1,7 @@
 #include "GodunovFlux.hpp"
 
+#include "WrittingUtils.hpp"
+
 std::vector<ReconstructedValues> GodunovFluxX(const PrimitiveVariables& P_cc, double Dx, double Dy, int nghost, Reconstruction rec, Slope sl, Riemann rs, OptionalPhysics OptP){
     RiemannSolverFunction ChosenRiemannSolver = getRiemannSolver(rs);
     std::vector<ReconstructedValues> NumFluxx;
@@ -34,6 +36,15 @@ ConservativeVariables ComputeFluxDifferenceX(PrimitiveVariables& P_cc, double Dx
             FluxDifx.set(NumFluxx[(i+1)+(P_cc.nx + 1 - 2*nghost)*j] - NumFluxx[i+(P_cc.nx + 1 - 2*nghost)*j], i + nghost, j + nghost);
         }
     }
+
+    
+    static int i = 0;
+    std::ostringstream fdifx;
+    fdifx << "whislerwaveres/FluxDifx_" << i <<".txt";
+    saveConcervativeVariables(FluxDifx, fdifx.str(), nghost);
+    i++;
+
+
     return FluxDifx;
 }
 

@@ -137,7 +137,7 @@ void UpdateGhostJ(Variables& Vn, int nghost, BoundaryConditions bc) {
 
     if(bc == BoundaryConditions::Periodic){
         // Jx
-        for (int i = nghostJ; i < nx - nghostJ; i++) {
+        for (int i = nghostJ; i < nx - nghostJ; i++) { // Ghost cells still not good for Jx, dir y and ZeroGradient (maybe)
             for (int k = 1; k <= nghostJ; k++) {
                 Vn.Jx[nghostJ - k][i] = Vn.Jx[ny1 - k - nghostJ][i]; // Bottom side
                 Vn.Jx[ny1 - 1 + k - nghostJ][i] = Vn.Jx[k - 1 + nghostJ][i]; // Top side

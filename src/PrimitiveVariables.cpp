@@ -73,14 +73,14 @@ PrimitiveVariables::PrimitiveVariables(const ConservativeVariables& C_cc) : nx(C
             Jy[j][i] = C_cc.Jy[j][i];
             Jz[j][i] = C_cc.Jz[j][i];
         }
-        Jy[j][nxJ] = C_cc.Jx[j][nxJ];
-        Jz[j][nxJ] = C_cc.Jx[j][nxJ];
+        Jy[j][nxJ] = C_cc.Jy[j][nxJ];
+        Jz[j][nxJ] = C_cc.Jz[j][nxJ];
     }
     for (int i = 0; i < nxJ; i++) {
         Jx[nyJ][i] = C_cc.Jx[nyJ][i];
-        Jz[nyJ][i] = C_cc.Jx[nyJ][i];
+        Jz[nyJ][i] = C_cc.Jz[nyJ][i];
     }
-    Jz[nyJ][nxJ] = C_cc.Jx[nyJ][nxJ];
+    Jz[nyJ][nxJ] = C_cc.Jz[nyJ][nxJ];
 
 }
 

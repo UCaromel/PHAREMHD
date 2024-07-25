@@ -2,7 +2,7 @@
 
 ReconstructedValues RusanovRiemannSolver(const Interface& inter){
     ReconstructedValues Frus;
-    Frus = 0.5 * (inter.fL + inter.fR) - 0.5 * inter.Splusb * (inter.uR - inter.uL);
+    Frus = 0.5 * (inter.fL + inter.fR) - 0.5 * inter.Splus * (inter.uR - inter.uL);
 
     if (inter.OP == OptionalPhysics::HallResHyper){
         Frus.Bx = 0.5 * (inter.fL.Bx + inter.fR.Bx) - 0.5 * inter.Splusb * (inter.uR.Bx - inter.uL.Bx);
@@ -10,10 +10,6 @@ ReconstructedValues RusanovRiemannSolver(const Interface& inter){
         Frus.Bz = 0.5 * (inter.fL.Bz + inter.fR.Bz) - 0.5 * inter.Splusb * (inter.uR.Bz - inter.uL.Bz);
         Frus.P = 0.5 * (inter.fL.P + inter.fR.P) - 0.5 * inter.Splusb * (inter.uR.P - inter.uL.P);
     }
-
-    std::cout<<(inter.fL.vy + inter.fR.vy)<<" "<<inter.Splus<<
-    " "<<inter.Splusb<<" "<<(inter.uR.vy - inter.uL.vy)<<" "<<inter.SL<<
-    " "<<inter.SR<<" "<<inter.SLb<<" "<<inter.SRb<<std::endl;
 
     return Frus;
 }

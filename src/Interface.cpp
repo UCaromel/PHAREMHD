@@ -29,16 +29,22 @@ ReconstructedValues ComputeFluxVector(const ReconstructedValues& u, Dir dir) {
 }
 
 void AddNonIdealFlux(ReconstructedValues& f, const ReconstructedValues& u, double Jx, double Jy, double Jz, double LaplJx, double LaplJy, double LaplJz, OptionalPhysics OptP, Dir dir){
-    if (OptP == OptionalPhysics::HallResHyper) {
+    if (OptP == OptionalPhysics::HallRes) {
         if (dir == Dir::X) {
-            f.Bz += (1.0/u.rho) * (Jz * u.Bx - Jx * u.Bz);
+            f.By += - (1.0/u.rho) * (Jx * u.By - Jy * u.Bx) *1.0;
+            //f.By += - pc.eta * Jz;
+            //f.By -= - pc.nu * LaplJz;
+            f.Bz += (1.0/u.rho) * (Jz * u.Bx - Jx * u.Bz) *1.0;
             //f.Bz += pc.eta * Jy;
             //f.Bz -= pc.nu * LaplJy;
 
-            f.P += (1.0/u.rho) * ((u.Bx * Jx + u.By * Jy + u.Bz * Jz)*u.Bx - (u.Bx * u.Bx + u.By * u.By + u.Bz * u.Bz) * Jx);
+            f.P += (1.0/u.rho) * ((u.Bx * Jx + u.By * Jy + u.Bz * Jz)*u.Bx - (u.Bx * u.Bx + u.By * u.By + u.Bz * u.Bz) * Jx) *1.0;
             //f.P += pc.eta * (Jy * u.Bz - Jz * u.By);
             //f.P -= pc.nu * (LaplJy * u.Bz - LaplJz * u.By);
         } else if (dir == Dir::Y) {
+            f.Bx += (1.0/u.rho) * (Jx * u.By - Jy * u.Bx);
+            //f.Bx += pc.eta * Jz;
+            //f.Bx -= pc.nu * LaplJz;
             f.Bz += - (1.0/u.rho) * (Jy * u.Bz - Jz * u.By);
             //f.Bz += - pc.eta * Jx;
             //f.Bz -= - pc.nu * LaplJx;
@@ -250,6 +256,14 @@ Interface::Interface(const PrimitiveVariables& P_cc /* Assuming ghost cells are 
         cwyL = std::sqrt(uL.Bx*uL.Bx + uL.By*uL.By + uL.Bz*uL.Bz) / (uL.rho) * vwy;
         cwxR = std::sqrt(uR.Bx*uR.Bx + uR.By*uR.By + uR.Bz*uR.Bz) / (uR.rho) * vwx;
         cwyR = std::sqrt(uR.Bx*uR.Bx + uR.By*uR.By + uR.Bz*uR.Bz) / (uR.rho) * vwy;
+        //double hallxL = std::sqrt(uL.Bx*uL.Bx + uL.By*uL.By + uL.Bz*uL.Bz) / (2.0*(uL.rho)*Dx);
+        //double hallyL = std::sqrt(uL.Bx*uL.Bx + uL.By*uL.By + uL.Bz*uL.Bz) / (2.0*(uL.rho)*Dy);
+        //double hallxR = std::sqrt(uR.Bx*uR.Bx + uR.By*uR.By + uR.Bz*uR.Bz) / (2.0*(uR.rho)*Dx);
+        //double hallyR = std::sqrt(uR.Bx*uR.Bx + uR.By*uR.By + uR.Bz*uR.Bz) / (2.0*(uR.rho)*Dy);
+        //cwxL = std::fabs(hallxL) + std::sqrt(hallxL*hallxL + caxL*caxL);
+        //cwyL = std::fabs(hallyL) + std::sqrt(hallyL*hallyL + cayL*cayL);
+        //cwxR = std::fabs(hallxR) + std::sqrt(hallxR*hallxR + caxR*caxR);
+        //cwyR = std::fabs(hallyR) + std::sqrt(hallyR*hallyR + cayR*cayR);
 
         if(dir == Dir::X){
             SLb = std::min(uL.vx - cfastxL - cwxL, uR.vx - cfastxR - cwxR);

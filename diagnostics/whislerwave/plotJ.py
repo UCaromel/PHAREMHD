@@ -4,8 +4,10 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import os
 
+nx = 128
+Dx = 0.05
 
-Dx = 0.2
+Dt = 0.000625
 
 Jz = []
 Jy = []
@@ -23,19 +25,30 @@ for filename in os.listdir(results_dir):
         times.append(time)
 
         df = read_file(os.path.join(results_dir, filename))
-        Jy.append(df.values.reshape((5,37)))
+        Jy.append(df.values.reshape((5,133)))
 
     if filename.startswith("Jz_") and filename.endswith(".txt"):
         
         df = read_file(os.path.join(results_dir, filename))
-        Jz.append(df.values.reshape((6,37)))
+        Jz.append(df.values.reshape((6,133)))
 
-x=Dx*np.arange(37)-2*Dx
+x=Dx*np.arange(133)-2*Dx
 
 def update(frame):
+
+    m = 10
+    lx = nx*Dx
+    k = 2*np.pi/lx * m
+    expectedJy = -k * np.cos(k*x + k**2 * times[frame]*Dt + 0.5488135)*0.01
+    expectedJz = -k * np.sin(k*x + k**2 * times[frame]*Dt + 0.5488135)*0.01
+
     plt.clf()
+
+    plt.plot(x, expectedJy, 'y-', marker = '+')
+    #plt.plot(x, expectedJz, 'g-', marker = 'x')
+
     plt.plot(x, Jy[frame][2,:], 'b-', marker = 'o')
-    plt.plot(x, Jz[frame][2,:], 'r--',marker = '*')
+    #plt.plot(x, Jz[frame][2,:], 'r--',marker = '*')
     plt.xlabel('x')
     plt.grid(True)
     #plt.yscale("log")

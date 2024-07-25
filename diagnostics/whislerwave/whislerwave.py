@@ -14,7 +14,7 @@ Dx = 0.05
 Dy = 1
 Dt = 0.000625
 FinalTime = 0.5
-nghost = 2
+nghost = 1
 
 boundaryconditions = p.BoundaryConditions.Periodic
 
@@ -23,7 +23,7 @@ reconstruction = p.Reconstruction.Constant
 slopelimiter = p.Slope.VanLeer
 riemannsolver = p.RiemannSolver.Rusanov
 constainedtransport = p.CTMethod.Average
-timeintegrator = p.Integrator.TVDRK2Integrator
+timeintegrator = p.Integrator.EulerIntegrator
 
 consts = p.Consts(sigmaCFL = 0.8, gam = 5/3, eta = 0.0, nu = 0.000)
 physics = p.OptionalPhysics.HallResHyper
@@ -37,7 +37,7 @@ k=2*np.pi/lx
 
 np.random.seed(0)
 
-modes = [20]#[int(nx/4)]
+modes = [10]#[int(nx/4)]
 phases = np.random.rand(len(modes))
 
 def rho_(x, y):

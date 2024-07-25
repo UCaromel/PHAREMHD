@@ -5,6 +5,19 @@
 ConservativeVariables EulerAdvance(const ConservativeVariables& Un, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs, OptionalPhysics OptP) {
     ConservativeVariables Un1(Un.nx, Un.ny);
     PrimitiveVariables P_cc(Un);
+/*
+    static int j = 0;
+    std::ostringstream filenamex;
+    filenamex << "whislerwaveres/" <<"Jx2_"<<j<< ".txt";
+    saveVectorToFile(Un.Jx, filenamex.str());
+    std::ostringstream filenamey;
+    filenamey << "whislerwaveres/" <<"Jy2_"<<j<< ".txt";
+    saveVectorToFile(Un.Jy, filenamey.str());
+    std::ostringstream filenamez;
+    filenamez << "whislerwaveres/" <<"Jz2_"<<j<< ".txt";
+    saveVectorToFile(Un.Jz, filenamez.str());
+    j++;
+*/
     ConservativeVariables FluxDifx = ComputeFluxDifferenceX(P_cc, Dx, Dy, nghost, rec, sl, rs, OptP);
     ConservativeVariables FluxDify = ComputeFluxDifferenceY(P_cc, Dx, Dy, nghost, rec, sl, rs, OptP);
     Un1 = Un - FluxDifx*(Dt/Dx) - FluxDify*(Dt/Dy);
@@ -19,24 +32,24 @@ ConservativeVariables Euler(ConservativeVariables& Un, double Dx, double Dy, dou
     if (OptP == OptionalPhysics::HallResHyper) {
         ComputeJ(Un, Dx, Dy, nghost);
         UpdateGhostJ(Un, nghost, bc);
-/*        static int i = 0;
+        static int j = 0;
         std::ostringstream filenamex;
-        filenamex << "whislerwaveres/" <<"Jx_"<<i<< ".txt";
+        filenamex << "whislerwaveres/" <<"Jx_"<<j<< ".txt";
         saveVectorToFile(Un.Jx, filenamex.str());
         std::ostringstream filenamey;
-        filenamey << "whislerwaveres/" <<"Jy_"<<i<< ".txt";
+        filenamey << "whislerwaveres/" <<"Jy_"<<j<< ".txt";
         saveVectorToFile(Un.Jy, filenamey.str());
         std::ostringstream filenamez;
-        filenamez << "whislerwaveres/" <<"Jz_"<<i<< ".txt";
+        filenamez << "whislerwaveres/" <<"Jz_"<<j<< ".txt";
         saveVectorToFile(Un.Jz, filenamez.str());
-        i++;*/
+        j++;
     }
 
     Un1 = EulerAdvance(Un, Dx, Dy, Dt, nghost, rec, sl, rs, OptP);
 
-    ApplyConstrainedTransport(Un1, Un, Dx, Dy, Dt, nghost, rec, sl, rs, ct, OptP); // If Un1 not needed in CT scheme (else update ghost cells before)
+    //ApplyConstrainedTransport(Un1, Un, Dx, Dy, Dt, nghost, rec, sl, rs, ct, OptP); // If Un1 not needed in CT scheme (else update ghost cells before)
     
-    Un1.ReconstructCenteredB(nghost);
+    //Un1.ReconstructCenteredB(nghost);
 
     return Un1;
 }
