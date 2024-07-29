@@ -24,8 +24,10 @@ inline double ComPuteNewDt(const ConservativeVariables& C_cc, double Dx, double 
             double cfasty = std::sqrt((c0*c0 + ca*ca)*0.5 + (std::sqrt((c0*c0 + ca*ca)*(c0*c0 + ca*ca) - 4*c0*c0*cay*cay))*0.5); // Fast magnetosonic speeds in y
 
             if (OptP == OptionalPhysics::HallResHyper) {
-                double cwx = std::abs(C_cc(i,j).Bx) * M_PI / (C_cc(i,j).rho * Dx);
-                double cwy = std::abs(C_cc(i,j).By) * M_PI / (C_cc(i,j).rho * Dy);
+                double vwx = M_PI * (std::sqrt(1 + 0.25/(Dx*Dx)) + 0.5/Dx);
+                double vwy = M_PI * (std::sqrt(1 + 0.25/(Dy*Dy)) + 0.5/Dy);
+                double cwx = std::abs(C_cc(i,j).Bx) / (C_cc(i,j).rho) * vwx;
+                double cwy = std::abs(C_cc(i,j).By) / (C_cc(i,j).rho) * vwy;
 
                 cfastx += cwx;
                 cfasty += cwy;
@@ -45,4 +47,4 @@ inline double ComPuteNewDt(const ConservativeVariables& C_cc, double Dx, double 
 }
 
 
-#endif //COMPUTE_NEW_DT_HPP_
+#endif // COMPUTE_NEW_DT_HPP_

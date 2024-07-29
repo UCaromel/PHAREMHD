@@ -29,7 +29,7 @@ ReconstructedValues ComputeFluxVector(const ReconstructedValues& u, Dir dir) {
 }
 
 void AddNonIdealFlux(ReconstructedValues& f, const ReconstructedValues& u, double Jx, double Jy, double Jz, double LaplJx, double LaplJy, double LaplJz, OptionalPhysics OptP, Dir dir){
-    if (OptP == OptionalPhysics::HallRes) {
+    if (OptP == OptionalPhysics::HallResHyper) {
         if (dir == Dir::X) {
             f.By += - (1.0/u.rho) * (Jx * u.By - Jy * u.Bx) *1.0;
             //f.By += - pc.eta * Jz;
@@ -250,12 +250,12 @@ Interface::Interface(const PrimitiveVariables& P_cc /* Assuming ghost cells are 
     cfastyR = std::sqrt((c0R*c0R + caR*caR)*0.5 + (std::sqrt((c0R*c0R + caR*caR)*(c0R*c0R + caR*caR) - 4*c0R*c0R*cayR*cayR))*0.5);
 
     if (OptP == OptionalPhysics::HallResHyper) {
-        double vwx = M_PI * (std::sqrt(1 + 0.25/(Dx*Dx)) + 0.5/Dx);
-        double vwy = M_PI * (std::sqrt(1 + 0.25/(Dy*Dy)) + 0.5/Dy);
-        cwxL = std::sqrt(uL.Bx*uL.Bx + uL.By*uL.By + uL.Bz*uL.Bz) / (uL.rho) * vwx;
-        cwyL = std::sqrt(uL.Bx*uL.Bx + uL.By*uL.By + uL.Bz*uL.Bz) / (uL.rho) * vwy;
-        cwxR = std::sqrt(uR.Bx*uR.Bx + uR.By*uR.By + uR.Bz*uR.Bz) / (uR.rho) * vwx;
-        cwyR = std::sqrt(uR.Bx*uR.Bx + uR.By*uR.By + uR.Bz*uR.Bz) / (uR.rho) * vwy;
+        double vwx = (std::sqrt(1 + 0.25/(Dx*Dx)) + 0.5/Dx);
+        double vwy = (std::sqrt(1 + 0.25/(Dy*Dy)) + 0.5/Dy);
+        cwxL = std::sqrt(uL.Bx*uL.Bx + uL.By*uL.By + uL.Bz*uL.Bz) / (uL.rho * Dx) ;//* vwx;
+        cwyL = std::sqrt(uL.Bx*uL.Bx + uL.By*uL.By + uL.Bz*uL.Bz) / (uL.rho * Dy) ;//* vwy;
+        cwxR = std::sqrt(uR.Bx*uR.Bx + uR.By*uR.By + uR.Bz*uR.Bz) / (uR.rho * Dx) ;//* vwx;
+        cwyR = std::sqrt(uR.Bx*uR.Bx + uR.By*uR.By + uR.Bz*uR.Bz) / (uR.rho * Dy) ;//* vwy;
         //double hallxL = std::sqrt(uL.Bx*uL.Bx + uL.By*uL.By + uL.Bz*uL.Bz) / (2.0*(uL.rho)*Dx);
         //double hallyL = std::sqrt(uL.Bx*uL.Bx + uL.By*uL.By + uL.Bz*uL.Bz) / (2.0*(uL.rho)*Dy);
         //double hallxR = std::sqrt(uR.Bx*uR.Bx + uR.By*uR.By + uR.Bz*uR.Bz) / (2.0*(uR.rho)*Dx);

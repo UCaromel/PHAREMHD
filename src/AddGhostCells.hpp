@@ -139,8 +139,8 @@ void UpdateGhostJ(Variables& Vn, int nghost, BoundaryConditions bc) {
         // Jx
         for (int i = nghostJ; i < nx - nghostJ; i++) { // Ghost cells still not good for Jx, dir y and ZeroGradient (maybe)
             for (int k = 1; k <= nghostJ; k++) {
-                Vn.Jx[nghostJ - k][i] = Vn.Jx[ny1 - k - nghostJ][i]; // Bottom side
-                Vn.Jx[ny1 - 1 + k - nghostJ][i] = Vn.Jx[k - 1 + nghostJ][i]; // Top side
+                Vn.Jx[nghostJ - k][i] = Vn.Jx[ny1 - k - nghostJ-1][i]; // Bottom side
+                Vn.Jx[ny1 - 1 + k - nghostJ][i] = Vn.Jx[k - 1 + nghostJ+1][i]; // Top side
             }
         }
 

@@ -14,18 +14,20 @@ Dx = 1/nx
 Dy = 1/ny
 Dt = 0.0
 FinalTime = 0.5
-nghost = 2
+nghost = 1
 
 boundaryconditions = p.BoundaryConditions.Periodic
 
-reconstruction = p.Reconstruction.Linear
+reconstruction = p.Reconstruction.Constant
 slopelimiter = p.Slope.VanLeer
 riemannsolver = p.RiemannSolver.Rusanov
 constainedtransport = p.CTMethod.Average
-timeintegrator = p.Integrator.TVDRK2Integrator
+timeintegrator = p.Integrator.EulerIntegrator
 
 dumpvariables = p.dumpVariables.Primitive
 dumpfrequency = 80
+
+OptionalPhysics = p.OptionalPhysics.HallResHyper
 
 ##############################################################################################################################################################################
 B0 = 1./(np.sqrt(4.*np.pi))
@@ -85,4 +87,4 @@ P0cc.init(rho, vx, vy, vz, Bxf, Byf, Bz, P)
 
 p.PhareMHD(P0cc, result_dir, nghost, 
            boundaryconditions, reconstruction, slopelimiter, riemannsolver, constainedtransport, timeintegrator,
-           Dx, Dy, FinalTime, Dt, dumpvariables = dumpvariables, dumpfrequency = dumpfrequency)
+           Dx, Dy, FinalTime, Dt, dumpvariables = dumpvariables, dumpfrequency = dumpfrequency, OptionalPhysics = OptionalPhysics)

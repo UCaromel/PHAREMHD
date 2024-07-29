@@ -10,15 +10,15 @@ import shutil
 
 nx = 128
 ny = 1
-Dx = 0.05
+Dx = 0.1
 Dy = 1
-Dt = 0.000625
+Dt = 0.00
 FinalTime = 0.5
-nghost = 1
+nghost = 2
 
 boundaryconditions = p.BoundaryConditions.Periodic
 
-reconstruction = p.Reconstruction.Constant
+reconstruction = p.Reconstruction.Linear
 
 slopelimiter = p.Slope.VanLeer
 riemannsolver = p.RiemannSolver.Rusanov
@@ -37,7 +37,7 @@ k=2*np.pi/lx
 
 np.random.seed(0)
 
-modes = [10]#[int(nx/4)]
+modes = [4]#[int(nx/4)]
 phases = np.random.rand(len(modes))
 
 def rho_(x, y):
@@ -48,14 +48,16 @@ def vx_(x, y):
 
 def vy_(x, y):
     ret = np.zeros((x.shape[0], y.shape[1]))
+    w = (k**2 /2) *(np.sqrt(1+4/k**2) + 1)
     for m,phi in zip(modes, phases):
-        ret[:,:] += np.cos(k*x*m + phi)*0.01
+        ret[:,:] += -np.cos(k*x*m + phi)*1e-7*k
     return ret
 
 def vz_(x, y):
     ret = np.zeros((x.shape[0], y.shape[1]))
+    w = (k**2 /2) *(np.sqrt(1+4/k**2) + 1)
     for m,phi in zip(modes, phases):
-        ret[:,:] += np.sin(k*x*m + phi)*0.01
+        ret[:,:] += np.sin(k*x*m + phi)*1e-7*k
     return ret
 
 def Bx_(x, y):
@@ -64,17 +66,17 @@ def Bx_(x, y):
 def By_(x, y):
     ret = np.zeros((x.shape[0], y.shape[1]))
     for m,phi in zip(modes, phases):
-        ret[:,:] += np.cos(k*x*m + phi)*0.01
+        ret[:,:] += np.cos(k*x*m + phi)*1e-7
     return ret
 
 def Bz_(x, y):
     ret = np.zeros((x.shape[0], y.shape[1]))
     for m,phi in zip(modes, phases):
-        ret[:,:] += np.sin(k*x*m + phi)*0.01
+        ret[:,:] += -np.sin(k*x*m + phi)*1e-7
     return ret
 
 def P_(x, y):
-    return 1e-3
+    return 1.0
 
 x = np.arange(nx) * Dx + 0.5 * Dx 
 y = np.arange(ny) * Dy + 0.5 * Dy 

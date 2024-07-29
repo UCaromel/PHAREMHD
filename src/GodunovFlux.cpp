@@ -8,7 +8,9 @@ std::vector<ReconstructedValues> GodunovFluxX(const PrimitiveVariables& P_cc, do
 
     for(int j = nghost; j < P_cc.ny - nghost; j++){
         for(int i = nghost; i < P_cc.nx + 1 - nghost; i++){
-            NumFluxx.push_back(ChosenRiemannSolver(Interface(P_cc, i, j, Dx, Dy, nghost, rec, sl, OptP, Dir::X)));
+            auto inter = Interface(P_cc, i, j, Dx, Dy, nghost, rec, sl, OptP, Dir::X);
+            auto riemann = ChosenRiemannSolver(inter);
+            NumFluxx.push_back(riemann);
         }
     }
     return NumFluxx;
@@ -37,13 +39,11 @@ ConservativeVariables ComputeFluxDifferenceX(PrimitiveVariables& P_cc, double Dx
         }
     }
 
-    
-    static int i = 0;
-    std::ostringstream fdifx;
-    fdifx << "whislerwaveres/FluxDifx_" << i <<".txt";
-    saveConcervativeVariables(FluxDifx, fdifx.str(), nghost);
-    i++;
-
+    // static int i = 0;
+    // std::ostringstream fdifx;
+    // fdifx << "whislerwaveres/FluxDifx_" << i <<".txt";
+    // saveConcervativeVariables(FluxDifx, fdifx.str(), nghost);
+    // i++;
 
     return FluxDifx;
 }

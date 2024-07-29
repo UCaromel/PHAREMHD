@@ -3,12 +3,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import os
+import shutil
 
 nx = 128
-Dx = 0.05
+Dx = 0.1
 
 
-quantity_name = 'Bz'
+quantity_name = 'By'
 fixed_index = 0
 ny = 1
 
@@ -75,13 +76,20 @@ for quantity in quantitieshll.keys():
 
 x=Dx*np.arange(nx) + 0.5*Dx
 
+output_dir = 'frames'
+if os.path.exists(output_dir):
+    shutil.rmtree(output_dir)
+os.makedirs(output_dir, exist_ok=True)
+
 def update(frame):
     lx = nx*Dx
-    m = 10#int(nx/4)
+    m = 4#int(nx/4)
 
     k = 2 * np.pi / lx * m
+
+    w = (k**2 /2) *(np.sqrt(1+4/k**2) + 1)
     
-    expected_value = 1e-2 * np.sin(k * x + k**2 * times[frame] + 0.5488135)
+    expected_value = 1e-7 * np.cos(k * x -w * times[frame] + 0.5488135)
 
     plt.clf()
     plt.plot(x, quantities[quantity_name][frame, fixed_index, :], color='blue', marker = 'x', markersize=3) # t,y,x
@@ -94,11 +102,12 @@ def update(frame):
     #plt.yscale("log")
     plt.tight_layout()
     
-    eps = 0.001
+    eps = 1e-7
     min_val = np.min(quantities[quantity_name][:, fixed_index, :]) - eps
     max_val = np.max(quantities[quantity_name][:, fixed_index, :]) + eps
     
     plt.ylim(min_val, max_val)
+    plt.savefig(f'{output_dir}/frame_{frame:04d}.png')
     #plt.axvline(x[2]-Dx/2, ls='--', color='k')
     #plt.axvline(x[-2]-Dx/2, ls='--', color='k')
 
