@@ -169,8 +169,8 @@ void UpdateGhostJ(Variables& Vn, int nghost, BoundaryConditions bc) {
         // Jz
         for (int i = nghostJ; i < nx1 - nghostJ; i++) {
             for (int k = 1; k <= nghostJ; k++) {
-                Vn.Jz[nghostJ - k][i] = Vn.Jz[ny1 - k - nghostJ][i]; // Bottom side
-                Vn.Jz[ny1 - 1 + k - nghostJ][i] = Vn.Jz[k - 1 + nghostJ][i]; // Top side
+                Vn.Jz[nghostJ - k][i] = Vn.Jz[ny1 - k - nghostJ-1][i]; // Bottom side
+                Vn.Jz[ny1 - 1 + k - nghostJ][i] = Vn.Jz[k - 1 + nghostJ+1][i]; // Top side
             }
         }
 

@@ -5,11 +5,11 @@ from matplotlib.animation import FuncAnimation
 import os
 import shutil
 
-nx = 128
-Dx = 0.1
+nx = 512
+Dx = 0.025
 
 
-quantity_name = 'Bx'
+quantity_name = 'By'
 fixed_index = 0
 ny = 1
 
@@ -19,8 +19,7 @@ def read_file(filename):
     df = pd.read_csv(filename, delim_whitespace=True, header=None, names=column_names)
     return df
 
-results_dir = 'whislerwaveres/'
-results_dir2 = 'whislerwaveHLL/'
+results_dir = 'space_results/'
 
 quantities = {
     'rho': [],
@@ -47,8 +46,8 @@ times = []
 timeshll = []"""
 
 for filename in os.listdir(results_dir):
-    if filename.startswith("PRK2_") and filename.endswith(".txt"):
-        time_str = filename.split('_')[1]+'.'+filename.split('_')[2].split('.')[0]
+    if filename.startswith("4_URK2_") and filename.endswith(".txt"):
+        time_str = filename.split('_')[2]+'.'+filename.split('_')[3].split('.')[0]
         time = float(time_str)
         times.append(time)
         
@@ -89,7 +88,7 @@ def update(frame):
 
     w = (k**2 /2) *(np.sqrt(1+4/k**2) + 1)
     
-    expected_value = 1e-7 * np.cos(k * x + w * times[frame] + 0.5488135)
+    expected_value = 1e-7 * np.cos(k * x -w * times[frame] + 0.5488135)
 
     plt.clf()
     plt.plot(x, quantities[quantity_name][frame, fixed_index, :], color='blue', marker = 'x', markersize=3) # t,y,x
@@ -107,7 +106,7 @@ def update(frame):
     max_val = np.max(quantities[quantity_name][:, fixed_index, :]) + eps
     
     plt.ylim(min_val, max_val)
-    plt.savefig(f'{output_dir}/frame_{frame:04d}.png')
+    #plt.savefig(f'{output_dir}/frame_{frame:04d}.png')
     #plt.axvline(x[2]-Dx/2, ls='--', color='k')
     #plt.axvline(x[-2]-Dx/2, ls='--', color='k')
 

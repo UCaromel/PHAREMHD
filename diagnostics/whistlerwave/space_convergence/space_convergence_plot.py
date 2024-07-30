@@ -9,7 +9,7 @@ nx_initial = 32
 ny = 1
 
 fixed_index = 0
-time_index = 1
+time_index = -1
 
 studied_quantity = 'By'
 
@@ -58,7 +58,7 @@ for filename in filenames:
 times = np.array(times)
 times = np.unique(times)
 
-Dx =np.asarray( [0.2 / (2 ** i) for i in range(len(nx_values))])
+Dx =np.asarray( [0.4 / (2 ** i) for i in range(len(nx_values))])
 
 # Function to calculate L2 norm of error
 def calculate_error(computed, expected, nx):
@@ -75,8 +75,9 @@ for stepDx in quantities[studied_quantity]:
     m = int(nx/4)
 
     k = 2 * np.pi / lx * m
+    w = (k**2 /2) *(np.sqrt(1+4/k**2) + 1)
     
-    expected_value = 1e-2 * np.cos(k * x - k**2 * times[time_index] + 0.5488135)
+    expected_value = 1e-7 * np.cos(k * x - w * times[time_index] + 0.5488135)
     
     # Extract computed value for this time_index
     computed_value = quantities[studied_quantity][stepDx][time_index]

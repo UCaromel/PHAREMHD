@@ -20,24 +20,25 @@ ConservativeVariables Euler(ConservativeVariables& Un, double Dx, double Dy, dou
     if (OptP == OptionalPhysics::HallResHyper) {
         ComputeJ(Un, Dx, Dy, nghost);
         UpdateGhostJ(Un, nghost, bc);
-        static int j = 0;
-        std::ostringstream filenamex;
-        filenamex << "whislerwaveres/" <<"Jx_"<<j<< ".txt";
-        saveVectorToFile(Un.Jx, filenamex.str());
-        std::ostringstream filenamey;
-        filenamey << "whislerwaveres/" <<"Jy_"<<j<< ".txt";
-        saveVectorToFile(Un.Jy, filenamey.str());
-        std::ostringstream filenamez;
-        filenamez << "whislerwaveres/" <<"Jz_"<<j<< ".txt";
-        saveVectorToFile(Un.Jz, filenamez.str());
-        j++;
+        
+        // static int j = 0;
+        // std::ostringstream filenamex;
+        // filenamex << "whislerwaveres/" <<"Jx_"<<j<< ".txt";
+        // saveVectorToFile(Un.Jx, filenamex.str());
+        // std::ostringstream filenamey;
+        // filenamey << "whislerwaveres/" <<"Jy_"<<j<< ".txt";
+        // saveVectorToFile(Un.Jy, filenamey.str());
+        // std::ostringstream filenamez;
+        // filenamez << "whislerwaveres/" <<"Jz_"<<j<< ".txt";
+        // saveVectorToFile(Un.Jz, filenamez.str());
+        // j++;
     }
 
     Un1 = EulerAdvance(Un, Dx, Dy, Dt, nghost, rec, sl, rs, OptP);
 
-    ApplyConstrainedTransport(Un1, Un, Dx, Dy, Dt, nghost, rec, sl, rs, ct, OptP); // If Un1 not needed in CT scheme (else update ghost cells before)
+    //ApplyConstrainedTransport(Un1, Un, Dx, Dy, Dt, nghost, rec, sl, rs, ct, OptP); // If Un1 not needed in CT scheme (else update ghost cells before)
     
-    Un1.ReconstructCenteredB(nghost);
+    //Un1.ReconstructCenteredB(nghost);
 
     return Un1;
 }
