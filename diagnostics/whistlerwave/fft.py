@@ -8,8 +8,8 @@ from matplotlib.colors import LogNorm, Normalize, PowerNorm
 nx = 128
 Dx = 0.1
 
-Dt = 0.002411
-finalTime = 10
+Dt = 0.0025
+finalTime = 1
 
 column_names = ['rho', 'vx', 'vy', 'vz', 'Bx', 'By', 'Bz', 'P']
 

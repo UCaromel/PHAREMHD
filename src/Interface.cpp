@@ -252,10 +252,10 @@ Interface::Interface(const PrimitiveVariables& P_cc /* Assuming ghost cells are 
     if (OptP == OptionalPhysics::HallResHyper) {
         double vwx = (std::sqrt(1 + 0.25/(Dx*Dx)) + 0.5/Dx);
         double vwy = (std::sqrt(1 + 0.25/(Dy*Dy)) + 0.5/Dy);
-        cwxL = std::sqrt(uL.Bx*uL.Bx + uL.By*uL.By + uL.Bz*uL.Bz) / (uL.rho * Dx) ;//* vwx;
-        cwyL = std::sqrt(uL.Bx*uL.Bx + uL.By*uL.By + uL.Bz*uL.Bz) / (uL.rho * Dy) ;//* vwy;
-        cwxR = std::sqrt(uR.Bx*uR.Bx + uR.By*uR.By + uR.Bz*uR.Bz) / (uR.rho * Dx) ;//* vwx;
-        cwyR = std::sqrt(uR.Bx*uR.Bx + uR.By*uR.By + uR.Bz*uR.Bz) / (uR.rho * Dy) ;//* vwy;
+        cwxL = std::sqrt(uL.Bx*uL.Bx + uL.By*uL.By + uL.Bz*uL.Bz) / (uL.rho) * vwx;
+        cwyL = std::sqrt(uL.Bx*uL.Bx + uL.By*uL.By + uL.Bz*uL.Bz) / (uL.rho) * vwy;
+        cwxR = std::sqrt(uR.Bx*uR.Bx + uR.By*uR.By + uR.Bz*uR.Bz) / (uR.rho) * vwx;
+        cwyR = std::sqrt(uR.Bx*uR.Bx + uR.By*uR.By + uR.Bz*uR.Bz) / (uR.rho) * vwy;
         //double hallxL = std::sqrt(uL.Bx*uL.Bx + uL.By*uL.By + uL.Bz*uL.Bz) / (2.0*(uL.rho)*Dx);
         //double hallyL = std::sqrt(uL.Bx*uL.Bx + uL.By*uL.By + uL.Bz*uL.Bz) / (2.0*(uL.rho)*Dy);
         //double hallxR = std::sqrt(uR.Bx*uR.Bx + uR.By*uR.By + uR.Bz*uR.Bz) / (2.0*(uR.rho)*Dx);

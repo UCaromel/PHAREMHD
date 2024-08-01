@@ -12,7 +12,7 @@ nx = 128
 ny = 1
 Dx = 0.1
 Dy = 1
-Dt = 0.0
+Dt = 0.0025
 FinalTime = 1
 nghost = 2
 
@@ -34,6 +34,7 @@ dumpfrequency = 1
 ##############################################################################################################################################################################
 lx=nx*Dx
 k=2*np.pi/lx
+cw = (k/2) + (np.sqrt(1+k**2/4))
 
 np.random.seed(0)
 
@@ -48,14 +49,13 @@ def vx_(x, y):
 
 def vy_(x, y):
     ret = np.zeros((x.shape[0], y.shape[1]))
-    w = (k**2 /2) *(np.sqrt(1+4/k**2) + 1)
+    
     for m,phi in zip(modes, phases):
         ret[:,:] += -np.cos(k*x*m + phi)*1e-7*k
     return ret
 
 def vz_(x, y):
     ret = np.zeros((x.shape[0], y.shape[1]))
-    w = (k**2 /2) *(np.sqrt(1+4/k**2) + 1)
     for m,phi in zip(modes, phases):
         ret[:,:] += np.sin(k*x*m + phi)*1e-7*k
     return ret

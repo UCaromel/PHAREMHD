@@ -9,7 +9,7 @@ nx = 128
 Dx = 0.1
 
 
-quantity_name = 'Bx'
+quantity_name = 'By'
 fixed_index = 0
 ny = 1
 
@@ -89,7 +89,7 @@ def update(frame):
 
     w = (k**2 /2) *(np.sqrt(1+4/k**2) + 1)
     
-    expected_value = 1e-7 * np.cos(k * x + w * times[frame] + 0.5488135)
+    expected_value = 1e-7 * np.cos(k * x - w * times[frame] + 0.5488135)
 
     plt.clf()
     plt.plot(x, quantities[quantity_name][frame, fixed_index, :], color='blue', marker = 'x', markersize=3) # t,y,x
