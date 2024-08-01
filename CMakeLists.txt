@@ -35,24 +35,21 @@ set(SOURCES
     src/RiemannSolver.cpp
     src/TimeIntegrator.cpp)
 
-set(INCLUDES 
-    src/ConservativeVariables.hpp
-    src/ConstrainedTransport.hpp
-    src/EquationOfState.hpp
-    src/GodunovFlux.hpp
-    src/Interface.hpp
-    src/ModularityUtils.hpp
-    src/PhareMHD.hpp
-    src/PhysicalConstants.hpp
-    src/PrimitiveVariables.hpp
-    src/RiemannSolver.hpp
-    src/TimeIntegrator.hpp)
-
-add_library(phareMHD SHARED ${SOURCES} ${INCLUDES})
 
 
-pybind11_add_module(pyMHD pyMHD/pyMHD.cpp)
-target_link_libraries(pyMHD PUBLIC phareMHD)
+pybind11_add_module(pyMHD pyMHD/pyMHD.cpp
+    src/ConservativeVariables.cpp 
+    src/ConstrainedTransport.cpp
+    src/EquationOfState.cpp
+    src/GodunovFlux.cpp
+    src/Interface.cpp
+    src/ModularityUtils.cpp
+    src/PhareMHD.cpp
+    src/PhysicalConstants.cpp
+    src/PrimitiveVariables.cpp
+    src/RiemannSolver.cpp
+    src/TimeIntegrator.cpp)
+
 
 
 
