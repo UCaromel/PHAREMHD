@@ -8,12 +8,12 @@ import shutil
 
 #############################################################################################################################################################################
 
-nx = 100
-ny = 100
-Dx = 0.2
-Dy = 0.2
+nx = 250
+ny = 250
+Dx = 0.1
+Dy = 0.1
 Dt = 0.0
-FinalTime = 5
+FinalTime = 30
 nghost = 2
 
 boundaryconditions = p.BoundaryConditions.Periodic
@@ -80,7 +80,7 @@ def Bz_(x, y):
 
 
 def P_(x, y):
-    return 5./(12.*np.pi)
+    return 1.0 - (Bx_(x, y) ** 2)/2.0
 
 x = np.arange(nx) * Dx + 0.5 * Dx
 y = np.arange(ny) * Dy + 0.5 * Dy

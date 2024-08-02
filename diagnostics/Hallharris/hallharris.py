@@ -27,7 +27,7 @@ timeintegrator = p.Integrator.TVDRK2Integrator
 OptionalPhysics = p.OptionalPhysics.HallResHyper
 
 dumpvariables = p.dumpVariables.Primitive
-dumpfrequency = 10
+dumpfrequency = 1000
 
 ##############################################################################################################################################################################
 Lx = nx*Dx
@@ -104,7 +104,7 @@ P = np.full((nx, ny), P_(xx, yy)).T
 
 #############################################################################################################################################################################
 
-result_dir = 'hallharrisres/'
+result_dir = 'hallharrisres2/'
 if os.path.exists(result_dir):
     shutil.rmtree(result_dir)
 

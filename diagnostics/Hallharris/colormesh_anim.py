@@ -30,21 +30,36 @@ file_paths = [results_dir + file for file in os.listdir(results_dir) if file.sta
 nx = 250
 ny = 250
 
+studied_index = 0
+
 data = [read_data(file_path) for file_path in file_paths]
 times = read_times(file_paths)
 
 reshaped_data = [reshape_data(d, nx, ny) for d in data]
 
+dx = 0.1
+dy = 0.1
 
-studied_index = 0
+# Extract Bx and By
+Bx = [reshaped_data[i][:, :, 4] for i in range(len(data))]
+By = [reshaped_data[i][:, :, 5] for i in range(len(data))]
 
-data_min = np.min(reshaped_data[-1][:, :, studied_index])
-data_max = np.max(reshaped_data[-1][:, :, studied_index])
+# Calculate the derivatives
+dBy_dx = [np.gradient(By[i], dx, axis=0) for i in range(len(data))]
+dBx_dy = [np.gradient(Bx[i], dy, axis=1) for i in range(len(data))]
+
+# Calculate Jz
+Jz = [(dBy_dx[i] - dBx_dy[i]) for i in range(len(data))]
+
+toPlot = Jz
+
+data_min = np.min(toPlot[-1])
+data_max = np.max(toPlot[-1])
 
 Norm = Normalize(vmin=data_min, vmax=data_max)
 
 fig, ax = plt.subplots()
-im = ax.pcolormesh(reshaped_data[0][:, :, studied_index].T, cmap='coolwarm', norm=Norm) 
+im = ax.pcolormesh(toPlot[0].T, cmap='coolwarm', norm=Norm) 
 ax.set_aspect('equal')
 fig.colorbar(im, ax=ax)
 
@@ -54,18 +69,18 @@ if os.path.exists(output_dir):
 os.makedirs(output_dir, exist_ok=True)
 
 def update(frame):
-    im.set_array(reshaped_data[frame][:, :, studied_index].T)
-    plt.title(f'rho at t={times[frame]}')
-    #plt.savefig(f'{output_dir}/frame_{frame:04d}.png')
+    im.set_array(toPlot[frame].T)
+    plt.title(f'Jz at t={times[frame]}')
+    plt.savefig(f'{output_dir}/frame_{frame:04d}.png')
     return im,
 
 ani = FuncAnimation(fig, update, frames=len(times), interval=100)
 
 #gif_writer = PillowWriter(fps=10)  # Adjust fps as needed
-#ani.save('hallharris.gif', writer=gif_writer)
+#ani.save('orszagtangP.gif', writer=gif_writer)
 
 plt.xlabel('X')
 plt.ylabel('Y')
 plt.show()
 
-#ffmpeg -r 10 -i frames/frame_%04d.png -vcodec mpeg4 -q:v 5 hallharris.mp4
+#ffmpeg -r 10 -i frames/frame_%04d.png -vcodec mpeg4 -q:v 5 orszagtangP.mp4

@@ -35,22 +35,4 @@ set(SOURCES
     src/RiemannSolver.cpp
     src/TimeIntegrator.cpp)
 
-
-
-pybind11_add_module(pyMHD pyMHD/pyMHD.cpp
-    src/ConservativeVariables.cpp 
-    src/ConstrainedTransport.cpp
-    src/EquationOfState.cpp
-    src/GodunovFlux.cpp
-    src/Interface.cpp
-    src/ModularityUtils.cpp
-    src/PhareMHD.cpp
-    src/PhysicalConstants.cpp
-    src/PrimitiveVariables.cpp
-    src/RiemannSolver.cpp
-    src/TimeIntegrator.cpp)
-
-
-
-
-
+pybind11_add_module(pyMHD pyMHD/pyMHD.cpp ${SOURCES})
