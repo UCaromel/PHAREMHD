@@ -12,7 +12,7 @@ def reshape_data(data, ny, nx):
 nx = 250
 ny = 250
 
-file_path = "hallharrisres/PRK2_15_0001697500.txt"
+file_path = "hallharrisresCT/PRK2_0_5002794389.txt"
 
 data = read_data(file_path)
 
@@ -22,8 +22,10 @@ dx = 0.1
 dy = 0.1
 
 # Extract Bx and By
+rho = reshaped_data[:, :, 0]
 Bx = reshaped_data[:, :, 4]
 By = reshaped_data[:, :, 5]
+Bz = reshaped_data[:, :, 6]
 
 # Calculate the derivatives
 dBy_dx = np.gradient(By, dx, axis=0)
@@ -32,24 +34,26 @@ dBx_dy = np.gradient(Bx, dy, axis=1)
 # Calculate Jz
 Jz = (dBy_dx - dBx_dy)
 
-plt.pcolormesh(Jz.T, cmap='coolwarm')  
-plt.title('Contour Plot of Jz at t=30')
+toPlot = Bz
+
+plt.pcolormesh(toPlot.T, cmap='coolwarm')  
+plt.title('Contour Plot of Bz at t=0.5')
 plt.xlabel('X')
 plt.ylabel('Y')
 plt.show()
 
-x_middle = nx // 2
+# x_middle = nx // 2
 
-Jz_cutx = Jz[x_middle, :]
+# Jz_cutx = Jz[x_middle, :]
 
-y_positions = np.arange(ny)
+# y_positions = np.arange(ny)
 
-# Create the plot
-plt.figure(figsize=(10, 6))
-plt.plot(y_positions, Jz_cutx, marker='o')
-plt.title(f'1D cut of Jz at X = {x_middle/nx}')
-plt.xlabel('y')
-plt.ylabel('Jz')
-plt.grid(True)
+# # Create the plot
+# plt.figure(figsize=(10, 6))
+# plt.plot(y_positions, Jz_cutx, marker='o')
+# plt.title(f'1D cut of Jz at X = {x_middle/nx}')
+# plt.xlabel('y')
+# plt.ylabel('Jz')
+# plt.grid(True)
 
-plt.show()
+# plt.show()

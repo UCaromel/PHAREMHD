@@ -18,7 +18,7 @@ ConservativeVariables Euler(ConservativeVariables& Un, double Dx, double Dy, dou
     UpdateGhostCells(Un, nghost, bc);
 
     if (OptP == OptionalPhysics::HallResHyper) {
-        ComputeJ(Un, Dx, Dy, nghost);
+        ComputeJ(Un, Dx, Dy, nghost, ct);
         UpdateGhostJ(Un, nghost, bc);
         
         // static int j = 0;
@@ -36,9 +36,12 @@ ConservativeVariables Euler(ConservativeVariables& Un, double Dx, double Dy, dou
 
     Un1 = EulerAdvance(Un, Dx, Dy, Dt, nghost, rec, sl, rs, OptP);
 
-    //ApplyConstrainedTransport(Un1, Un, Dx, Dy, Dt, nghost, rec, sl, rs, ct, OptP); // If Un1 not needed in CT scheme (else update ghost cells before)
+    // Desactivate in 1D
+    if (ct != CTMethod::NoCT) {
+        ApplyConstrainedTransport(Un1, Un, Dx, Dy, Dt, nghost, rec, sl, rs, ct, OptP); // If Un1 not needed in CT scheme (else update ghost cells before)
     
-    //Un1.ReconstructCenteredB(nghost);
+        Un1.ReconstructCenteredB(nghost);
+    }
 
     return Un1;
 }

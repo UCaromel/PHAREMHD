@@ -136,3 +136,29 @@ plt.axvline(x[1]-Dx/2, ls='--', color='k')
 plt.axvline(x[-1]-Dx/2, ls='--', color='k')
 plt.show()
 """
+def calculate_total_energy(quantities, t, gamma):
+    rho = quantities['rho'][t, fixed_index, :]
+    vx = quantities['vx'][t, fixed_index, :]
+    vy = quantities['vy'][t, fixed_index, :]
+    vz = quantities['vz'][t, fixed_index, :]
+    Bx = quantities['Bx'][t, fixed_index, :]
+    By = quantities['By'][t, fixed_index, :]
+    Bz = quantities['Bz'][t, fixed_index, :]
+    P = quantities['P'][t, fixed_index, :]
+
+    # Calculate kinetic energy density
+    kinetic_energy = 0.5 * rho * (vx**2 + vy**2 + vz**2)
+    
+    # Calculate magnetic energy density
+    magnetic_energy = 0.5 * (Bx**2 + By**2 + Bz**2)
+    
+    # Calculate internal energy density using pressure and gamma
+    internal_energy = P / (gamma - 1)
+    
+    # Total energy density
+    total_energy = internal_energy + kinetic_energy + magnetic_energy
+    
+    return np.sum(total_energy)
+
+print(calculate_total_energy(quantities, 0, 5.0/3.0))
+print(calculate_total_energy(quantities, -1, 5.0/3.0))

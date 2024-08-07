@@ -25,8 +25,12 @@ whislerwavelin/
 whislerwaveHLL/
 hallharrisres/
 hallharrisres2/
+hallharrisresCT/
+hallharrisresCT2/
+hallharrisresCT2long/
 subprojects
 
 debug/
 frames/
+framestest/
 pyMHD/pyMHD.cpython*

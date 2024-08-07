@@ -12,8 +12,8 @@ nx = 128
 ny = 1
 Dx = 0.1
 Dy = 1
-Dt = 0.0025
-FinalTime = 1
+Dt = 0.002
+
 nghost = 2
 
 boundaryconditions = p.BoundaryConditions.Periodic
@@ -34,11 +34,16 @@ dumpfrequency = 1
 ##############################################################################################################################################################################
 lx=nx*Dx
 k=2*np.pi/lx
-cw = (k/2) + (np.sqrt(1+k**2/4))
+
+m = 4
+
+kt=2*np.pi/lx * m
+w = (kt**2 /2) *(np.sqrt(1+4/kt**2) + 1)
+FinalTime = 2*np.pi / w
 
 np.random.seed(0)
 
-modes = [4]#[int(nx/4)]
+modes = [m]#[int(nx/4)]
 phases = np.random.rand(len(modes))
 
 def rho_(x, y):

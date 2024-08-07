@@ -13,7 +13,7 @@ ny = 250
 Dx = 0.1
 Dy = 0.1
 Dt = 0.0
-FinalTime = 30
+FinalTime = 0.5
 nghost = 2
 
 boundaryconditions = p.BoundaryConditions.Periodic
@@ -104,7 +104,7 @@ P = np.full((nx, ny), P_(xx, yy)).T
 
 #############################################################################################################################################################################
 
-result_dir = 'hallharrisres2/'
+result_dir = 'hallharrisresCT2/'
 if os.path.exists(result_dir):
     shutil.rmtree(result_dir)
 

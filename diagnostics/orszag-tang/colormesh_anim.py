@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 from matplotlib.colors import Normalize
+from matplotlib.animation import FuncAnimation
 import shutil
 
 # Function to read data from file
@@ -59,8 +60,7 @@ def update(frame):
     plt.savefig(f'{output_dir}/frame_{frame:04d}.png')
     return im,
 
-for frame in range(len(times)):
-    update(frame)
+ani = FuncAnimation(fig, update, frames=len(times), interval=100)
 
 plt.xlabel('X')
 plt.ylabel('Y')

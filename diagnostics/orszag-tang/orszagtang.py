@@ -8,13 +8,13 @@ import shutil
 
 #############################################################################################################################################################################
 
-nx = 128
-ny = 128
+nx = 1024
+ny = 1024
 Dx = 1/nx
 Dy = 1/ny
 Dt = 0.0
-FinalTime = 0.5
-nghost = 1
+FinalTime = 1
+nghost = 2
 
 boundaryconditions = p.BoundaryConditions.Periodic
 
@@ -22,12 +22,12 @@ reconstruction = p.Reconstruction.Constant
 slopelimiter = p.Slope.VanLeer
 riemannsolver = p.RiemannSolver.Rusanov
 constainedtransport = p.CTMethod.Average
-timeintegrator = p.Integrator.EulerIntegrator
+timeintegrator = p.Integrator.TVDRK2Integrator
 
 dumpvariables = p.dumpVariables.Primitive
 dumpfrequency = 80
 
-OptionalPhysics = p.OptionalPhysics.HallResHyper
+OptionalPhysics = p.OptionalPhysics.Off
 
 ##############################################################################################################################################################################
 B0 = 1./(np.sqrt(4.*np.pi))

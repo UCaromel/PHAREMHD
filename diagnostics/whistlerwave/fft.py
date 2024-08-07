@@ -8,8 +8,13 @@ from matplotlib.colors import LogNorm, Normalize, PowerNorm
 nx = 128
 Dx = 0.1
 
-Dt = 0.0025
-finalTime = 1
+Dt = 0.002
+
+lx=nx*Dx
+m = 4
+kt=2*np.pi/lx * m
+w = (kt**2 /2) *(np.sqrt(1+4/kt**2) + 1)
+finalTime = 2*np.pi / w
 
 column_names = ['rho', 'vx', 'vy', 'vz', 'Bx', 'By', 'Bz', 'P']
 
@@ -54,21 +59,17 @@ halfw = int(len(w)/2)
 kplus = k[:halfk]
 wplus = w[:halfw]
 
-"""modes = [4]
-kmodes = 2*np.pi*np.asarray([1/(nx*Dx) * m for m in modes])"""
-
-"""
-fig,ax = plt.subplots()
-ax.plot(kplus, whistler(kplus))
-ax.plot(kplus, np.abs(fft(quantities['By'][-1,:] + 1j*fft(quantities['Bz'][-1,:]))[:halfk]))
-for km in kmodes:
-    ax.axvline(km, ls='--', color='k')
-    ax.plot(km, km**2, marker='o')
-
-plt.show()
-"""
+modes = [m]
+kmodes = 2*np.pi*np.asarray([1/(nx*Dx) * m for m in modes])
 
 B_combined = quantities['By'] + 1j * quantities['Bz']
+
+# window_space = np.hanning(nx)
+# window_time = np.hanning(int(finalTime / Dt) + 1)
+# window = np.outer(window_time, window_space)
+
+# B_combined *= window
+
 B_fft = fft2(B_combined)
 B_fft_abs = np.abs(B_fft)[:halfw,:halfk]
 
@@ -80,8 +81,8 @@ fig.colorbar(pcm, ax=ax, label='Magnitude of FFT(By + i*Bz)')
 ax.plot(kplus, whistler(kplus), marker = '+', color='k')
 ax.plot(kplus, leftAlfvenIonCyclotron(kplus), marker = '*', color='g')
 ax.plot(kplus, kplus)
-"""for km in kmodes:
+for km in kmodes:
     ax.axvline(km, ls='--', color='k')
-    ax.plot(km, km**2, marker='o')"""
+    ax.plot(km, whistler(km), marker='o')
 
 plt.show()

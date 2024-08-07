@@ -3,7 +3,7 @@
 
 // J has 1 more ghost cells for laplacian calculations in Flux vector
 template<typename Variables>
-void ComputeJ(Variables& Vn, double Dx, double Dy, int nghost) {
+void ComputeJ(Variables& Vn, double Dx, double Dy, int nghost, CTMethod ct) {
 
     for (int j = nghost; j <= Vn.ny - nghost; ++j)
     {
@@ -26,8 +26,10 @@ void ComputeJ(Variables& Vn, double Dx, double Dy, int nghost) {
         for (int i = nghost; i <= Vn.nx - nghost; ++i)
         {
             // In 1D (no CT), use cell centered Bx and By
-            Vn.Jz[j + 1][i + 1] =  (Vn.By[j][i] - Vn.By[j][i - 1]) / (Dx) - (Vn.Bx[j][i] - Vn.Bx[j - 1][i]) / (Dy);
-            // Vn.Jz[j + 1][i + 1] = (Vn.Byf[j][i] - Vn.Byf[j][i - 1]) / (Dx) - (Vn.Bxf[j][i] - Vn.Bxf[j - 1][i]) / (Dy);
+            if (ct == CTMethod::NoCT)
+                Vn.Jz[j + 1][i + 1] =  (Vn.By[j][i] - Vn.By[j][i - 1]) / (Dx) - (Vn.Bx[j][i] - Vn.Bx[j - 1][i]) / (Dy);
+            else
+                Vn.Jz[j + 1][i + 1] = (Vn.Byf[j][i] - Vn.Byf[j][i - 1]) / (Dx) - (Vn.Bxf[j][i] - Vn.Bxf[j - 1][i]) / (Dy);
         }
     }
 }

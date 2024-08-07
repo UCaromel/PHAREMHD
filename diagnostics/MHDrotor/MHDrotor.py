@@ -28,12 +28,11 @@ consts = p.Consts(sigmaCFL = 0.2, gam = 1.4)
 
 ##############################################################################################################################################################################
 B0 = 5/(np.sqrt(4*np.pi))
-v0 = 1
+v0 = 2
 
 r0 = 0.1
 r1 = 0.115
 
-# Domain [-0.5, 0.5]*[-0.5, 0.5]
 def r(x, y):
     return np.sqrt((x-0.5)**2 + (y-0.5)**2)
 
@@ -51,14 +50,14 @@ def vx_(x, y):
     r_ = r(x, y)
     f_ = f(r_)
     
-    vx_values = np.where(r_ <= r0, -f_ * v0 * (y - 0.5) / r0, np.where(r_ < r1, -f_ * v0 * (y - 0.5) / r_, 0.0))
+    vx_values = np.where(r_ <= r0, - v0 * (y - 0.5) / r0, np.where(r_ < r1, -f_ * v0 * (y - 0.5) / r_, 0.0))
     return vx_values
 
 def vy_(x, y):
     r_ = r(x, y)
     f_ = f(r_)
     
-    vy_values = np.where(r_ <= r0, f_ * v0 * (x - 0.5) / r0, np.where(r_ < r1, f_ * v0 * (x - 0.5) / r_, 0.0))
+    vy_values = np.where(r_ <= r0, v0 * (x - 0.5) / r0, np.where(r_ < r1, f_ * v0 * (x - 0.5) / r_, 0.0))
     return vy_values
 
 def vz_(x, y):
@@ -74,7 +73,7 @@ def Bz_(x, y):
     return 0.0 
 
 def P_(x, y):
-    return 1.0
+    return 0.5
 
 
 x = np.arange(nx) * Dx + 0.5 * Dx
