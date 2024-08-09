@@ -30,6 +30,7 @@ RiemannSolverFunction getRiemannSolver(Riemann rs){
 CTFunction getCT(CTMethod ct){
     switch (ct){
         case Average: return &ConstrainedTransportAverage;
+        case Arithmetic: return &ConstrainedTransportArithmetic;
         case Contact: return &ConstrainedTransportContact;
         case UCT_HLL: return &UCTHLL;
         default: throw std::invalid_argument("Unknown constrained transport");

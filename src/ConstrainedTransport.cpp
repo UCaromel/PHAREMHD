@@ -2,7 +2,7 @@
 
 static const PhysicalConstants& pc = PhysicalConstants::getInstance(); 
 
-std::vector<std::vector<double>> ConstrainedTransportAverage(const ConservativeVariables &Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs, OptionalPhysics OptP)
+std::vector<std::vector<double>> ConstrainedTransportAverage(const ConservativeVariables &Cn, double Dx, double Dy, int nghost, Reconstruction rec, Slope sl, Riemann rs, OptionalPhysics OptP)
 {
     // Edge-centered (reconstructions)
     std::vector<std::vector<double>> vx(Cn.ny + 1 - 2 * nghost, std::vector<double>(Cn.nx + 1 - 2 * nghost));
@@ -66,7 +66,51 @@ std::vector<std::vector<double>> ConstrainedTransportAverage(const ConservativeV
     return Ez;
 }
 
-std::vector<std::vector<double>> ConstrainedTransportContact(const ConservativeVariables &Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs, OptionalPhysics OptP){
+std::vector<std::vector<double>> ConstrainedTransportArithmetic(const ConservativeVariables &Cn, double Dx, double Dy, int nghost, Reconstruction rec, Slope sl, Riemann rs, OptionalPhysics OptP){
+    PrimitiveVariables Pn(Cn);
+    std::vector<std::vector<Interface>> InterfacesX(Pn.ny + 2 - 2 * nghost, std::vector<Interface>(Pn.nx + 1 - 2 * nghost));
+    std::vector<std::vector<Interface>> InterfacesY(Pn.ny + 1 - 2 * nghost, std::vector<Interface>(Pn.nx + 2 - 2 * nghost));
+
+    std::vector<std::vector<double>> Ez(Pn.ny + 1 - 2 * nghost, std::vector<double>(Pn.nx + 1 - 2 * nghost));
+
+    RiemannSolverFunction ChosenRiemannSolver = getRiemannSolver(rs);
+
+    for (int j = nghost - 1; j < Cn.ny - nghost + 1; ++j)
+    {
+        for (int i = nghost; i <= Cn.nx - nghost; ++i)
+        {
+            InterfacesX[j - nghost + 1][i - nghost] = Interface(Pn, i, j, Dx, Dy, nghost, rec, sl, OptP, Dir::X);
+        }
+    }
+
+    for (int j = nghost; j <= Cn.ny - nghost; ++j)
+    {
+        for (int i = nghost - 1; i < Cn.nx - nghost + 1; ++i)
+        {
+            InterfacesY[j - nghost][i - nghost + 1] = Interface(Pn, i, j, Dx, Dy, nghost, rec, sl, OptP, Dir::Y);
+        }
+    }
+
+    for (int j = 0; j <= Cn.ny - 2*nghost; ++j)
+    {
+        for (int i = 0; i <= Cn.nx - 2*nghost; ++i)
+        {
+            Interface x = InterfacesX[j][i];
+            Interface x1 = InterfacesX[j + 1][i];
+            Interface y = InterfacesY[j][i];
+            Interface y1 = InterfacesY[j][i + 1];
+
+            double ezi = - ChosenRiemannSolver(x).By;
+            double ezi1 = - ChosenRiemannSolver(x1).By;
+            double ezj = ChosenRiemannSolver(y).Bx;
+            double ezj1 = ChosenRiemannSolver(y1).Bx;
+            Ez[j][i] = 0.25 * (ezi + ezi1 + ezj + ezj1);
+        }
+    }
+    return Ez;
+}
+
+std::vector<std::vector<double>> ConstrainedTransportContact(const ConservativeVariables &Cn, double Dx, double Dy, int nghost, Reconstruction rec, Slope sl, Riemann rs, OptionalPhysics OptP){
 /*    PrimitiveVariables Pn(Cn);
     std::vector<std::vector<Interface>> InterfacesX(Pn.ny + 2 - 2 * nghost, std::vector<Interface>(Pn.nx + 1 - 2 * nghost));
     std::vector<std::vector<Interface>> InterfacesY(Pn.ny + 1 - 2 * nghost, std::vector<Interface>(Pn.nx + 2 - 2 * nghost));
@@ -147,38 +191,11 @@ std::vector<std::vector<double>> ConstrainedTransportContact(const ConservativeV
         }
     }
 
-    for (int j = nghost; j < Cn.ny - nghost; ++j)
-    {
-        for (int i = nghost; i <= Cn.nx - nghost; ++i)
-        {
-            bx[j - nghost][i - nghost] = 0.5 * (Cn.Bx[j][i] + Cn.Bx[j][i - 1]);
-            bx[j - nghost][i - nghost] -= (Dt / Dy) * (Ez[j + 1 - nghost][i - nghost] - Ez[j - nghost][i - nghost]);
-        }
-    }
-
-    for (int j = nghost; j <= Cn.ny - nghost; ++j)
-    {
-        for (int i = nghost; i < Cn.nx - nghost; ++i)
-        {
-            by[j - nghost][i - nghost] = 0.5 * (Cn.By[j][i] + Cn.By[j - 1][i]);
-            by[j - nghost][i - nghost] += (Dt / Dx) * (Ez[j - nghost][i + 1 - nghost] - Ez[j - nghost][i - nghost]);
-        }
-    }
-
-    for (int j = 0; j < Cn.ny - 2 * nghost; ++j)
-    {
-        for (int i = 0; i < Cn.nx - 2 * nghost; ++i)
-        {
-            BX[j][i] = 0.5 * (bx[j][i + 1] + bx[j][i]);
-            BY[j][i] = 0.5 * (by[j + 1][i] + by[j][i]);
-        }
-    }
-
-    return {BX, BY};*/
+    return Ez;*/
 }
 
 
-std::vector<std::vector<double>> UCTHLL(const ConservativeVariables &Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs, OptionalPhysics OptP){
+std::vector<std::vector<double>> UCTHLL(const ConservativeVariables &Cn, double Dx, double Dy, int nghost, Reconstruction rec, Slope sl, Riemann rs, OptionalPhysics OptP){
     PrimitiveVariables Pn(Cn);
     std::vector<std::vector<Interface>> InterfacesX(Pn.ny + 2 - 2 * nghost, std::vector<Interface>(Pn.nx + 1 - 2 * nghost));
     std::vector<std::vector<Interface>> InterfacesY(Pn.ny + 1 - 2 * nghost, std::vector<Interface>(Pn.nx + 2 - 2 * nghost));
@@ -281,7 +298,7 @@ std::vector<std::vector<double>> UCTHLL(const ConservativeVariables &Cn, double 
 void ApplyConstrainedTransport(ConservativeVariables& Cn1, const ConservativeVariables& Cn, double Dx, double Dy, double Dt, int nghost, Reconstruction rec, Slope sl, Riemann rs, CTMethod ct, OptionalPhysics OptP)
 {
     CTFunction ChosenCT = getCT(ct);
-    std::vector<std::vector<double>> Ez = ChosenCT(Cn, Dx, Dy, Dt, nghost, rec, sl, rs, OptP);
+    std::vector<std::vector<double>> Ez = ChosenCT(Cn, Dx, Dy, nghost, rec, sl, rs, OptP);
     
     for(int j = nghost; j < Cn1.ny - nghost; ++j)
     {

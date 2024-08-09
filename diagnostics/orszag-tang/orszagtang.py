@@ -8,8 +8,8 @@ import shutil
 
 #############################################################################################################################################################################
 
-nx = 1024
-ny = 1024
+nx = 128
+ny = 128
 Dx = 1/nx
 Dy = 1/ny
 Dt = 0.0
@@ -18,10 +18,10 @@ nghost = 2
 
 boundaryconditions = p.BoundaryConditions.Periodic
 
-reconstruction = p.Reconstruction.Constant
+reconstruction = p.Reconstruction.Linear
 slopelimiter = p.Slope.VanLeer
 riemannsolver = p.RiemannSolver.Rusanov
-constainedtransport = p.CTMethod.Average
+constainedtransport = p.CTMethod.Arithmetic
 timeintegrator = p.Integrator.TVDRK2Integrator
 
 dumpvariables = p.dumpVariables.Primitive

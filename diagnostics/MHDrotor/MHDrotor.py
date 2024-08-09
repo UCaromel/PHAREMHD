@@ -21,7 +21,7 @@ boundaryconditions = p.BoundaryConditions.Periodic
 reconstruction = p.Reconstruction.Constant
 slopelimiter = p.Slope.MinMod
 riemannsolver = p.RiemannSolver.Rusanov
-constainedtransport = p.CTMethod.Average
+constainedtransport = p.CTMethod.Arithmetic
 timeintegrator = p.Integrator.TVDRK2Integrator
 
 consts = p.Consts(sigmaCFL = 0.2, gam = 1.4)

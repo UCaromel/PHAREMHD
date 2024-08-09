@@ -107,6 +107,7 @@ PYBIND11_MODULE(pyMHD, m)
 
     py::enum_<CTMethod>(m, "CTMethod")
         .value("Average", Average)
+        .value("Arithmetic", Arithmetic)
         .value("Contact", Contact)
         .value("UCT_HLL", UCT_HLL)
         .value("NoCT", NoCT);

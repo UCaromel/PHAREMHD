@@ -1,6 +1,6 @@
 import sys
 
-# sys.path.append('/home/caromel/Documents/PHAREMHD/pyMHD')
+sys.path.append('/home/caromel/Documents/PHAREMHD/pyMHD')
 
 import numpy as np
 import pyMHD as p
@@ -22,7 +22,7 @@ boundaryconditions = p.BoundaryConditions.Periodic
 reconstruction = p.Reconstruction.Linear
 slopelimiter = p.Slope.VanLeer
 riemannsolver = p.RiemannSolver.Rusanov
-constainedtransport = p.CTMethod.Average
+constainedtransport = p.CTMethod.Arithmetic
 timeintegrator = p.Integrator.TVDRK2Integrator
 
 dumpvariables = p.dumpVariables.Conservative

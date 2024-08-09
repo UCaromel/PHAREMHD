@@ -29,13 +29,12 @@ file_paths = [results_dir + file for file in os.listdir(results_dir) if file.sta
 nx = 200
 ny = 200
 
+studied_index = 0
+
 data = [read_data(file_path) for file_path in file_paths]
 times = read_times(file_paths)
 
 reshaped_data = [reshape_data(d, nx, ny) for d in data]
-
-
-studied_index = 0
 
 data_min = np.min(reshaped_data[-1][:, :, studied_index])
 data_max = np.max(reshaped_data[-1][:, :, studied_index])

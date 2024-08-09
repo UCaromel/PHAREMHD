@@ -96,52 +96,52 @@ std::pair<std::pair<double, double>, std::pair<double, double>> ComputeRiemannJ(
         SLFunctionDouble ChosenSLDouble = getSlopeLimiterDouble(sl);
 
         // for x derivatives
-        double J_3x = AVERAGING(J, i-3, j);
+        //double J_3x = AVERAGING(J, i-3, j);
         double J_2x = AVERAGING(J, i-2, j);
         double J_1x = AVERAGING(J, i-1, j);
         double Jx = AVERAGING(J, i, j);
         double J1x = AVERAGING(J, i+1, j);
-        double J2x = AVERAGING(J, i+2, j);
+        //double J2x = AVERAGING(J, i+2, j);
 
         // for y derivatives
-        double J_3y = AVERAGING(J, i, j-3);
+        //double J_3y = AVERAGING(J, i, j-3);
         double J_2y = AVERAGING(J, i, j-2);
         double J_1y = AVERAGING(J, i, j-1);
         double Jy = AVERAGING(J, i, j);
         double J1y = AVERAGING(J, i, j+1);
-        double J2y = AVERAGING(J, i, j+2);
+        //double J2y = AVERAGING(J, i, j+2);
 
         // Slopes
-        double Di_1x = ChosenSLDouble(J_1x - J_2x, J_2x - J_3x);
+        //double Di_1x = ChosenSLDouble(J_1x - J_2x, J_2x - J_3x);
         double Dix = ChosenSLDouble(Jx - J_1x, J_1x - J_2x);
         double Di1x = ChosenSLDouble(J1x - Jx, Jx - J_1x);
-        double Di2x = ChosenSLDouble(J2x - J1x, J1x - Jx);
+        //double Di2x = ChosenSLDouble(J2x - J1x, J1x - Jx);
 
-        double Di_1y = ChosenSLDouble(J_1y - J_2y, J_2y - J_3y);
+        //double Di_1y = ChosenSLDouble(J_1y - J_2y, J_2y - J_3y);
         double Diy = ChosenSLDouble(Jy - J_1y, J_1y - J_2y);
         double Di1y = ChosenSLDouble(J1y - Jy, Jy - J_1y);
-        double Di2y = ChosenSLDouble(J2y - J1y, J1y - Jy);
+        //double Di2y = ChosenSLDouble(J2y - J1y, J1y - Jy);
 
         // for L interface Laplacian
-        double J_1xR = J_2x + 0.5 * Di_1x;
+        //double J_1xR = J_2x + 0.5 * Di_1x;
         double JxR = J_1x + 0.5 * Dix;
-        double J1xR = Jx + 0.5 * Di1x;
+        //double J1xR = Jx + 0.5 * Di1x;
 
-        double J_1yR = J_2y + 0.5 * Di_1y;
+        //double J_1yR = J_2y + 0.5 * Di_1y;
         double JyR = J_1y + 0.5 * Diy;
-        double J1yR = Jy + 0.5 * Di1y;
+        //double J1yR = Jy + 0.5 * Di1y;
 
         // for R interface Laplacian
-        double JxL = J_1x - 0.5 * Dix;
+        //double JxL = J_1x - 0.5 * Dix;
         double J1xL = Jx - 0.5 * Di1x;
-        double J2xL = J1x - 0.5 * Di2x;
+        //double J2xL = J1x - 0.5 * Di2x;
 
-        double JyL = J_1y - 0.5 * Diy;
+        //double JyL = J_1y - 0.5 * Diy;
         double J1yL = Jy - 0.5 * Di1y;
-        double J2yL = J1y - 0.5 * Di2y;
+        //double J2yL = J1y - 0.5 * Di2y;
 
-        LaplJL = (J_1xR - 2.0 * JxR + J1xR) / (Dx * Dx) + (J_1yR - 2.0 * JyR + J1yR) / (Dy * Dy);
-        LaplJR = (JxL - 2.0 * J1xL + J2xL) / (Dx * Dx) + (JyL - 2.0 * J1yL + J2yL) / (Dy * Dy);
+        LaplJL = 0.0;//(J_1xR - 2.0 * JxR + J1xR) / (Dx * Dx) + (J_1yR - 2.0 * JyR + J1yR) / (Dy * Dy);
+        LaplJR = 0.0;//(JxL - 2.0 * J1xL + J2xL) / (Dx * Dx) + (JyL - 2.0 * J1yL + J2yL) / (Dy * Dy);
 
         if (Dir == Dir::X) {
             JL = JxR;

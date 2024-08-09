@@ -8,55 +8,83 @@ import shutil
 
 #############################################################################################################################################################################
 
-nx = 200
-ny = 200
-Dx = 0.01
-Dy = 0.01
-Dt = 0.0
-FinalTime = 5
+nx = 100
+ny = 100
+Dx = 0.1
+Dy = 0.1
+Dt = 0.002
+
 nghost = 2
 
 boundaryconditions = p.BoundaryConditions.Periodic
 
 reconstruction = p.Reconstruction.Linear
+
 slopelimiter = p.Slope.VanLeer
 riemannsolver = p.RiemannSolver.Rusanov
 constainedtransport = p.CTMethod.Arithmetic
-timeintegrator = p.Integrator.TVDRK2Integrator
+timeintegrator = p.Integrator.EulerIntegrator
+
+consts = p.Consts(sigmaCFL = 0.8, gam = 5/3, eta = 0.0, nu = 0.000)
+physics = p.OptionalPhysics.HallResHyper
 
 dumpvariables = p.dumpVariables.Primitive
-dumpfrequency = 5
+dumpfrequency = 1
 
 ##############################################################################################################################################################################
-u0 = 0.1
-B0 = 1
+lx=nx*Dx
+k=2*np.pi/lx
+
+m = 1
+
+kt=2*np.pi/lx * m
+w = (kt**2 /2) *(np.sqrt(1+4/kt**2) + 1)
+FinalTime = 2*np.pi / w 
+
+np.random.seed(0)
+
+modes = [1,2,4,8]
+phases = np.random.rand(len(modes))
 
 def rho_(x, y):
     return 1.0
 
 def vx_(x, y):
-    return u0 * np.sin(2 * np.pi * y)
+    return 0.0
 
 def vy_(x, y):
-    return 0.0
+    ret = np.zeros((x.shape[0], y.shape[1]))
+    
+    for m,phi in zip(modes, phases):
+        ret[:,:] += -np.cos(k*x*m + phi)*0.01*k
+    return ret
 
 def vz_(x, y):
-    return 0.0
+    ret = np.zeros((x.shape[0], y.shape[1]))
+    for m,phi in zip(modes, phases):
+        ret[:,:] += np.sin(k*x*m + phi)*0.01*k
+    return ret
 
 def Bx_(x, y):
-    return 0.0
+    return 1.0
 
 def By_(x, y):
-    return np.where(x < 0.5, B0, np.where(x < 1.5, -B0, B0))
+    ret = np.zeros((x.shape[0], y.shape[1]))
+    for m,phi in zip(modes, phases):
+        ret[:,:] += np.cos(k*x*m + phi)*0.01
+    return ret
 
 def Bz_(x, y):
-    return 0.0
+    ret = np.zeros((x.shape[0], y.shape[1]))
+    for m,phi in zip(modes, phases):
+        ret[:,:] += -np.sin(k*x*m + phi)*0.01
+    return ret
 
 def P_(x, y):
-    return 0.1
+    return 1.0
 
-x = np.arange(nx) * Dx + 0.5 * Dx
-y = np.arange(ny) * Dy + 0.5 * Dy
+x = np.arange(nx) * Dx + 0.5 * Dx 
+y = np.arange(ny) * Dy + 0.5 * Dy 
 xf = np.arange(nx+1) * Dx
 yf = np.arange(ny+1) * Dy
 
@@ -75,7 +103,7 @@ P = np.full((nx, ny), P_(xx, yy)).T
 
 #############################################################################################################################################################################
 
-result_dir = 'currentres/'
+result_dir = 'AICres2/'
 if os.path.exists(result_dir):
     shutil.rmtree(result_dir)
 
@@ -86,4 +114,4 @@ P0cc.init(rho, vx, vy, vz, Bxf, Byf, Bz, P)
 
 p.PhareMHD(P0cc, result_dir, nghost, 
            boundaryconditions, reconstruction, slopelimiter, riemannsolver, constainedtransport, timeintegrator,
-           Dx, Dy, FinalTime, Dt, dumpvariables = dumpvariables, dumpfrequency = dumpfrequency)
+           Dx, Dy, FinalTime, Dt = Dt, dumpvariables = dumpvariables, Consts = consts, OptionalPhysics = physics, dumpfrequency = dumpfrequency)

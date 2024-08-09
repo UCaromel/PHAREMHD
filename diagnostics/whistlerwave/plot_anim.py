@@ -6,10 +6,10 @@ import os
 import shutil
 
 nx = 128
-Dx = 0.1
+Dx = 0.05
 
 
-quantity_name = 'By'
+quantity_name = 'Bz'
 fixed_index = 0
 ny = 1
 
@@ -19,8 +19,8 @@ def read_file(filename):
     df = pd.read_csv(filename, delim_whitespace=True, header=None, names=column_names)
     return df
 
-results_dir = 'whislerwaveres/'
-results_dir2 = 'whislerwaveHLL/'
+results_dir = 'AICres2/'
+results_dir2 = 'whislerwaveres2/'
 
 quantities = {
     'rho': [],
@@ -34,7 +34,7 @@ quantities = {
 }
 times = []
 
-"""quantitieshll = {
+quantities2 = {
     'rho': [],
     'vx': [],
     'vy': [],
@@ -44,7 +44,7 @@ times = []
     'Bz': [],
     'P': []
 }
-timeshll = []"""
+times2 = []
 
 for filename in os.listdir(results_dir):
     if filename.startswith("PRK2_") and filename.endswith(".txt"):
@@ -60,19 +60,19 @@ for filename in os.listdir(results_dir):
 for quantity in quantities.keys():
     quantities[quantity] = np.array(quantities[quantity])
 
-"""for filename in os.listdir(results_dir2):
-    if filename.startswith("PRK2_") and filename.endswith(".txt"):
-        time_str = filename.split('_')[1]+'.'+filename.split('_')[2].split('.')[0]
-        time = float(time_str)
-        timeshll.append(time)
+# for filename in os.listdir(results_dir2):
+#     if filename.startswith("PRK2_") and filename.endswith(".txt"):
+#         time_str = filename.split('_')[1]+'.'+filename.split('_')[2].split('.')[0]
+#         time = float(time_str)
+#         times2.append(time)
         
-        df = read_file(os.path.join(results_dir2, filename))
+#         df = read_file(os.path.join(results_dir2, filename))
 
-        for quantity in quantitieshll.keys():
-            quantitieshll[quantity].append(df[quantity].values.reshape((ny, nx)))
+#         for quantity in quantities2.keys():
+#             quantities2[quantity].append(df[quantity].values.reshape((ny, nx)))
 
-for quantity in quantitieshll.keys():
-    quantitieshll[quantity] = np.array(quantitieshll[quantity])"""
+# for quantity in quantities2.keys():
+#     quantities2[quantity] = np.array(quantities2[quantity])
 
 x=Dx*np.arange(nx) + 0.5*Dx
 
@@ -83,17 +83,17 @@ os.makedirs(output_dir, exist_ok=True)
 
 def update(frame):
     lx = nx*Dx
-    m = 4#int(nx/4)
+    m = 12#int(nx/4)
 
     k = 2 * np.pi / lx * m
 
     w = (k**2 /2) *(np.sqrt(1+4/k**2) + 1)
     
-    expected_value = 1e-7 * np.cos(k * x - w * times[frame] + 0.5488135)
+    expected_value = -1 * np.sin(k * x - w * times[frame] + 0.5488135)
 
     plt.clf()
     plt.plot(x, quantities[quantity_name][frame, fixed_index, :], color='blue', marker = 'x', markersize=3) # t,y,x
-    #plt.plot(x, quantitieshll[quantity_name][frame, fixed_index, :], color='green', marker = 'o', markersize=3) # t,y,x
+    #plt.plot(x, quantities2[quantity_name][frame, fixed_index, :], color='green', marker = 'o', markersize=3) # t,y,x
     plt.plot(x, expected_value)
     plt.title(f'{quantity_name} at t={times[frame]}')  # Format time to one decimal place
     plt.xlabel('x')

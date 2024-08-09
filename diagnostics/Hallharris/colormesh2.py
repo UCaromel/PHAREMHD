@@ -13,7 +13,7 @@ nx = 250
 ny = 250
 
 file_path1 = "hallharrisresCT/PRK2_0_5002794389.txt"
-file_path2 = "hallharrisresCT2/PRK2_0_5000859584.txt"
+file_path2 = "hallharrisresCT2/PRK2_0_5001043321.txt"
 # file_path1 = "hallharrisres2/PRK2_2_4174122015.txt"
 # file_path2 = "hallharrisresCT2long/PRK2_2_4039801735.txt"
 

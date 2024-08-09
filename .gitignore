@@ -11,23 +11,14 @@ space_results/
 time_results/
 2Dwave/
 orszagtangres/
-orszagtangCTAverage/
-orszagtangUCTHLL/
-orszagtangCTContact/
-orszagtang1024
-orszagtang1024r2
+orszagtang*/
 MHDrotorres/
 shockres/
 harrisres/
 currentres/
-whislerwaveres/
-whislerwavelin/
-whislerwaveHLL/
-hallharrisres/
-hallharrisres2/
-hallharrisresCT/
-hallharrisresCT2/
-hallharrisresCT2long/
+whislerwaveres*/
+ideal*/
+hallharrisres*/
 subprojects
 
 debug/

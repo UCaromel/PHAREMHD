@@ -10,9 +10,9 @@ import shutil
 
 nx = 128
 ny = 1
-Dx = 0.1
+Dx = 0.8
 Dy = 1
-Dt = 0.002
+Dt = 0.077
 
 nghost = 2
 
@@ -22,7 +22,7 @@ reconstruction = p.Reconstruction.Linear
 
 slopelimiter = p.Slope.VanLeer
 riemannsolver = p.RiemannSolver.Rusanov
-constainedtransport = p.CTMethod.Average
+constainedtransport = p.CTMethod.NoCT
 timeintegrator = p.Integrator.EulerIntegrator
 
 consts = p.Consts(sigmaCFL = 0.8, gam = 5/3, eta = 0.0, nu = 0.000)
@@ -35,15 +35,15 @@ dumpfrequency = 1
 lx=nx*Dx
 k=2*np.pi/lx
 
-m = 4
+m = 1
 
 kt=2*np.pi/lx * m
 w = (kt**2 /2) *(np.sqrt(1+4/kt**2) + 1)
-FinalTime = 2*np.pi / w
+FinalTime = 2*np.pi / w *10
 
 np.random.seed(0)
 
-modes = [m]#[int(nx/4)]
+modes = [1,2,4,8]
 phases = np.random.rand(len(modes))
 
 def rho_(x, y):
@@ -56,13 +56,13 @@ def vy_(x, y):
     ret = np.zeros((x.shape[0], y.shape[1]))
     
     for m,phi in zip(modes, phases):
-        ret[:,:] += -np.cos(k*x*m + phi)*1e-7*k
+        ret[:,:] += -np.cos(k*x*m + phi)*0.01*k
     return ret
 
 def vz_(x, y):
     ret = np.zeros((x.shape[0], y.shape[1]))
     for m,phi in zip(modes, phases):
-        ret[:,:] += np.sin(k*x*m + phi)*1e-7*k
+        ret[:,:] += np.sin(k*x*m + phi)*0.01*k
     return ret
 
 def Bx_(x, y):
@@ -71,13 +71,13 @@ def Bx_(x, y):
 def By_(x, y):
     ret = np.zeros((x.shape[0], y.shape[1]))
     for m,phi in zip(modes, phases):
-        ret[:,:] += np.cos(k*x*m + phi)*1e-7
+        ret[:,:] += np.cos(k*x*m + phi)*0.01
     return ret
 
 def Bz_(x, y):
     ret = np.zeros((x.shape[0], y.shape[1]))
     for m,phi in zip(modes, phases):
-        ret[:,:] += -np.sin(k*x*m + phi)*1e-7
+        ret[:,:] += -np.sin(k*x*m + phi)*0.01
     return ret
 
 def P_(x, y):
@@ -103,7 +103,7 @@ P = np.full((nx, ny), P_(xx, yy)).T
 
 #############################################################################################################################################################################
 
-result_dir = 'whislerwaveres/'
+result_dir = 'idealres/'
 if os.path.exists(result_dir):
     shutil.rmtree(result_dir)
 
