@@ -26,3 +26,7 @@ debug/
 frames/
 framestest/
 pyMHD/pyMHD.cpython*
+PHAREMHD/
+build/
+pyrightconfig.json
+compile_commands.json
