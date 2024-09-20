@@ -17,7 +17,7 @@ lx=nx*Dx
 m = 1
 
 kt=2*np.pi/lx * m
-w = kt#(kt**2 /2) *(np.sqrt(1+4/kt**2) + 1)
+w = (kt**2 /2) *(np.sqrt(1+4/kt**2) + 1)
 finalTime = 2*np.pi / w *10
 
 column_names = ['rho', 'vx', 'vy', 'vz', 'Bx', 'By', 'Bz', 'P']
@@ -26,7 +26,7 @@ def read_file(filename):
     df = pd.read_csv(filename, delim_whitespace=True, header=None, names=column_names)
     return df
 
-results_dir = 'whislerwaveres2'
+results_dir = 'whislerwaveres'
 
 quantities = {
     'rho': [],
@@ -65,7 +65,7 @@ wplus = w[:halfw]
 
 kmodes = 2*np.pi*np.asarray([1/(nx*Dx) * m for m in modes])
 
-B_combined = quantities['Bz']# + 1j * quantities['Bz']
+B_combined = quantities['By'] - 1j * quantities['Bz']
 
 # window_space = np.hanning(nx)
 # window_time = np.hanning(int(finalTime / Dt) + 1)

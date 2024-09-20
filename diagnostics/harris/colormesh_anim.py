@@ -40,9 +40,10 @@ reshaped_data = [reshape_data(d, nx, ny) for d in data]
 dx = 0.1
 dy = 0.1
 
-# Extract Bx and By
+rho = [reshaped_data[i][:, :, 0] for i in range(len(data))]
 Bx = [reshaped_data[i][:, :, 4] for i in range(len(data))]
 By = [reshaped_data[i][:, :, 5] for i in range(len(data))]
+Bz = [reshaped_data[i][:, :, 6] for i in range(len(data))]
 
 # Calculate the derivatives
 dBy_dx = [np.gradient(By[i], dx, axis=0) for i in range(len(data))]
@@ -51,7 +52,7 @@ dBx_dy = [np.gradient(Bx[i], dy, axis=1) for i in range(len(data))]
 # Calculate Jz
 Jz = [(dBy_dx[i] - dBx_dy[i]) for i in range(len(data))]
 
-toPlot = Jz
+toPlot = rho
 
 data_min = np.min(toPlot[-1])
 data_max = np.max(toPlot[-1])
@@ -70,7 +71,7 @@ os.makedirs(output_dir, exist_ok=True)
 
 def update(frame):
     im.set_array(toPlot[frame].T)
-    plt.title(f'{toPlot} at t={times[frame]}')
+    plt.title(f'rho at t={times[frame]}')
     plt.savefig(f'{output_dir}/frame_{frame:04d}.png')
     return im,
 

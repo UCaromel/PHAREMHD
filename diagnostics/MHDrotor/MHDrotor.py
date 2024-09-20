@@ -24,6 +24,8 @@ riemannsolver = p.RiemannSolver.Rusanov
 constainedtransport = p.CTMethod.Arithmetic
 timeintegrator = p.Integrator.TVDRK2Integrator
 
+dumpvariables = p.dumpVariables.Primitive
+
 consts = p.Consts(sigmaCFL = 0.2, gam = 1.4)
 
 ##############################################################################################################################################################################
@@ -73,7 +75,7 @@ def Bz_(x, y):
     return 0.0 
 
 def P_(x, y):
-    return 0.5
+    return 1
 
 
 x = np.arange(nx) * Dx + 0.5 * Dx
@@ -108,4 +110,4 @@ P0cc.init(rho, vx, vy, vz, Bxf, Byf, Bz, P)
 
 p.PhareMHD(P0cc, result_dir, nghost, 
            boundaryconditions, reconstruction, slopelimiter, riemannsolver, constainedtransport, timeintegrator,
-           Dx, Dy, FinalTime, Dt, Consts = consts)
+           Dx, Dy, FinalTime, Dt, Consts = consts, dumpvariables = dumpvariables)

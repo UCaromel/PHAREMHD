@@ -22,11 +22,11 @@ def read_times(file_paths):
         times.append(time)
     return times
 
-results_dir = "orszagtangCTAverage/"
+results_dir = "orszagtang1024r2/"
 file_paths = [results_dir + file for file in os.listdir(results_dir) if file.startswith("PRK2_") and file.endswith(".txt")]
 
-nx = 128
-ny = 128
+nx = 1024
+ny = 1024
 
 studied_index = 7
 
@@ -44,8 +44,9 @@ qty = reshaped_data[-1][:,:,studied_index]
 
 im = plt.pcolormesh(qty.T, cmap='coolwarm',vmin = data_min, vmax = data_max)#, norm=Norm)  
 plt.colorbar(im)
-plt.title('Contour Plot of qty')
+plt.title('P at t=0.5')
 plt.xlabel('X')
 plt.ylabel('Y')
 plt.gca().set_aspect('equal')
+plt.savefig('orszagtang1024.png')
 plt.show()

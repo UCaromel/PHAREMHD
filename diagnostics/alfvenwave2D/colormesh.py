@@ -37,7 +37,9 @@ time_index = 0
 qty = reshaped_data[time_index][:, :, 5]
 
 plt.pcolormesh(qty.T, cmap='coolwarm')  
-plt.title('Contour Plot of qty')
+plt.colorbar()
+plt.title('Contour Plot of By at t=0')
 plt.xlabel('X')
 plt.ylabel('Y')
+plt.savefig('2Dwave_0.png')
 plt.show()

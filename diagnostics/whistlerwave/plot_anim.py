@@ -19,8 +19,7 @@ def read_file(filename):
     df = pd.read_csv(filename, delim_whitespace=True, header=None, names=column_names)
     return df
 
-results_dir = 'AICres2/'
-results_dir2 = 'whislerwaveres2/'
+results_dir = 'whislerwaveres_singlemode/'
 
 quantities = {
     'rho': [],
@@ -34,17 +33,6 @@ quantities = {
 }
 times = []
 
-quantities2 = {
-    'rho': [],
-    'vx': [],
-    'vy': [],
-    'vz': [],
-    'Bx': [],
-    'By': [],
-    'Bz': [],
-    'P': []
-}
-times2 = []
 
 for filename in os.listdir(results_dir):
     if filename.startswith("PRK2_") and filename.endswith(".txt"):
@@ -83,13 +71,13 @@ os.makedirs(output_dir, exist_ok=True)
 
 def update(frame):
     lx = nx*Dx
-    m = 12#int(nx/4)
+    m = 4#int(nx/4)
 
     k = 2 * np.pi / lx * m
 
     w = (k**2 /2) *(np.sqrt(1+4/k**2) + 1)
     
-    expected_value = -1 * np.sin(k * x - w * times[frame] + 0.5488135)
+    expected_value = -1e-2 * np.sin(k * x - w * times[frame] + 0.5488135)
 
     plt.clf()
     plt.plot(x, quantities[quantity_name][frame, fixed_index, :], color='blue', marker = 'x', markersize=3) # t,y,x
@@ -102,7 +90,7 @@ def update(frame):
     #plt.yscale("log")
     plt.tight_layout()
     
-    eps = 1e-7
+    eps = 1e-3
     min_val = np.min(quantities[quantity_name][:, fixed_index, :]) - eps
     max_val = np.max(quantities[quantity_name][:, fixed_index, :]) + eps
     
@@ -125,40 +113,40 @@ fig.canvas.mpl_connect('key_press_event', onclick)
 
 plt.show()
 
-"""
-lx = nx*Dx
-m = 4#int(nx/4)
 
-k = 2 * np.pi / lx * m
-plt.plot(x, quantities[quantity_name][0, fixed_index, :], color='blue', marker = 'x', markersize=3) # t,y,x
-plt.plot(x, 1e-3 * np.cos(k * x + k**2 * times[0] + 0.5488135))
-plt.axvline(x[1]-Dx/2, ls='--', color='k')
-plt.axvline(x[-1]-Dx/2, ls='--', color='k')
-plt.show()
-"""
-def calculate_total_energy(quantities, t, gamma):
-    rho = quantities['rho'][t, fixed_index, :]
-    vx = quantities['vx'][t, fixed_index, :]
-    vy = quantities['vy'][t, fixed_index, :]
-    vz = quantities['vz'][t, fixed_index, :]
-    Bx = quantities['Bx'][t, fixed_index, :]
-    By = quantities['By'][t, fixed_index, :]
-    Bz = quantities['Bz'][t, fixed_index, :]
-    P = quantities['P'][t, fixed_index, :]
+# lx = nx*Dx
+# m = 4#int(nx/4)
 
-    # Calculate kinetic energy density
-    kinetic_energy = 0.5 * rho * (vx**2 + vy**2 + vz**2)
-    
-    # Calculate magnetic energy density
-    magnetic_energy = 0.5 * (Bx**2 + By**2 + Bz**2)
-    
-    # Calculate internal energy density using pressure and gamma
-    internal_energy = P / (gamma - 1)
-    
-    # Total energy density
-    total_energy = internal_energy + kinetic_energy + magnetic_energy
-    
-    return np.sum(total_energy)
+# k = 2 * np.pi / lx * m
+# plt.plot(x, quantities[quantity_name][0, fixed_index, :], color='blue', marker = 'x', markersize=3) # t,y,x
+# plt.plot(x, 1e-3 * np.cos(k * x + k**2 * times[0] + 0.5488135))
+# plt.axvline(x[1]-Dx/2, ls='--', color='k')
+# plt.axvline(x[-1]-Dx/2, ls='--', color='k')
+# plt.show()
 
-print(calculate_total_energy(quantities, 0, 5.0/3.0))
-print(calculate_total_energy(quantities, -1, 5.0/3.0))
+# def calculate_total_energy(quantities, t, gamma):
+#     rho = quantities['rho'][t, fixed_index, :]
+#     vx = quantities['vx'][t, fixed_index, :]
+#     vy = quantities['vy'][t, fixed_index, :]
+#     vz = quantities['vz'][t, fixed_index, :]
+#     Bx = quantities['Bx'][t, fixed_index, :]
+#     By = quantities['By'][t, fixed_index, :]
+#     Bz = quantities['Bz'][t, fixed_index, :]
+#     P = quantities['P'][t, fixed_index, :]
+
+#     # Calculate kinetic energy density
+#     kinetic_energy = 0.5 * rho * (vx**2 + vy**2 + vz**2)
+    
+#     # Calculate magnetic energy density
+#     magnetic_energy = 0.5 * (Bx**2 + By**2 + Bz**2)
+    
+#     # Calculate internal energy density using pressure and gamma
+#     internal_energy = P / (gamma - 1)
+    
+#     # Total energy density
+#     total_energy = internal_energy + kinetic_energy + magnetic_energy
+    
+#     return np.sum(total_energy)
+
+# print(calculate_total_energy(quantities, 0, 5.0/3.0))
+# print(calculate_total_energy(quantities, -1, 5.0/3.0))

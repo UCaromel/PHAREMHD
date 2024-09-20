@@ -2,6 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 from matplotlib.animation import FuncAnimation, PillowWriter
+from matplotlib.colors import Normalize
+
+
+studied_index = 1
 
 # Function to read data from file
 def read_data(file_path):
@@ -23,7 +27,7 @@ def read_times(file_paths):
     return times
 
 results_dir = "MHDrotorres/"
-file_paths = [results_dir + file for file in os.listdir(results_dir) if file.startswith("URK2_") and file.endswith(".txt")]
+file_paths = [results_dir + file for file in os.listdir(results_dir) if file.startswith("PRK2_") and file.endswith(".txt")]
 
 nx = 100
 ny = 100
@@ -33,13 +37,18 @@ times = read_times(file_paths)
 
 reshaped_data = [reshape_data(d, nx, ny) for d in data]
 
+data_min = np.min(reshaped_data[-1][:, :, studied_index])
+data_max = np.max(reshaped_data[-1][:, :, studied_index])
+
+Norm = Normalize(vmin=data_min, vmax=data_max)
+
 fig, ax = plt.subplots()
-im = ax.pcolormesh(reshaped_data[0][:, :, 0].T, cmap='coolwarm')
+im = ax.pcolormesh(reshaped_data[0][:, :, studied_index].T, cmap='coolwarm')
 ax.set_aspect('equal')
 fig.colorbar(im, ax=ax)
 
 def update(frame):
-    im.set_array(reshaped_data[frame][:, :, 0].T)
+    im.set_array(reshaped_data[frame][:, :, studied_index].T)
     plt.title(f'qty at t={times[frame]}')
     return im,
 

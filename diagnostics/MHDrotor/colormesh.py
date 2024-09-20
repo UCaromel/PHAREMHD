@@ -12,13 +12,13 @@ def reshape_data(data, ny, nx):
 nx = 100
 ny = 100
 
-file_path = "MHDrotorres/URK2_0_0.txt"
+file_path = "MHDrotorres/PRK2_0_0.txt"
 
 data = read_data(file_path)
 
 reshaped_data = reshape_data(data, nx, ny)
 
-rho = reshaped_data[:, :, 0]
+rho = reshaped_data[:, :, 1]
 
 plt.pcolormesh(rho.T, cmap='coolwarm')  
 plt.title('Contour Plot of rho at t=0')

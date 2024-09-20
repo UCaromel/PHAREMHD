@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.colors import Normalize
 
 def read_data(file_path):
     data = np.loadtxt(file_path)
@@ -12,7 +13,7 @@ def reshape_data(data, ny, nx):
 nx = 250
 ny = 250
 
-file_path = "hallharrisres2/PRK2_15_1429222576.txt"
+file_path = "harrisres/PRK2_15_1801638342.txt"
 
 data = read_data(file_path)
 
@@ -36,26 +37,15 @@ Jz = (dBy_dx - dBx_dy)
 
 toPlot = rho
 
-plt.pcolormesh(toPlot.T, cmap='coolwarm')  
+data_min = np.min(toPlot[-1])
+data_max = np.max(toPlot[-1]) + 0.2
+
+Norm = Normalize(vmin=data_min, vmax=data_max)
+
+plt.pcolormesh(toPlot.T, cmap='coolwarm', norm = Norm)  
 plt.colorbar()
-plt.title('Contour Plot of rho')
+plt.title('Contour Plot of rho at t=15')
 plt.xlabel('X')
 plt.ylabel('Y')
-plt.savefig('hall_harris_rho.png')
+plt.savefig('harris_rho_t_15.png')
 plt.show()
-
-# x_middle = nx // 2
-
-# Jz_cutx = Jz[x_middle, :]
-
-# y_positions = np.arange(ny)
-
-# # Create the plot
-# plt.figure(figsize=(10, 6))
-# plt.plot(y_positions, Jz_cutx, marker='o')
-# plt.title(f'1D cut of Jz at X = {x_middle/nx}')
-# plt.xlabel('y')
-# plt.ylabel('Jz')
-# plt.grid(True)
-
-# plt.show()

@@ -28,8 +28,7 @@ times = []
 for filename in os.listdir(results_dir):
     if filename.startswith("PRK2_") and filename.endswith(".txt"):
         # Extract time from filename and format it properly
-        time_str = filename.split('_')[2].split('.')[0]
-        time_str = time_str.replace('_', '.')  # Replace underscore with dot
+        time_str = filename.split('_')[1]+'.'+filename.split('_')[2].split('.')[0]
         time = float(time_str)
         times.append(time)
         
@@ -44,7 +43,7 @@ for quantity in quantities.keys():
 times = np.array(times)
 
 Dx = lx / nx
-x = Dx * np.arange(nx) + 0.5 * Dx
+x = np.arange(nx) + 0.5
 
 # Determine the range for x-axis
 x_range = (x.min(), x.max())
@@ -56,7 +55,7 @@ gs = plt.GridSpec(3, 2)
 # Plot 'rho' on the centered subplot spanning both columns
 ax_rho = plt.subplot(gs[0, :])
 ax_rho.plot(x, quantities['rho'][time_index, fixed_index, :], 'o', color='blue', markersize=3)
-ax_rho.set_title(f'rho at y={fixed_index}, t={times[time_index]:.2f}')
+ax_rho.set_title(f'rho at t={times[time_index]:.2f}')
 ax_rho.set_xlabel('x')
 ax_rho.set_ylabel('rho')
 ax_rho.grid(True)
@@ -75,7 +74,7 @@ for i, quantity in enumerate(quantities_to_plot[1:]):
     col = i % 2
     ax = plt.subplot(gs[row, col])
     ax.plot(x, quantities[quantity][time_index, fixed_index, :], 'o', color='blue', markersize=3)
-    ax.set_title(f'{quantity} at y={fixed_index}, t={times[time_index]:.2f}')
+    ax.set_title(f'{quantity} at t={times[time_index]:.2f}')
     ax.set_xlabel('x')
     ax.set_ylabel(quantity)
     ax.grid(True)

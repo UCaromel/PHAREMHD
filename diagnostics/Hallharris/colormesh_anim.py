@@ -24,7 +24,7 @@ def read_times(file_paths):
         times.append(time)
     return times
 
-results_dir = "hallharrisresCT2long/"
+results_dir = "hallharrisres2/"
 file_paths = [results_dir + file for file in os.listdir(results_dir) if file.startswith("PRK2_") and file.endswith(".txt")]
 
 nx = 250
@@ -53,7 +53,7 @@ dBx_dy = [np.gradient(Bx[i], dy, axis=1) for i in range(len(data))]
 # Calculate Jz
 Jz = [(dBy_dx[i] - dBx_dy[i]) for i in range(len(data))]
 
-toPlot = Bz
+toPlot = rho
 
 data_min = np.min(toPlot[-1])
 data_max = np.max(toPlot[-1])

@@ -181,36 +181,36 @@ Interface::Interface(const PrimitiveVariables& P_cc /* Assuming ghost cells are 
 
         SLFunction ChosenSL = getSlopeLimiter(sl);
 
+        ReconstructedValues ui_2;
         ReconstructedValues ui_1;
         ReconstructedValues ui;
         ReconstructedValues ui1;
-        ReconstructedValues ui2;
 
         if (dir == Dir::X){
-            ui_1 = P_cc(i-2,j);
-            ui = P_cc(i-1,j);
-            ui1 = P_cc(i,j);
-            ui2 = P_cc(i+1,j);
+            ui_2 = P_cc(i-2,j);
+            ui_1 = P_cc(i-1,j);
+            ui = P_cc(i,j);
+            ui1 = P_cc(i+1,j);
         } else if (dir == Dir::Y){
-            ui_1 = P_cc(i,j-2);
-            ui = P_cc(i,j-1);
-            ui1 = P_cc(i,j);
-            ui2 = P_cc(i,j+1);
+            ui_2 = P_cc(i,j-2);
+            ui_1 = P_cc(i,j-1);
+            ui = P_cc(i,j);
+            ui1 = P_cc(i,j+1);
         }
 
-        ReconstructedValues Dui_12 = ui - ui_1;
-        ReconstructedValues Dui12 = ui1 - ui;
-        ReconstructedValues Di = ChosenSL(Dui12, Dui_12);
+        ReconstructedValues Dui_12 = ui_1 - ui_2;
+        ReconstructedValues Dui12 = ui - ui_1;
+        ReconstructedValues Di_1 = ChosenSL(Dui12, Dui_12);
 
         ReconstructedValues Dui1_12 = Dui12;
-        ReconstructedValues Dui112 = ui2 - ui1;
-        ReconstructedValues Di1 = ChosenSL(Dui112, Dui1_12);
+        ReconstructedValues Dui112 = ui1 - ui;
+        ReconstructedValues Di = ChosenSL(Dui112, Dui1_12);
 
-        ReconstructedValues uiR = ui + 0.5 * Di;
-        ReconstructedValues ui1L = ui1 - 0.5 * Di1;
+        ReconstructedValues ui_1R = ui_1 + 0.5 * Di_1;
+        ReconstructedValues uiL = ui - 0.5 * Di;
 
-        uL = uiR;
-        uR = ui1L;
+        uL = ui_1R;
+        uR = uiL;
     }
 
     fL = ComputeFluxVector(uL, dir);

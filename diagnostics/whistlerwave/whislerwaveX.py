@@ -10,9 +10,9 @@ import shutil
 
 nx = 128
 ny = 1
-Dx = 0.8
+Dx = 0.05
 Dy = 1
-Dt = 0.077
+Dt = 0.0006
 
 nghost = 2
 
@@ -35,15 +35,15 @@ dumpfrequency = 1
 lx=nx*Dx
 k=2*np.pi/lx
 
-m = 1
+m = 4
 
 kt=2*np.pi/lx * m
 w = (kt**2 /2) *(np.sqrt(1+4/kt**2) + 1)
-FinalTime = 2*np.pi / w *10
+FinalTime = 2*np.pi / w
 
 np.random.seed(0)
 
-modes = [1,2,4,8]
+modes = [4]
 phases = np.random.rand(len(modes))
 
 def rho_(x, y):
@@ -56,28 +56,27 @@ def vy_(x, y):
     ret = np.zeros((x.shape[0], y.shape[1]))
     
     for m,phi in zip(modes, phases):
-        ret[:,:] += -np.cos(k*x*m + phi)*0.01*k
+        ret[:,:] += -np.cos(k*x*m + phi)*1e-2*k
     return ret
 
 def vz_(x, y):
     ret = np.zeros((x.shape[0], y.shape[1]))
     for m,phi in zip(modes, phases):
-        ret[:,:] += np.sin(k*x*m + phi)*0.01*k
+        ret[:,:] += np.sin(k*x*m + phi)*1e-2*k
     return ret
-
 def Bx_(x, y):
     return 1.0
 
 def By_(x, y):
     ret = np.zeros((x.shape[0], y.shape[1]))
     for m,phi in zip(modes, phases):
-        ret[:,:] += np.cos(k*x*m + phi)*0.01
+        ret[:,:] += np.cos(k*x*m + phi)*1e-2
     return ret
 
 def Bz_(x, y):
     ret = np.zeros((x.shape[0], y.shape[1]))
     for m,phi in zip(modes, phases):
-        ret[:,:] += -np.sin(k*x*m + phi)*0.01
+        ret[:,:] += -np.sin(k*x*m + phi)*1e-2
     return ret
 
 def P_(x, y):
@@ -103,7 +102,7 @@ P = np.full((nx, ny), P_(xx, yy)).T
 
 #############################################################################################################################################################################
 
-result_dir = 'idealres/'
+result_dir = 'whislerwaveres_singlemode/'
 if os.path.exists(result_dir):
     shutil.rmtree(result_dir)
 
