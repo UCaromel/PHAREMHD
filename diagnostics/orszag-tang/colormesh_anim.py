@@ -24,7 +24,7 @@ def read_times(file_paths):
         times.append(time)
     return times
 
-results_dir = "orszagtangCTAverage/"
+results_dir = "orszagtangConstantLowA/"
 file_paths = [results_dir + file for file in os.listdir(results_dir) if file.startswith("PRK2_") and file.endswith(".txt")]
 
 nx = 128
@@ -48,7 +48,7 @@ ax.set_aspect('equal')
 fig.colorbar(im, ax=ax)
 
 
-output_dir = 'framestest'
+output_dir = 'framesConstantLowA'
 if os.path.exists(output_dir):
     shutil.rmtree(output_dir)
 os.makedirs(output_dir, exist_ok=True)

@@ -13,16 +13,16 @@ ny = 128
 Dx = 1/nx
 Dy = 1/ny
 Dt = 0.0
-FinalTime = 1
-nghost = 2
+FinalTime = 0.5
+nghost = 1
 
 boundaryconditions = p.BoundaryConditions.Periodic
 
-reconstruction = p.Reconstruction.Linear
+reconstruction = p.Reconstruction.Constant
 slopelimiter = p.Slope.VanLeer
 riemannsolver = p.RiemannSolver.Rusanov
 constainedtransport = p.CTMethod.Arithmetic
-timeintegrator = p.Integrator.TVDRK2Integrator
+timeintegrator = p.Integrator.TVDRK3Integrator
 
 dumpvariables = p.dumpVariables.Primitive
 dumpfrequency = 80
@@ -76,7 +76,7 @@ P = np.full((nx, ny), P_(xx, yy)).T
 
 #############################################################################################################################################################################
 
-result_dir = 'orszagtangCTAverage/'
+result_dir = 'orszagtangConstantLowA/'
 if os.path.exists(result_dir):
     shutil.rmtree(result_dir)
 

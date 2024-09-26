@@ -24,7 +24,7 @@ def read_times(file_paths):
         times.append(time)
     return times
 
-results_dir = "hallharrisres2/"
+results_dir = "hallharrisNoCTWENO3/"
 file_paths = [results_dir + file for file in os.listdir(results_dir) if file.startswith("PRK2_") and file.endswith(".txt")]
 
 nx = 250
@@ -65,7 +65,7 @@ im = ax.pcolormesh(toPlot[0].T, cmap='coolwarm', norm=Norm)
 ax.set_aspect('equal')
 fig.colorbar(im, ax=ax)
 
-output_dir = 'frames'
+output_dir = 'framesNoCTWENO3'
 if os.path.exists(output_dir):
     shutil.rmtree(output_dir)
 os.makedirs(output_dir, exist_ok=True)

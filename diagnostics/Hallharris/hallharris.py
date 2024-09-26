@@ -13,15 +13,15 @@ ny = 250
 Dx = 0.1
 Dy = 0.1
 Dt = 0.0
-FinalTime = 0.5
+FinalTime = 10
 nghost = 2
 
 boundaryconditions = p.BoundaryConditions.Periodic
 
 reconstruction = p.Reconstruction.Linear
-slopelimiter = p.Slope.MinMod
+slopelimiter = p.Slope.VanLeer
 riemannsolver = p.RiemannSolver.Rusanov
-constainedtransport = p.CTMethod.Arithmetic
+constainedtransport = p.CTMethod.Contact
 timeintegrator = p.Integrator.TVDRK2Integrator
 
 OptionalPhysics = p.OptionalPhysics.HallResHyper
@@ -82,7 +82,7 @@ def Bz_(x, y):
 
 
 def P_(x, y):
-    return 1.0 - (Bx_(x, y) ** 2)/2.0
+    return 1.0 - (Bx_(x, y) ** 2 + By_(x, y) ** 2)/2.0
 
 x = np.arange(nx) * Dx + 0.5 * Dx
 y = np.arange(ny) * Dy + 0.5 * Dy
@@ -104,7 +104,7 @@ P = np.full((nx, ny), P_(xx, yy)).T
 
 #############################################################################################################################################################################
 
-result_dir = 'hallharrisresCT2/'
+result_dir = 'hallharrisLinearC/'
 if os.path.exists(result_dir):
     shutil.rmtree(result_dir)
 

@@ -13,7 +13,7 @@ ny = 250
 Dx = 0.1
 Dy = 0.1
 Dt = 0.0
-FinalTime = 30
+FinalTime = 10
 nghost = 2
 
 boundaryconditions = p.BoundaryConditions.Periodic
