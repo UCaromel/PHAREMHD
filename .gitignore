@@ -11,15 +11,14 @@ __pycache__
 space_results/
 time_results/
 2Dwave/
-orszagtangres/
 orszagtang*/
 MHDrotorres/
 shockres/
 harrisres/
 currentres/
-whislerwaveres*/
+whislerwave*/
 ideal*/
-hallharrisres*/
+hallharris*/
 subprojects
 
 debug/
