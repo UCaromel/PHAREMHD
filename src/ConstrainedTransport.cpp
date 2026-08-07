@@ -213,10 +213,19 @@ ConstrainedTransportContact(const ConservativeVariables &Cn, double Dx,
           auto [JzL, LaplJzL] = Lz;
           auto [JzR, LaplJzR] = Rz;
 
-          AddNonIdealFlux(F, U, JxL, JyL, JzL, LaplJxL, LaplJyL, LaplJzL, OptP,
-                          dir);
-          AddNonIdealFlux(F, U, JxR, JyR, JzR, LaplJxR, LaplJyR, LaplJzR, OptP,
-                          dir);
+          // F here is a cell-centered flux (built from a single reconstructed
+          // state U), unlike Interface.cpp where fL/fR are two distinct
+          // interface fluxes that each legitimately take one side's current.
+          // AddNonIdealFlux accumulates into F, so calling it once with J_L
+          // and once with J_R would add the Hall term twice. Average the two
+          // interface-reconstructed currents (and Laplacians) to approximate
+          // the cell-centered current instead, consistent with how
+          // ConstrainedTransportAverage's Hall branch works directly on
+          // cell-centered quantities rather than on an L/R pair.
+          AddNonIdealFlux(F, U, 0.5 * (JxL + JxR), 0.5 * (JyL + JyR),
+                          0.5 * (JzL + JzR), 0.5 * (LaplJxL + LaplJxR),
+                          0.5 * (LaplJyL + LaplJyR), 0.5 * (LaplJzL + LaplJzR),
+                          OptP, dir);
         };
 
         // Apply non-ideal flux calculations to each reconstructed value
