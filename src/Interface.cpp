@@ -482,15 +482,27 @@ Interface::Interface(
     Splus = std::max(std::abs(uL.vy) + cfastyL, std::abs(uR.vy) + cfastyR);
   }
 
-  // Pass uL and uR in conservative form
-  uL.vx = uL.rho * uL.vx;
-  uL.vy = uL.rho * uL.vy;
-  uL.vz = uL.rho * uL.vz;
-  uL.P = EosEtot(uL);
-  uR.vx = uR.rho * uR.vx;
-  uR.vy = uR.rho * uR.vy;
-  uR.vz = uR.rho * uR.vz;
-  uR.P = EosEtot(uR);
+  // Pass uL and uR in conservative form.
+  // EosEtot forms 0.5*rho*(vx^2+vy^2+vz^2) and so needs the velocities: it
+  // must be evaluated before vx/vy/vz are overwritten with the momenta,
+  // otherwise the kinetic term comes out as 0.5*rho^3*|v|^2.
+  double vxL = uL.rho * uL.vx;
+  double vyL = uL.rho * uL.vy;
+  double vzL = uL.rho * uL.vz;
+  double EtotL = EosEtot(uL);
+  double vxR = uR.rho * uR.vx;
+  double vyR = uR.rho * uR.vy;
+  double vzR = uR.rho * uR.vz;
+  double EtotR = EosEtot(uR);
+
+  uL.vx = vxL;
+  uL.vy = vyL;
+  uL.vz = vzL;
+  uL.P = EtotL;
+  uR.vx = vxR;
+  uR.vy = vyR;
+  uR.vz = vzR;
+  uR.P = EtotR;
 }
 
 Interface::~Interface() = default;
